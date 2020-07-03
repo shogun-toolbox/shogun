@@ -28,7 +28,7 @@
 
 using namespace shogun;
 
-#define TRIES(X) ((use_poim_tries) ? (poim_tries.X) : (tries.X))
+#define TRIES(X) ((use_poim_tries) ? (poim_tries->X) : (tries->X))
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <class Trie> struct S_THREAD_PARAM_WDS
@@ -66,11 +66,10 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 	degree=d;
 	max_mismatch=mm;
 
-	tries=CTrie<DNATrie>(d);
-	poim_tries=CTrie<POIMTrie>(d);
-
 	set_wd_weights();
-	ASSERT(weights)
+
+	tries=std::make_unique<CTrie<DNATrie>>(d);
+	poim_tries=std::make_unique<CTrie<POIMTrie>>(d);
 }
 
 WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
@@ -84,15 +83,12 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 	degree=d;
 	max_mismatch=mm;
 
-	tries=CTrie<DNATrie>(d);
-	poim_tries=CTrie<POIMTrie>(d);
+	tries=std::make_unique<CTrie<DNATrie>>(d);
+	poim_tries=std::make_unique<CTrie<POIMTrie>>(d);
 
-	weights=SG_MALLOC(float64_t, d*(1+max_mismatch));
+	weights=w.clone();
 	weights_degree=degree;
 	weights_length=(1+max_mismatch);
-
-	for (int32_t i=0; i<d*(1+max_mismatch); i++)
-		weights[i]=w[i];
 
 	set_shifts(s);
 }
@@ -106,11 +102,9 @@ WeightedDegreePositionStringKernel::WeightedDegreePositionStringKernel(
 	mkl_stepsize=1;
 	degree=d;
 
-	tries=CTrie<DNATrie>(d);
-	poim_tries=CTrie<POIMTrie>(d);
-
+	tries=std::make_unique<CTrie<DNATrie>>(d);
+	poim_tries=std::make_unique<CTrie<POIMTrie>>(d);
 	set_wd_weights();
-	ASSERT(weights)
 
 	init(l->as<StringFeatures<char>>(), r->as<StringFeatures<char>>());
 }
@@ -120,35 +114,12 @@ WeightedDegreePositionStringKernel::~WeightedDegreePositionStringKernel()
 {
 	cleanup();
 	cleanup_POIM2();
-
-	SG_FREE(shift);
-	shift=NULL;
-
-	SG_FREE(weights);
-	weights=NULL;
-	weights_degree=0;
-	weights_length=0;
-
-	SG_FREE(position_weights);
-	position_weights=NULL;
-
-	SG_FREE(position_weights_lhs);
-	position_weights_lhs=NULL;
-
-	SG_FREE(position_weights_rhs);
-	position_weights_rhs=NULL;
-
-	SG_FREE(weights_buffer);
-	weights_buffer=NULL;
 }
 
 void WeightedDegreePositionStringKernel::remove_lhs()
 {
 	SG_DEBUG("deleting CWeightedDegreePositionStringKernel optimization")
 	delete_optimization();
-
-	tries.destroy();
-	poim_tries.destroy();
 
 	Kernel::remove_lhs();
 }
@@ -160,13 +131,13 @@ void WeightedDegreePositionStringKernel::create_empty_tries()
 
 	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
-		tries.create(seq_length, true);
-		poim_tries.create(seq_length, true);
+		tries->create(seq_length, true);
+		poim_tries->create(seq_length, true);
 	}
 	else if (opt_type==FASTBUTMEMHUNGRY)
 	{
-		tries.create(seq_length, false);  // still buggy
-		poim_tries.create(seq_length, false);  // still buggy
+		tries->create(seq_length, false);  // still buggy
+		poim_tries->create(seq_length, false);  // still buggy
 	}
 	else
 		error("unknown optimization type");
@@ -174,6 +145,8 @@ void WeightedDegreePositionStringKernel::create_empty_tries()
 
 bool WeightedDegreePositionStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
+	set_wd_weights();
+
 	int32_t lhs_changed = (lhs!=l) ;
 	int32_t rhs_changed = (rhs!=r) ;
 
@@ -188,14 +161,10 @@ bool WeightedDegreePositionStringKernel::init(std::shared_ptr<Features> l, std::
 	/* set shift */
 	if (shift_len==0) {
 		shift_len=sf_l->get_vector_length(0);
-		int32_t *shifts=SG_MALLOC(int32_t, shift_len);
-		for (int32_t i=0; i<shift_len; i++) {
-			shifts[i]=1;
-		}
-		set_shifts(SGVector<int32_t>(shifts, shift_len, false));
-		SG_FREE(shifts);
+		auto shifts = SGVector<int32_t>(shift_len);
+		shifts.set_const(1);
+		set_shifts(shifts);
 	}
-
 
 	int32_t len=sf_l->get_max_vector_length();
 
@@ -205,15 +174,13 @@ bool WeightedDegreePositionStringKernel::init(std::shared_ptr<Features> l, std::
 	if (rhs_changed && !sf_r->have_same_length(len))
 		error("All strings in WD kernel must have same length (rhs wrong)!");
 
-
-	alphabet= sf_l->get_alphabet();
-	auto ralphabet=sf_r->get_alphabet();
+	const auto& alphabet= sf_l->get_alphabet();
+	const auto& ralphabet=sf_r->get_alphabet();
 
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
-
 
 	//whenever init is called also init tries and block weights
 	create_empty_tries();
@@ -227,16 +194,8 @@ void WeightedDegreePositionStringKernel::cleanup()
 	SG_DEBUG("deleting CWeightedDegreePositionStringKernel optimization")
 	delete_optimization();
 
-	block_weights = SGVector<float64_t>(0);
-
-	tries.destroy();
-	poim_tries.destroy();
-
 	seq_length = 0;
 	tree_initialized = false;
-
-
-	alphabet=NULL;
 
 	Kernel::cleanup();
 }
@@ -245,8 +204,8 @@ bool WeightedDegreePositionStringKernel::init_optimization(
 	int32_t p_count, int32_t * IDX, float64_t * alphas, int32_t tree_num,
 	int32_t upto_tree)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
+	ASSERT(position_weights_lhs.size() > 0)
+	ASSERT(position_weights_rhs.size() > 0)
 
 	if (upto_tree<0)
 		upto_tree=tree_num;
@@ -284,18 +243,18 @@ bool WeightedDegreePositionStringKernel::init_optimization(
 
 bool WeightedDegreePositionStringKernel::delete_optimization()
 {
-	if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
+	if ((opt_type==FASTBUTMEMHUNGRY) && (tries->get_use_compact_terminal_nodes()))
 	{
-		tries.set_use_compact_terminal_nodes(false) ;
+		tries->set_use_compact_terminal_nodes(false) ;
 		SG_DEBUG("disabling compact trie nodes with FASTBUTMEMHUNGRY")
 	}
 
 	if (get_is_initialized())
 	{
 		if (opt_type==SLOWBUTMEMEFFICIENT)
-			tries.delete_trees(true);
+			tries->delete_trees(true);
 		else if (opt_type==FASTBUTMEMHUNGRY)
-			tries.delete_trees(false);  // still buggy
+			tries->delete_trees(false);  // still buggy
 		else {
 			error("unknown optimization type");
 		}
@@ -310,15 +269,14 @@ bool WeightedDegreePositionStringKernel::delete_optimization()
 float64_t WeightedDegreePositionStringKernel::compute_with_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t* max_shift_vec= SG_MALLOC(float64_t, max_shift);
-    float64_t sum0=0 ;
-    for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
+	float64_t sum0=0;
 
     // no shift
     for (int32_t i=0; i<alen; i++)
     {
-		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+		if ((position_weights.size() > 0) && (position_weights[i]==0.0))
 			continue ;
 
 		int32_t mismatches=0;
@@ -333,7 +291,7 @@ float64_t WeightedDegreePositionStringKernel::compute_with_mismatch(
 			} ;
 			sumi += weights[j+degree*mismatches];
 		}
-		if (position_weights!=NULL)
+		if (position_weights.size() > 0)
 			sum0 += position_weights[i]*sumi ;
 		else
 			sum0 += sumi ;
@@ -343,7 +301,7 @@ float64_t WeightedDegreePositionStringKernel::compute_with_mismatch(
     {
 		for (int32_t k=1; (k<=shift[i]) && (i+k<alen); k++)
 		{
-			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+			if ((position_weights.size() > 0) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
 			float64_t sumi1 = 0.0 ;
@@ -372,7 +330,7 @@ float64_t WeightedDegreePositionStringKernel::compute_with_mismatch(
 				} ;
 				sumi2 += weights[j+degree*mismatches];
 			}
-			if (position_weights!=NULL)
+			if (position_weights.size() > 0)
 				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
 				max_shift_vec[k-1] += sumi1 + sumi2 ;
@@ -383,22 +341,20 @@ float64_t WeightedDegreePositionStringKernel::compute_with_mismatch(
     for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
     return result ;
 }
 
 float64_t WeightedDegreePositionStringKernel::compute_without_mismatch(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t* max_shift_vec = SG_MALLOC(float64_t, max_shift);
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
 	float64_t sum0=0 ;
-	for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
 
 	// no shift
 	for (int32_t i=0; i<alen; i++)
 	{
-		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+		if ((position_weights.size() > 0) && (position_weights[i]==0.0))
 			continue ;
 
 		float64_t sumi = 0.0 ;
@@ -408,7 +364,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch(
 				break ;
 			sumi += weights[j];
 		}
-		if (position_weights!=NULL)
+		if (position_weights.size() > 0)
 			sum0 += position_weights[i]*sumi ;
 		else
 			sum0 += sumi ;
@@ -418,7 +374,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch(
 	{
 		for (int32_t k=1; (k<=shift[i]) && (i+k<alen); k++)
 		{
-			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+			if ((position_weights.size() > 0) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
 			float64_t sumi1 = 0.0 ;
@@ -437,7 +393,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch(
 					break ;
 				sumi2 += weights[j];
 			}
-			if (position_weights!=NULL)
+			if (position_weights.size() > 0)
 				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
 				max_shift_vec[k-1] += sumi1 + sumi2 ;
@@ -448,23 +404,20 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch(
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
-
 	return result ;
 }
 
 float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	char* avec, int32_t alen, char* bvec, int32_t blen)
 {
-	float64_t* max_shift_vec = SG_MALLOC(float64_t, max_shift);
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
 	float64_t sum0=0 ;
-	for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
 
 	// no shift
 	for (int32_t i=0; i<alen; i++)
 	{
-		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+		if ((position_weights.size() > 0) && (position_weights[i]==0.0))
 			continue ;
 		float64_t sumi = 0.0 ;
 		for (int32_t j=0; (j<degree) && (i+j<alen); j++)
@@ -473,7 +426,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 				break ;
 			sumi += weights[i*degree+j];
 		}
-		if (position_weights!=NULL)
+		if (position_weights.size() > 0)
 			sum0 += position_weights[i]*sumi ;
 		else
 			sum0 += sumi ;
@@ -483,7 +436,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	{
 		for (int32_t k=1; (k<=shift[i]) && (i+k<alen); k++)
 		{
-			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+			if ((position_weights.size() > 0) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
 			float64_t sumi1 = 0.0 ;
@@ -502,7 +455,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 					break ;
 				sumi2 += weights[i*degree+j];
 			}
-			if (position_weights!=NULL)
+			if (position_weights.size() > 0)
 				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
 				max_shift_vec[k-1] += sumi1 + sumi2 ;
@@ -513,7 +466,6 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_matrix(
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -521,15 +473,14 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_position_
 	char* avec, float64_t* pos_weights_lhs, int32_t alen, char* bvec,
 	float64_t* pos_weights_rhs, int32_t blen)
 {
-	float64_t* max_shift_vec = SG_MALLOC(float64_t, max_shift);
-	float64_t sum0=0 ;
-	for (int32_t i=0; i<max_shift; i++)
-		max_shift_vec[i]=0 ;
+	SGVector<float64_t> max_shift_vec(max_shift);
+	max_shift_vec.zero();
+	float64_t sum0=0;
 
 	// no shift
 	for (int32_t i=0; i<alen; i++)
 	{
-		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+		if ((position_weights.size() > 0) && (position_weights[i]==0.0))
 			continue ;
 
 		float64_t sumi = 0.0 ;
@@ -544,7 +495,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_position_
 				break ;
 			sumi += weights[j]*(posweight_lhs/(j+1))*(posweight_rhs/(j+1)) ;
 		}
-		if (position_weights!=NULL)
+		if (position_weights.size() > 0)
 			sum0 += position_weights[i]*sumi ;
 		else
 			sum0 += sumi ;
@@ -554,7 +505,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_position_
 	{
 		for (int32_t k=1; (k<=shift[i]) && (i+k<alen); k++)
 		{
-			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+			if ((position_weights.size() > 0) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
 				continue ;
 
 			// shift in sequence a
@@ -581,7 +532,7 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_position_
 					break ;
 				sumi2 += weights[j]*(posweight_lhs/(j+1))*(posweight_rhs/(j+1)) ;
 			}
-			if (position_weights!=NULL)
+			if (position_weights.size() > 0)
 				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
 				max_shift_vec[k-1] += sumi1 + sumi2 ;
@@ -592,7 +543,6 @@ float64_t WeightedDegreePositionStringKernel::compute_without_mismatch_position_
 	for (int32_t i=0; i<max_shift; i++)
 		result += max_shift_vec[i]/(2*(i+1)) ;
 
-	SG_FREE(max_shift_vec);
 	return result ;
 }
 
@@ -610,10 +560,10 @@ float64_t WeightedDegreePositionStringKernel::compute(
 	ASSERT(shift_len==alen)
 
 	float64_t result = 0 ;
-	if (position_weights_lhs!=NULL || position_weights_rhs!=NULL)
+	if (position_weights_lhs.size() > 0 || position_weights_rhs.size() > 0)
 	{
 		ASSERT(max_mismatch==0)
-		float64_t* position_weights_rhs_ = position_weights_rhs ;
+		auto position_weights_rhs_ = position_weights_rhs ;
 		if (lhs==rhs)
 			position_weights_rhs_ = position_weights_lhs ;
 
@@ -636,9 +586,9 @@ float64_t WeightedDegreePositionStringKernel::compute(
 void WeightedDegreePositionStringKernel::add_example_to_tree(
 	int32_t idx, float64_t alpha)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
-	ASSERT(alphabet)
+	ASSERT(position_weights_lhs.size() > 0)
+	ASSERT(position_weights_rhs.size() > 0)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	int32_t len=0;
@@ -672,11 +622,11 @@ void WeightedDegreePositionStringKernel::add_example_to_tree(
 		for (int32_t s=max_s; s>=0; s--)
 		{
 			float64_t alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
-			TRIES(add_to_trie(i, s, vec, alpha_pw, weights, (length!=0))) ;
+			TRIES(add_to_trie(i, s, vec, alpha_pw, weights.vector, (length!=0))) ;
 			if ((s==0) || (i+s>=len))
 				continue;
 
-			TRIES(add_to_trie(i+s, -s, vec, alpha_pw, weights, (length!=0))) ;
+			TRIES(add_to_trie(i+s, -s, vec, alpha_pw, weights.vector, (length!=0))) ;
 		}
 	}
 
@@ -687,9 +637,9 @@ void WeightedDegreePositionStringKernel::add_example_to_tree(
 void WeightedDegreePositionStringKernel::add_example_to_single_tree(
 	int32_t idx, float64_t alpha, int32_t tree_num)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
-	ASSERT(alphabet)
+	ASSERT(position_weights_lhs.size() > 0)
+	ASSERT(position_weights_rhs.size() > 0)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	int32_t len=0;
@@ -703,7 +653,7 @@ void WeightedDegreePositionStringKernel::add_example_to_single_tree(
 		max_s=0;
 	else if (opt_type==FASTBUTMEMHUNGRY)
 	{
-		ASSERT(!tries.get_use_compact_terminal_nodes())
+		ASSERT(!tries->get_use_compact_terminal_nodes())
 		max_s=shift[tree_num];
 	}
 	else {
@@ -719,7 +669,7 @@ void WeightedDegreePositionStringKernel::add_example_to_single_tree(
 	for (int32_t s=max_s; s>=0; s--)
 	{
 		float64_t alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
-		tries.add_to_trie(tree_num, s, vec, alpha_pw, weights, (length!=0)) ;
+		tries->add_to_trie(tree_num, s, vec, alpha_pw, weights.vector, (length!=0)) ;
 	}
 
 	if (opt_type==FASTBUTMEMHUNGRY)
@@ -730,7 +680,7 @@ void WeightedDegreePositionStringKernel::add_example_to_single_tree(
 			if ((i+s<len) && (s>=1) && (s<=shift[i]))
 			{
 				float64_t alpha_pw = normalizer->normalize_lhs((s==0) ? (alpha) : (alpha/(2.0*s)), idx);
-				tries.add_to_trie(tree_num, -s, vec, alpha_pw, weights, (length!=0)) ;
+				tries->add_to_trie(tree_num, -s, vec, alpha_pw, weights.vector, (length!=0)) ;
 			}
 		}
 	}
@@ -740,9 +690,9 @@ void WeightedDegreePositionStringKernel::add_example_to_single_tree(
 
 float64_t WeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
-	ASSERT(alphabet)
+	ASSERT(position_weights_lhs.size() > 0)
+	ASSERT(position_weights_rhs.size() > 0)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	float64_t sum=0;
@@ -758,7 +708,7 @@ float64_t WeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(char_vec, idx, free_vec);
 
 	for (int32_t i=0; i<len; i++)
-		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0)) ;
+		sum += tries->compute_by_tree_helper(vec, len, i, i, i, weights.vector, (length!=0)) ;
 
 	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
@@ -766,8 +716,8 @@ float64_t WeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 		{
 			for (int32_t s=1; (s<=shift[i]) && (i+s<len); s++)
 			{
-				sum+=tries.compute_by_tree_helper(vec, len, i, i+s, i, weights, (length!=0))/(2*s) ;
-				sum+=tries.compute_by_tree_helper(vec, len, i+s, i, i+s, weights, (length!=0))/(2*s) ;
+				sum+=tries->compute_by_tree_helper(vec, len, i, i+s, i, weights.vector, (length!=0))/(2*s) ;
+				sum+=tries->compute_by_tree_helper(vec, len, i+s, i, i+s, weights.vector, (length!=0))/(2*s) ;
 			}
 		}
 	}
@@ -780,9 +730,9 @@ float64_t WeightedDegreePositionStringKernel::compute_by_tree(int32_t idx)
 void WeightedDegreePositionStringKernel::compute_by_tree(
 	int32_t idx, float64_t* LevelContrib)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
-	ASSERT(alphabet)
+	ASSERT(position_weights_lhs.size() > 0)
+	ASSERT(position_weights_rhs.size() > 0)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	int32_t len=0;
@@ -798,8 +748,8 @@ void WeightedDegreePositionStringKernel::compute_by_tree(
 
 	for (int32_t i=0; i<len; i++)
 	{
-		tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib,
-				normalizer->normalize_rhs(1.0, idx), mkl_stepsize, weights,
+		tries->compute_by_tree_helper(vec, len, i, i, i, LevelContrib,
+				normalizer->normalize_rhs(1.0, idx), mkl_stepsize, weights.vector,
 				(length!=0));
 	}
 
@@ -808,12 +758,12 @@ void WeightedDegreePositionStringKernel::compute_by_tree(
 		for (int32_t i=0; i<len; i++)
 			for (int32_t k=1; (k<=shift[i]) && (i+k<len); k++)
 			{
-				tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib,
+				tries->compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib,
 						normalizer->normalize_rhs(1.0/(2*k), idx), mkl_stepsize,
-						weights, (length!=0)) ;
-				tries.compute_by_tree_helper(vec, len, i+k, i, i+k,
+						weights.vector, (length!=0)) ;
+				tries->compute_by_tree_helper(vec, len, i+k, i, i+k,
 						LevelContrib, normalizer->normalize_rhs(1.0/(2*k), idx),
-						mkl_stepsize, weights, (length!=0)) ;
+						mkl_stepsize, weights.vector, (length!=0)) ;
 			}
 	}
 
@@ -823,74 +773,53 @@ void WeightedDegreePositionStringKernel::compute_by_tree(
 float64_t* WeightedDegreePositionStringKernel::compute_abs_weights(
 	int32_t &len)
 {
-	return tries.compute_abs_weights(len);
+	return tries->compute_abs_weights(len);
 }
 
 void WeightedDegreePositionStringKernel::set_shifts(SGVector<int32_t> shifts)
 {
-	SG_FREE(shift);
+	shift = shifts;
+	max_shift = *std::max_element(shift.begin(), shift.end());
 
-	shift_len = shifts.vlen;
-	shift = SG_MALLOC(int32_t, shift_len);
-
-	if (shift)
-	{
-		max_shift = 0 ;
-
-		for (int32_t i=0; i<shift_len; i++)
-		{
-			shift[i] = shifts.vector[i] ;
-			max_shift = Math::max(shift[i], max_shift);
-		}
-
-		ASSERT(max_shift>=0 && max_shift<=shift_len)
-	}
+	ASSERT(max_shift>=0 && max_shift<=shift_len)
 }
 
 bool WeightedDegreePositionStringKernel::set_wd_weights()
 {
 	ASSERT(degree>0)
 
-	SG_FREE(weights);
-	weights=SG_MALLOC(float64_t, degree);
+	weights=SGVector<float64_t>(degree);
 	weights_degree=degree;
 	weights_length=1;
 
-	if (weights)
+	int32_t i;
+	float64_t sum=0;
+	for (i=0; i<degree; i++)
 	{
-		int32_t i;
-		float64_t sum=0;
-		for (i=0; i<degree; i++)
-		{
-			weights[i]=degree-i;
-			sum+=weights[i];
-		}
-		for (i=0; i<degree; i++)
-			weights[i]/=sum;
-
-		for (i=0; i<degree; i++)
-		{
-			for (int32_t j=1; j<=max_mismatch; j++)
-			{
-				if (j<i+1)
-				{
-					int32_t nk=Math::nchoosek(i+1, j);
-					weights[i+j*degree]=weights[i]/(nk*Math::pow(3.0,j));
-				}
-				else
-					weights[i+j*degree]= 0;
-			}
-		}
-
-		return true;
+		weights[i]=degree-i;
+		sum+=weights[i];
 	}
-	else
-		return false;
+	for (i=0; i<degree; i++)
+		weights[i]/=sum;
+
+	for (i=0; i<degree; i++)
+	{
+		for (int32_t j=1; j<=max_mismatch; j++)
+		{
+			if (j<i+1)
+			{
+				int32_t nk=Math::nchoosek(i+1, j);
+				weights[i+j*degree]=weights[i]/(nk*Math::pow(3.0,j));
+			}
+			else
+				weights[i+j*degree]= 0;
+		}
+	}
+	return true;
 }
 
 bool WeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_weights)
 {
-	float64_t* ws=new_weights.matrix;
 	int32_t d=new_weights.num_rows;
 	int32_t len=new_weights.num_cols;
 
@@ -907,86 +836,59 @@ bool WeightedDegreePositionStringKernel::set_weights(SGMatrix<float64_t> new_wei
 	weights_length=len+max_mismatch;
 
 	SG_DEBUG("Creating weights of size {}x{}", weights_degree, weights_length)
-	int32_t num_weights=weights_degree*weights_length;
-	SG_FREE(weights);
-	weights=SG_MALLOC(float64_t, num_weights);
-
-	for (int32_t i=0; i<degree*len; i++)
-		weights[i]=ws[i];
+	weights=new_weights.clone();
 
 	return true;
 }
 
-void WeightedDegreePositionStringKernel::set_position_weights(SGVector<float64_t> pws)
+void WeightedDegreePositionStringKernel::set_position_weights(const SGVector<float64_t>& pws)
 {
 	if (seq_length==0)
-		seq_length=pws.vlen;
+		seq_length=pws.size();
 
-	if (seq_length!=pws.vlen)
-		error("seq_length = {}, position_weights_length={}", seq_length, pws.vlen);
+	if (seq_length!=pws.size())
+		error("seq_length = {}, position_weights_length={}", seq_length, pws.size());
 
-	SG_FREE(position_weights);
-	position_weights=SG_MALLOC(float64_t, pws.vlen);
-	position_weights_len=pws.vlen;
-	tries.set_position_weights(position_weights);
-
-	for (int32_t i=0; i<pws.vlen; i++)
-		position_weights[i]=pws.vector[i];
+	position_weights=pws.clone();
+	tries->set_position_weights(position_weights.vector);
 }
 
-bool WeightedDegreePositionStringKernel::set_position_weights_lhs(float64_t* pws, int32_t len, int32_t num)
+bool WeightedDegreePositionStringKernel::set_position_weights_lhs(const SGMatrix<float64_t>& pws)
 {
-	if (position_weights_rhs==position_weights_lhs)
-		position_weights_rhs=NULL;
-	else
-		delete_position_weights_rhs();
-
-	if (len==0)
+	if (pws.num_rows==0)
 	{
-		return delete_position_weights_lhs();
+		position_weights_lhs = SGVector<float64_t>();
+		return true;
 	}
 
-	if (seq_length!=len)
+	if (seq_length!=pws.num_rows)
 	{
-		error("seq_length = {}, position_weights_length={}", seq_length, len);
+		error("seq_length = {}, position_weights_length={}", seq_length, pws.num_rows);
 		return false;
 	}
 
-	SG_FREE(position_weights_lhs);
-	position_weights_lhs=SG_MALLOC(float64_t, len*num);
-	position_weights_lhs_len=len*num;
-
-	for (int32_t i=0; i<len*num; i++)
-		position_weights_lhs[i]=pws[i];
+	position_weights_lhs=pws.clone();
 
 	return true;
 }
 
 bool WeightedDegreePositionStringKernel::set_position_weights_rhs(
-	float64_t* pws, int32_t len, int32_t num)
+	const SGMatrix<float64_t>& pws)
 {
-	if (len==0)
+	if (pws.num_rows==0)
 	{
-		if (position_weights_rhs==position_weights_lhs)
-		{
-			position_weights_rhs=NULL;
-			return true;
-		}
-		return delete_position_weights_rhs();
+		position_weights_rhs=SGVector<float64_t>();
+		return true;
 	}
 
-	if (seq_length!=len)
+	if (seq_length!=pws.num_rows)
 	{
-		error("seq_length = {}, position_weights_length={}", seq_length, len);
+		error("seq_length = {}, position_weights_length={}", seq_length, pws.num_rows);
 		return false;
 	}
 
-	SG_FREE(position_weights_rhs);
-	position_weights_rhs=SG_MALLOC(float64_t, len*num);
-	position_weights_rhs_len=len*num;
-
-	for (int32_t i=0; i<len*num; i++)
-		position_weights_rhs[i]=pws[i];
+	position_weights_rhs=SGMatrix<float64_t>::empty_like(pws);
+	std::copy(pws.begin(), pws.end(), position_weights_rhs.begin());
 
 	return true;
 }
@@ -1012,7 +914,6 @@ bool WeightedDegreePositionStringKernel::init_block_weights_from_wd()
 
 bool WeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
 {
-	ASSERT(weights)
 	block_weights=SGVector<float64_t>(std::max(seq_length,degree));
 
 	if (block_weights.vlen)
@@ -1152,11 +1053,9 @@ bool WeightedDegreePositionStringKernel::init_block_weights()
 	return false;
 }
 
-
-
 void* WeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 {
-	S_THREAD_PARAM_WDS<DNATrie>* params = (S_THREAD_PARAM_WDS<DNATrie>*) p;
+	auto* params = (S_THREAD_PARAM_WDS<DNATrie>*) p;
 	int32_t j=params->j;
 	WeightedDegreePositionStringKernel* wd=params->kernel;
 	CTrie<DNATrie>* tries=params->tries;
@@ -1173,15 +1072,13 @@ void* WeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 	{
 		int32_t len=0;
 		auto rhs_feat=(StringFeatures<char>*)(wd->get_rhs().get());
-		auto alpha=wd->alphabet;
+		auto alpha=rhs_feat->get_alphabet();
 
 		bool free_vec;
 		char* char_vec=rhs_feat->get_feature_vector(vec_idx[i], len, free_vec);
 		for (int32_t k=Math::max(0,j-max_shift); k<Math::min(len,j+wd->get_degree()+max_shift); k++)
 			vec[k]=alpha->remap_to_bin(char_vec[k]);
 		rhs_feat->free_feature_vector(char_vec, vec_idx[i], free_vec);
-
-
 
 		result[i] += factor*wd->normalizer->normalize_rhs(tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0)), vec_idx[i]);
 
@@ -1216,10 +1113,8 @@ void WeightedDegreePositionStringKernel::compute_batch(
 	int32_t num_vec, int32_t* vec_idx, float64_t* result, int32_t num_suppvec,
 	int32_t* IDX, float64_t* alphas, float64_t factor)
 {
-	ASSERT(alphabet)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
 	ASSERT(rhs)
 	ASSERT(num_vec<=rhs->get_num_vectors())
 	ASSERT(num_vec>0)
@@ -1248,9 +1143,9 @@ void WeightedDegreePositionStringKernel::compute_batch(
 			S_THREAD_PARAM_WDS<DNATrie> params;
 			params.vec = vec;
 			params.result = result;
-			params.weights = weights;
+			params.weights = weights.vector;
 			params.kernel = this;
-			params.tries = &tries;
+			params.tries = tries.get();
 			params.factor = factor;
 			params.j = j;
 			params.start = 0;
@@ -1271,7 +1166,7 @@ void WeightedDegreePositionStringKernel::compute_batch(
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t* threads = SG_MALLOC(pthread_t, num_threads-1);
-			S_THREAD_PARAM_WDS<DNATrie>* params = SG_MALLOC(S_THREAD_PARAM_WDS<DNATrie>, num_threads);
+			std::vector<S_THREAD_PARAM_WDS<DNATrie>> params(num_threads);
 			int32_t step= num_vec/num_threads;
 			int32_t t;
 
@@ -1279,9 +1174,9 @@ void WeightedDegreePositionStringKernel::compute_batch(
 			{
 				params[t].vec=&vec[num_feat*t];
 				params[t].result=result;
-				params[t].weights=weights;
+				params[t].weights=weights.vector;
 				params[t].kernel=this;
-				params[t].tries=&tries;
+				params[t].tries=tries.get();
 				params[t].factor=factor;
 				params[t].j=j;
 				params[t].start = t*step;
@@ -1295,9 +1190,9 @@ void WeightedDegreePositionStringKernel::compute_batch(
 
 			params[t].vec=&vec[num_feat*t];
 			params[t].result=result;
-			params[t].weights=weights;
+			params[t].weights=weights.vector;
 			params[t].kernel=this;
-			params[t].tries=&tries;
+			params[t].tries=tries.get();
 			params[t].factor=factor;
 			params[t].j=j;
 			params[t].start=t*step;
@@ -1311,7 +1206,6 @@ void WeightedDegreePositionStringKernel::compute_batch(
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
 
-			SG_FREE(params);
 			SG_FREE(threads);
 		}
 	}
@@ -1328,12 +1222,9 @@ float64_t* WeightedDegreePositionStringKernel::compute_scoring(
 	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* result,
 	int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
-
 	num_feat=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_max_vector_length();
 	ASSERT(num_feat>0)
-	ASSERT(alphabet)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	num_sym=4; //for now works only w/ DNA
@@ -1420,7 +1311,7 @@ float64_t* WeightedDegreePositionStringKernel::compute_scoring(
 			for(int32_t j = 0; j < degree+1; j++ ) {
 				x[j] = -1;
 			}
-			tries.traverse( tree, p, info, 0, x, k );
+			tries->traverse( tree, p, info, 0, x, k );
 		}
 
 		// --- add partial overlap scores
@@ -1481,14 +1372,12 @@ float64_t* WeightedDegreePositionStringKernel::compute_scoring(
 char* WeightedDegreePositionStringKernel::compute_consensus(
 	int32_t &num_feat, int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
-	ASSERT(position_weights_lhs==NULL)
-	ASSERT(position_weights_rhs==NULL)
 	//only works for order <= 32
 	ASSERT(degree<=32)
-	ASSERT(!tries.get_use_compact_terminal_nodes())
+	ASSERT(!tries->get_use_compact_terminal_nodes())
 	num_feat=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_max_vector_length();
 	ASSERT(num_feat>0)
-	ASSERT(alphabet)
+	auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
 	ASSERT(alphabet->get_alphabet()==DNA || alphabet->get_alphabet()==RNA)
 
 	//consensus
@@ -1518,9 +1407,9 @@ char* WeightedDegreePositionStringKernel::compute_consensus(
 		}
 
 		if (i==0)
-			tries.fill_backtracking_table(i, NULL, table[i], cumulative, weights);
+			tries->fill_backtracking_table(i, NULL, table[i], cumulative, weights.vector);
 		else
-			tries.fill_backtracking_table(i, table[i-1], table[i], cumulative, weights);
+			tries->fill_backtracking_table(i, table[i-1], table[i], cumulative, weights.vector);
 	}
 
 
@@ -1602,18 +1491,17 @@ float64_t* WeightedDegreePositionStringKernel::extract_w(
 {
   delete_optimization();
   use_poim_tries=true;
-  poim_tries.delete_trees(false);
+  poim_tries->delete_trees(false);
 
   // === check
-  ASSERT(position_weights_lhs==NULL)
-  ASSERT(position_weights_rhs==NULL)
   num_feat=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_max_vector_length();
   ASSERT(num_feat>0)
+  auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
   ASSERT(alphabet->get_alphabet()==DNA)
   ASSERT(max_degree>0)
 
   // === general variables
-  static const int32_t NUM_SYMS = poim_tries.NUM_SYMS;
+  static const int32_t NUM_SYMS = poim_tries->NUM_SYMS;
   const int32_t seqLen = num_feat;
   float64_t** subs;
   int32_t i;
@@ -1648,14 +1536,14 @@ float64_t* WeightedDegreePositionStringKernel::extract_w(
 
   // === init trees; extract "w"
   init_optimization( num_suppvec, IDX, alphas, -1);
-  poim_tries.POIMs_extract_W( subs, max_degree );
+  poim_tries->POIMs_extract_W( subs, max_degree );
 
   // === clean; return "subs" as vector
   SG_FREE(subs);
   num_feat = 1;
   num_sym = bigTabSize;
   use_poim_tries=false;
-  poim_tries.delete_trees(false);
+  poim_tries->delete_trees(false);
   return w_result;
 }
 
@@ -1666,19 +1554,18 @@ float64_t* WeightedDegreePositionStringKernel::compute_POIM(
 {
   delete_optimization();
   use_poim_tries=true;
-  poim_tries.delete_trees(false);
+  poim_tries->delete_trees(false);
 
   // === check
-  ASSERT(position_weights_lhs==NULL)
-  ASSERT(position_weights_rhs==NULL)
   num_feat=std::static_pointer_cast<StringFeatures<char>>(rhs)->get_max_vector_length();
   ASSERT(num_feat>0)
+  auto alphabet = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_alphabet();
   ASSERT(alphabet->get_alphabet()==DNA)
   ASSERT(max_degree!=0)
   ASSERT(distrib)
 
   // === general variables
-  static const int32_t NUM_SYMS = poim_tries.NUM_SYMS;
+  static const int32_t NUM_SYMS = poim_tries->NUM_SYMS;
   const int32_t seqLen = num_feat;
   float64_t** subs;
   int32_t i;
@@ -1749,11 +1636,11 @@ float64_t* WeightedDegreePositionStringKernel::compute_POIM(
 
   // === init trees; precalc S, L and R
   init_optimization( num_suppvec, IDX, alphas, -1);
-  poim_tries.POIMs_precalc_SLR( distrib );
+  poim_tries->POIMs_precalc_SLR( distrib );
 
   // === compute substring scores
   if( debug==0 || debug==1 ) {
-    poim_tries.POIMs_extract_W( subs, max_degree );
+    poim_tries->POIMs_extract_W( subs, max_degree );
     for( k = 1; k < max_degree; ++k ) {
       const int32_t nofKmers2 = ( k > 1 ) ? (int32_t) Math::pow(NUM_SYMS,k-1) : 0;
       const int32_t nofKmers1 = (int32_t) Math::pow( NUM_SYMS, k );
@@ -1781,7 +1668,7 @@ float64_t* WeightedDegreePositionStringKernel::compute_POIM(
   }
 
   // === compute POIMs
-  poim_tries.POIMs_add_SLR( subs, max_degree, debug );
+  poim_tries->POIMs_add_SLR( subs, max_degree, debug );
 
   // === clean; return "subs" as vector
   SG_FREE(subs);
@@ -1789,7 +1676,7 @@ float64_t* WeightedDegreePositionStringKernel::compute_POIM(
   num_sym = bigTabSize;
 
   use_poim_tries=false;
-  poim_tries.delete_trees(false);
+  poim_tries->delete_trees(false);
 
   return poim_result;
 }
@@ -1797,13 +1684,9 @@ float64_t* WeightedDegreePositionStringKernel::compute_POIM(
 
 void WeightedDegreePositionStringKernel::prepare_POIM2(SGMatrix<float64_t> distrib)
 {
-	SG_FREE(m_poim_distrib);
-	int32_t num_sym=distrib.num_cols;
-	int32_t num_feat=distrib.num_rows;
-	m_poim_distrib=SG_MALLOC(float64_t, num_sym*num_feat);
-	sg_memcpy(m_poim_distrib, distrib.matrix, num_sym*num_feat*sizeof(float64_t));
-	m_poim_num_sym=num_sym;
-	m_poim_num_feat=num_feat;
+	m_poim_distrib=distrib.clone();
+	m_poim_num_sym=m_poim_distrib.num_cols;
+	m_poim_num_feat=m_poim_distrib.num_rows;
 }
 
 void WeightedDegreePositionStringKernel::compute_POIM2(
@@ -1829,12 +1712,12 @@ void WeightedDegreePositionStringKernel::compute_POIM2(
 
 	int32_t num_feat = m_poim_num_feat;
 	int32_t num_sym = m_poim_num_sym;
-	SG_FREE(m_poim);
 
-	m_poim = compute_POIM(max_degree, num_feat, num_sym, NULL,	num_suppvec, sv_idx,
-						  sv_weight, m_poim_distrib);
-
+	auto* poim = compute_POIM(max_degree, num_feat, num_sym, NULL,	num_suppvec, sv_idx,
+						  sv_weight, m_poim_distrib.matrix);
 	ASSERT(num_feat==1)
+	m_poim = SGVector<float64_t>(poim, num_sym);
+
 	m_poim_result_len=num_sym;
 
 	SG_FREE(sv_weight);
@@ -1849,10 +1732,6 @@ SGVector<float64_t> WeightedDegreePositionStringKernel::get_POIM2()
 
 void WeightedDegreePositionStringKernel::cleanup_POIM2()
 {
-	SG_FREE(m_poim) ;
-	m_poim=NULL ;
-	SG_FREE(m_poim_distrib) ;
-	m_poim_distrib=NULL ;
 	m_poim_num_sym=0 ;
 	m_poim_num_sym=0 ;
 	m_poim_result_len=0 ;
@@ -1862,27 +1741,22 @@ void WeightedDegreePositionStringKernel::load_serializable_post() noexcept(false
 {
 	Kernel::load_serializable_post();
 
-	tries=CTrie<DNATrie>(degree);
-	poim_tries=CTrie<POIMTrie>(degree);
+	tries=std::make_unique<CTrie<DNATrie>>(degree);
+	poim_tries=std::make_unique<CTrie<POIMTrie>>(degree);
 
-	if (weights)
+	if (weights.size() > 0)
 		init_block_weights();
 }
 
 void WeightedDegreePositionStringKernel::init()
 {
-	weights = NULL;
 	weights_length = 0;
 	weights_degree = 0;
-	position_weights = NULL;
 	position_weights_len = 0;
 
-	position_weights_lhs = NULL;
 	position_weights_lhs_len = 0;
-	position_weights_rhs = NULL;
 	position_weights_rhs_len = 0;
 
-	weights_buffer = NULL;
 	mkl_stepsize = 1;
 	degree = 1;
 	length = 0;
@@ -1890,57 +1764,49 @@ void WeightedDegreePositionStringKernel::init()
 	max_shift = 0;
 	max_mismatch = 0;
 	seq_length = 0;
-	shift = NULL;
 	shift_len = 0;
 
-	block_weights = SGVector<float64_t>(0);
 	block_computation = true;
 	type = E_EXTERNAL;
 	which_degree = -1;
-	tries = CTrie<DNATrie>(1);
-	poim_tries = CTrie<POIMTrie>(1);
+	tries = std::make_unique<CTrie<DNATrie>>(1);
+	poim_tries = std::make_unique<CTrie<POIMTrie>>(1);
 
 	tree_initialized = false;
 	use_poim_tries = false;
-	m_poim_distrib = NULL;
 
-	m_poim = NULL;
 	m_poim_num_sym = 0;
 	m_poim_num_feat = 0;
 	m_poim_result_len = 0;
-
-	alphabet = NULL;
 
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
 	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 
-	/*m_parameters->add_matrix(
-	    &weights, &weights_degree, &weights_length, "weights",
-	    "WD Kernel weights.");*/
-	watch_param("weights", &weights, &weights_degree, &weights_length);
+	SG_ADD(&weights, "weights", "weights")
+	add_callback_function("weights", [this](){
+		set_weights(weights);
+	});
 
-	/*m_parameters->add_vector(
-	    &position_weights, &position_weights_len, "position_weights",
-	    "Weights per position.");*/
-	watch_param("position_weights", &position_weights, &position_weights_len);
+	SG_ADD(&position_weights, "position_weights", "Weights per position");
+	add_callback_function("position_weights", [this](){
+		set_position_weights(position_weights);
+	});
 
-	/*m_parameters->add_vector(
-	    &position_weights_lhs, &position_weights_lhs_len,
-	    "position_weights_lhs", "Weights per position left hand side.");*/
-	watch_param(
-	    "position_weights_lhs", &position_weights_lhs,
-	    &position_weights_lhs_len);
+	SG_ADD(&position_weights_lhs, "position_weights_lhs", "Weights per position left-hand side");
+	add_callback_function("position_weights_lhs", [this](){
+		set_position_weights_lhs(position_weights_lhs);
+	});
 
-	/*m_parameters->add_vector(
-	    &position_weights_rhs, &position_weights_rhs_len,
-	    "position_weights_rhs", "Weights per position right hand side.");*/
-	watch_param(
-	    "position_weights_rhs", &position_weights_rhs,
-	    &position_weights_rhs_len);
+	SG_ADD(&position_weights_rhs, "position_weights_rhs", "Weights per position right-hand side");
+	add_callback_function("position_weights_rhs", [this](){
+		set_position_weights_rhs(position_weights_rhs);
+	});
 
-	/*m_parameters->add_vector(&shift, &shift_len, "shift", "Shift Vector.");*/
-	watch_param("shift", &shift, &shift_len);
+	SG_ADD(&shift, "shifts", "shifts");
+	add_callback_function("shifts", [this](){
+		set_shifts(shift);
+	});
 
 	SG_ADD(
 	    &max_shift, "max_shift", "Maximal shift.", ParameterProperties::HYPER);
@@ -1949,6 +1815,10 @@ void WeightedDegreePositionStringKernel::init()
 	    ParameterProperties::HYPER);
 	SG_ADD(
 	    &degree, "degree", "Order of WD kernel.", ParameterProperties::HYPER);
+	add_callback_function("degree", [this](){
+		tries = std::make_unique<CTrie<DNATrie>>(degree);
+		poim_tries = std::make_unique<CTrie<POIMTrie>>(degree);
+	});
 	SG_ADD(
 	    &max_mismatch, "max_mismatch", "Number of allowed mismatches.",
 	    ParameterProperties::HYPER);
@@ -1959,7 +1829,6 @@ void WeightedDegreePositionStringKernel::init()
 	    &which_degree, "which_degree",
 	    "The selected degree. All degrees are used by default (for value -1).",
 	    ParameterProperties::HYPER);
-	SG_ADD((std::shared_ptr<SGObject>*)&alphabet, "alphabet", "Alphabet of Features.");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&type, "type", "WeightedDegree kernel type.",
 	    ParameterProperties::HYPER,

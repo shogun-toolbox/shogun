@@ -47,8 +47,6 @@ TEST(HashedDocConverterTest, apply_single_vector)
 		ASSERT_EQ(c_doc.features[i].entry,
 				hashed_rep[c_doc.features[i].feat_index]);
 	}
-
-
 }
 
 TEST(HashedDocConverterTest, compare_dot_features)
@@ -94,9 +92,6 @@ TEST(HashedDocConverterTest, compare_dot_features)
 		for (index_t j=0; j<c_vec.num_feat_entries; j++)
 			EXPECT_TRUE(e > c_vec.features[j].entry - d_vec[c_vec.features[j].feat_index]);
 	}
-
-
-
 }
 
 TEST(HashedDocConverterTest, apply_quadratic_test)

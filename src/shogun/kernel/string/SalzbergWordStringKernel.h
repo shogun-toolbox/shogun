@@ -115,12 +115,13 @@ class SalzbergWordStringKernel: public StringKernel<uint16_t>
 		{
 			return position*num_symbols+symbol;
 		}
-	private:
-		void init();
 
 	protected:
 		/** the plugin estimate */
 		std::shared_ptr<PluginEstimate> estimate;
+
+		/** the labels */
+		std::shared_ptr<Labels> m_labels;
 
 		/** mean */
 		float64_t* mean;

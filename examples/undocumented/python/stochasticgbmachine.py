@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
 import shogun as sg
-from shogun import CSVFile
 
 traindat = '../../../data/uci/housing/fm_housing.dat'
 label_traindat = '../../../data/uci/housing/housing_label.dat'
@@ -14,8 +13,8 @@ parameter_list = [[traindat,label_traindat,feat_types]]
 def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types):
 
 	# wrap features and labels into Shogun objects
-	feats=sg.create_features(CSVFile(train))
-	labels=sg.create_labels(CSVFile(train_labels))
+	feats=sg.create_features(sg.read_csv(train))
+	labels=sg.create_labels(sg.read_csv(train_labels))
 
 	# divide into training (90%) and test dataset (10%)
 	p=np.random.permutation(labels.get_num_labels())

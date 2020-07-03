@@ -2,8 +2,8 @@ File traindat = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
 File testdat = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
 
 #![create_features]
-Features feats_train = create_char_string_features(traindat, enum EAlphabet.DNA)
-Features feats_test = create_char_string_features(testdat, enum EAlphabet.DNA)
+Features feats_train = create_string_features(traindat, enum EAlphabet.DNA)
+Features feats_test = create_string_features(testdat, enum EAlphabet.DNA)
 #![create_features]
 
 #![create_kernel]

@@ -1,8 +1,8 @@
 File f_feats_train = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
 
  #![create_features]
-Features char_feats = create_char_string_features(f_feats_train, enum EAlphabet.DNA)
-Features embedded_feats = create_int_string_features(char_feats, 2, 3, 0, False)
+Features char_feats = create_string_features(f_feats_train, enum EAlphabet.DNA)
+Features embedded_feats = create_string_features(char_feats, 2, 3, 0, False, enum EPrimitiveType.PT_UINT16)
 #![create_features]
 
 #![create_distribution]

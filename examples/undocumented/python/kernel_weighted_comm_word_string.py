@@ -8,19 +8,15 @@ testdat = lm.load_dna('../data/fm_test_dna.dat')
 parameter_list = [[traindat,testdat],[traindat,testdat]]
 
 def kernel_weighted_comm_word_string (fm_train_dna=traindat,fm_test_dna=testdat,order=3,gap=0,reverse=True ):
-	from shogun import WeightedCommWordStringKernel
-	from shogun import StringWordFeatures, StringCharFeatures, DNA
 
-	charfeat=StringCharFeatures(fm_train_dna, DNA)
-	feats_train=StringWordFeatures(charfeat.get_alphabet())
-	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
-	charfeat=StringCharFeatures(fm_test_dna, DNA)
-	feats_test=StringWordFeatures(charfeat.get_alphabet())
-	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
 	use_sign=False

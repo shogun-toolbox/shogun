@@ -105,12 +105,14 @@ void SGSparseMatrix<complex128_t>::load(const std::shared_ptr<File>& loader)
 	error("SGSparseMatrix::load():: Not supported for complex128_t");
 }
 
-template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(const std::shared_ptr<LibSVMFile>& file, bool do_sort_features)
+template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(const std::shared_ptr<File>& file, bool do_sort_features)
 {
 	ASSERT(file)
+	auto libsvm_file = std::dynamic_pointer_cast<LibSVMFile>(file);
+	require(libsvm_file, "Expected file to be of type LibSVMFile");
 
 	float64_t* raw_labels;
-	file->get_sparse_matrix(sparse_matrix, num_features, num_vectors,
+	libsvm_file->get_sparse_matrix(sparse_matrix, num_features, num_vectors,
 					raw_labels, true);
 
 	SGVector<float64_t> labels(raw_labels, num_vectors);
@@ -121,7 +123,7 @@ template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(const 
 	return labels;
 }
 
-template<> SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(const std::shared_ptr<LibSVMFile>& file, bool do_sort_features) { return SGVector<float64_t>(); }
+template<> SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(const std::shared_ptr<File>& file, bool do_sort_features) { return SGVector<float64_t>(); }
 
 
 template<class T>
@@ -140,20 +142,22 @@ void SGSparseMatrix<complex128_t>::save(const std::shared_ptr<File>& saver)
 	error("SGSparseMatrix::save():: Not supported for complex128_t");
 }
 
-template<class T> void SGSparseMatrix<T>::save_with_labels(const std::shared_ptr<LibSVMFile>& file,
+template<class T> void SGSparseMatrix<T>::save_with_labels(const std::shared_ptr<File>& file,
 		SGVector<float64_t> labels)
 {
 	ASSERT(file)
+	auto libsvm_file = std::dynamic_pointer_cast<LibSVMFile>(file);
+	require(libsvm_file, "Expected file to be of type LibSVMFile");
 	int32_t num=labels.vlen;
 	ASSERT(num>0)
 	ASSERT(num==num_vectors)
 
 	float64_t* raw_labels=labels.vector;
-	file->set_sparse_matrix(sparse_matrix, num_features, num_vectors,
+	libsvm_file->set_sparse_matrix(sparse_matrix, num_features, num_vectors,
 			raw_labels);
 }
 
-template <> void SGSparseMatrix<complex128_t>::save_with_labels(const std::shared_ptr<LibSVMFile>& saver, SGVector<float64_t> labels) { }
+template <> void SGSparseMatrix<complex128_t>::save_with_labels(const std::shared_ptr<File>& saver, SGVector<float64_t> labels) { }
 
 
 template <class T>

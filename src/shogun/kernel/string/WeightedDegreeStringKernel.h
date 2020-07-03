@@ -68,7 +68,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 *
 		 * @param weights kernel's weights
 		 */
-		WeightedDegreeStringKernel(SGVector<float64_t> weights);
+		WeightedDegreeStringKernel(const SGVector<float64_t>& weights);
 
 		/** constructor
 		 *
@@ -164,12 +164,6 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 			return 0;
 		}
 
-		/** helper for compute batch
-		 *
-		 * @param p thread parameter
-		 */
-		static void* compute_batch_helper(void* p);
-
 		/** compute batch
 		 *
 		 * @param num_vec number of vectors
@@ -224,11 +218,11 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 *
 		 * @return number of subkernels
 		 */
-		virtual int32_t get_num_subkernels()
+		int32_t get_num_subkernels() override
 		{
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				return std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->get_num_betas();
-			if (position_weights!=NULL)
+			if (position_weights.size() > 0)
 				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;
 			if (length==0)
 				return (int32_t) ceil(1.0*get_degree()/mkl_stepsize);
@@ -262,18 +256,16 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		inline const float64_t* get_subkernel_weights(int32_t& num_weights)
+		inline SGVector<float64_t> get_subkernel_weights()
 		{
+			const auto& num_weights = get_num_subkernels();
 
-			num_weights = get_num_subkernels();
-
-			SG_FREE(weights_buffer);
-			weights_buffer = SG_MALLOC(float64_t, num_weights);
+			weights_buffer = SGVector<float64_t>(num_weights);
 
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->get_beta(i);
-			else if (position_weights!=NULL)
+			else if (position_weights.size())
 				for (int32_t i=0; i<num_weights; i++)
 					weights_buffer[i] = position_weights[i*mkl_stepsize];
 			else
@@ -287,18 +279,16 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 *
 		 * @param w weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> w)
+		virtual void set_subkernel_weights(const SGVector<float64_t>& w)
 		{
-			float64_t* weights2=w.vector;
-			int32_t num_weights2=w.vlen;
+			int32_t num_weights2=w.size();
 			int32_t num_weights = get_num_subkernels();
 			if (num_weights!=num_weights2)
 				error("number of weights do not match");
 
-
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				for (int32_t i=0; i<num_weights; i++)
-					std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->set_beta(i, weights2[i]);
+					std::static_pointer_cast<MultitaskKernelMklNormalizer>(normalizer)->set_beta(i, w[i]);
 			else if (position_weights!=NULL)
 			{
 				for (int32_t i=0; i<num_weights; i++)
@@ -306,7 +296,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
 						if (i*mkl_stepsize+j<seq_length)
-							position_weights[i*mkl_stepsize+j] = weights2[i];
+							position_weights[i*mkl_stepsize+j] = w[i];
 					}
 				}
 			}
@@ -317,7 +307,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
 						if (i*mkl_stepsize+j<get_degree())
-							weights[i*mkl_stepsize+j] = weights2[i];
+							weights[i*mkl_stepsize+j] = w[i];
 					}
 				}
 			}
@@ -328,7 +318,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 					for (int32_t j=0; j<mkl_stepsize; j++)
 					{
 						if (i*mkl_stepsize+j<get_degree()*length)
-							weights[i*mkl_stepsize+j] = weights2[i];
+							weights[i*mkl_stepsize+j] = w[i];
 					}
 				}
 			}
@@ -338,7 +328,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(std::shared_ptr<KernelNormalizer> normalizer_) {
+		virtual bool set_normalizer(const std::shared_ptr<KernelNormalizer>& normalizer_) {
 
 			if (normalizer_ && strcmp(normalizer_->get_name(),"MultitaskKernelTreeNormalizer")==0) {
 				unset_property(KP_LINADD);
@@ -350,9 +340,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 				set_property(KP_BATCHEVALUATION);
 			}
 
-
 			return StringKernel<char>::set_normalizer(normalizer_);
-
 		}
 
 		// other kernel tree operations
@@ -378,48 +366,34 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		bool is_tree_initialized() { return tree_initialized; }
 
 		/** get degree weights
-		 *
-		 * @param d degree weights will be stored here
-		 * @param len number of degree weights will be stored here
 		 */
-		inline float64_t *get_degree_weights(int32_t& d, int32_t& len)
+		SGMatrix<float64_t> get_degree_weights() const
 		{
-			d=degree;
-			len=length;
 			return weights;
 		}
 
 		/** get weights
 		 *
-		 * @param num_weights number of weights will be stored here
 		 * @return weights
 		 */
-		inline float64_t *get_weights(int32_t& num_weights)
+		inline SGMatrix<float64_t> get_weights() const
 		{
-
 			if (normalizer && normalizer->get_normalizer_type()==N_MULTITASK)
 				error("not implemented");
 
-			if (position_weights!=NULL)
+			if (position_weights.size() > 0)
 			{
-				num_weights = seq_length ;
-				return position_weights ;
+				return SGMatrix<float64_t>(position_weights);
 			}
-			if (length==0)
-				num_weights = degree ;
-			else
-				num_weights = degree*length ;
 			return weights;
 		}
 
 		/** get position weights
 		 *
-		 * @param len number of position weights will be stored here
 		 * @return position weights
 		 */
-		inline float64_t *get_position_weights(int32_t& len)
+		inline SGVector<float64_t> get_position_weights() const
 		{
-			len=seq_length;
 			return position_weights;
 		}
 
@@ -445,15 +419,14 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 *
 		 * @param new_weights new weights
 		 */
-		bool set_weights(SGMatrix<float64_t> new_weights);
+		bool set_weights(const SGMatrix<float64_t>& new_weights);
 
 		/** set position weights
 		 *
 		 * @param pws new position weights
-		 * @param len number of position weights
 		 * @return if setting was successful
 		 */
-		bool set_position_weights(float64_t* pws, int32_t len);
+		bool set_position_weights(const SGVector<float64_t>& pws);
 
 		/** initialize block weights
 		 *
@@ -515,8 +488,7 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		 */
 		bool delete_position_weights()
 		{
-			SG_FREE(position_weights);
-			position_weights=NULL;
+			position_weights=SGVector<float64_t>();
 			return true;
 		}
 
@@ -699,61 +671,53 @@ class WeightedDegreeStringKernel: public StringKernel<char>
 		/** remove lhs from kernel */
 		virtual void remove_lhs();
 
-	private:
-		/** Do basic initialisations like default settings
-		 * and registering parameters */
-		void init();
-
 	protected:
 		/** degree*length weights
 		 *length must match seq_length if != 0
 		 */
-		float64_t* weights;
+		SGMatrix<float64_t> weights;
 		/** degree */
-		int32_t weights_degree;
+		int32_t weights_degree = 0;
 		/** length */
-		int32_t weights_length;
+		int32_t weights_length = 0;
 
 
 		/** position weights */
-		float64_t* position_weights;
+		SGVector<float64_t> position_weights;
 		/** position weights */
-		int32_t position_weights_len;
+		int32_t position_weights_len = 0;
 		/** weights buffer */
-		float64_t* weights_buffer;
+		SGVector<float64_t> weights_buffer;
 		/** MKL step size */
-		int32_t mkl_stepsize;
+		int32_t mkl_stepsize = 1;
 		/** degree */
-		int32_t degree;
+		int32_t degree = 1;
 		/** length */
-		int32_t length;
+		int32_t length = 0;
 
 		/** maximum mismatch */
-		int32_t max_mismatch;
+		int32_t max_mismatch = 0;
 		/** sequence length */
-		int32_t seq_length;
+		int32_t seq_length = 0;
 
 		/** if kernel is initialized */
 		bool initialized;
 
 		/** if block computation is used */
-		bool block_computation;
+		bool block_computation = true;
 
 		/** (internal) block weights */
-		float64_t* block_weights;
+		SGVector<float64_t> block_weights;
 		/** WeightedDegree kernel type */
-		EWDKernType type;
+		EWDKernType type = E_WD;
 		/** which degree */
-		int32_t which_degree;
+		int32_t which_degree = -1;
 
 		/** tries */
 		std::shared_ptr<CTrie<DNATrie>> tries;
 
 		/** if tree is initialized */
-		bool tree_initialized;
-
-		/** alphabet of features */
-		std::shared_ptr<Alphabet> alphabet;
+		bool tree_initialized = false;
 };
 
 }

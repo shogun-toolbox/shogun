@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+import shogun as sg
 parameter_list=[[".", "features_string_char.py"]]
 
 def features_string_file (directory, fname):
 	from shogun import StringCharFeatures, RAWBYTE
-	from shogun import CSVFile
 
 	# load features from directory
 	f=StringCharFeatures(RAWBYTE)
@@ -18,7 +18,7 @@ def features_string_file (directory, fname):
 	#print("str[0]", f.get_feature_vector(0))
 
 	#or load features from file (one string per line)
-	fil=CSVFile(fname)
+	fil=sg.read_csv(fname)
 	f.load(fil)
 	#print(f.get_features())
 

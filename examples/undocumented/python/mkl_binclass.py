@@ -35,8 +35,8 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     K_test = tkernel.get_kernel_matrix()
 
     # create combined train features
-    feats_train = sg.CombinedFeatures()
-    feats_train.append_feature_obj(sg.create_features(fm_train_real))
+    feats_train = sg.create_features("CombinedFeatures")
+    feats_train.add("feature_array", sg.create_features(fm_train_real))
 
     # and corresponding combined kernel
     kernel = sg.create_kernel("CombinedKernel")
@@ -70,8 +70,8 @@ def mkl_binclass (fm_train_real=traindat,fm_test_real=testdat,fm_label_twoclass 
     # test
 
     # create combined test features
-    feats_pred = sg.CombinedFeatures()
-    feats_pred.append_feature_obj(sg.create_features(fm_test_real))
+    feats_pred = sg.create_features("CombinedFeatures")
+    feats_pred.add("feature_array", sg.create_features(fm_test_real))
 
     # and corresponding combined kernel
     kernel = sg.create_kernel("CombinedKernel")

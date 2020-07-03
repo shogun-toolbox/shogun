@@ -162,6 +162,16 @@ void CombinedFeatures::init()
 {
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
 	SG_ADD(&feature_array, "feature_array", "Feature array.");
+	add_callback_function("feature_array", [this](){
+		int32_t n=feature_array.back()->get_num_vectors();
+		if (get_num_vectors()>0 && n!=get_num_vectors())
+		{
+			feature_array.pop_back();
+			error("Number of feature vectors does not match (expected {}, "
+					"obj has {})", get_num_vectors(), n);
+		}
+		num_vec=n;
+	});
 }
 
 std::shared_ptr<Features> CombinedFeatures::create_merged_copy(std::shared_ptr<Features> other) const
@@ -199,8 +209,6 @@ std::shared_ptr<Features> CombinedFeatures::create_merged_copy(std::shared_ptr<F
 
 		result->append_feature_obj(
 				current_this->create_merged_copy(current_other));
-
-
 	}
 
 	SG_TRACE("leaving {}::create_merged_copy()", get_name());

@@ -57,6 +57,7 @@
 %enddef
 
 /* Define concrete examples of the TYPEMAP_SG_VECTOR macros */
+TYPEMAP_IN_SGVECTOR(is_bool_type, boolNDArray, bool_array_value, bool, bool, "Boolean")
 TYPEMAP_IN_SGVECTOR(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 TYPEMAP_IN_SGVECTOR(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 TYPEMAP_IN_SGVECTOR(is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
@@ -91,6 +92,7 @@ TYPEMAP_IN_SGVECTOR(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
 %enddef
 
 /* Define concrete examples of the TYPEMAP_OUT_SGVECTOR macros */
+TYPEMAP_OUT_SGVECTOR(boolNDArray, bool, bool, "Boolean")
 TYPEMAP_OUT_SGVECTOR(uint8NDArray, uint8_t, uint8_t, "Byte")
 TYPEMAP_OUT_SGVECTOR(charMatrix, char, char, "Char")
 TYPEMAP_OUT_SGVECTOR(int32NDArray, int32_t, int32_t, "Integer")
@@ -130,6 +132,7 @@ TYPEMAP_OUT_SGVECTOR(uint16NDArray, uint16_t, uint16_t, "Word")
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN_SGMATRIX macros */
+TYPEMAP_IN_SGMATRIX(is_bool_type, boolNDArray, bool_array_value, bool, bool, "Boolean")
 TYPEMAP_IN_SGMATRIX(is_uint8_type, uint8NDArray, uint8_array_value, uint8_t, uint8_t, "Byte")
 TYPEMAP_IN_SGMATRIX(is_char_matrix, charMatrix, char_matrix_value, char, char, "Char")
 TYPEMAP_IN_SGMATRIX(is_int32_type, int32NDArray, int32_array_value, int32_t, int32_t, "Integer")
@@ -167,6 +170,7 @@ TYPEMAP_IN_SGMATRIX(is_uint16_type, uint16NDArray, uint16_array_value, uint16_t,
 }
 %enddef
 
+TYPEMAP_OUT_SGMATRIX(boolNDArray, bool, bool, "Boolean")
 TYPEMAP_OUT_SGMATRIX(uint8NDArray, uint8_t, uint8_t, "Byte")
 TYPEMAP_OUT_SGMATRIX(charMatrix, char, char, "Char")
 TYPEMAP_OUT_SGMATRIX(int32NDArray, int32_t, int32_t, "Integer")

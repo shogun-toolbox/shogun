@@ -16,34 +16,30 @@ def kernel_fisher (fm_train_dna=traindat, fm_test_dna=testdat,
 		N=1,M=4,pseudo=1e-1,order=1,gap=0,reverse=False,
 		c=1):
 
-	from shogun import StringCharFeatures, StringWordFeatures, FKFeatures, DNA
+	from shogun import FKFeatures
 	from shogun import HMM, BW_NORMAL
 	import shogun as sg
 
 	# train HMM for positive class
-	charfeat=StringCharFeatures(fm_hmm_pos, DNA)
+	charfeat=sg.create_string_features(fm_hmm_pos, sg.DNA)
 	#charfeat.io.set_loglevel(MSG_DEBUG)
-	hmm_pos_train=StringWordFeatures(charfeat.get_alphabet())
-	hmm_pos_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	hmm_pos_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	pos=HMM(hmm_pos_train, N, M, pseudo)
 	pos.baum_welch_viterbi_train(BW_NORMAL)
 
 	# train HMM for negative class
-	charfeat=StringCharFeatures(fm_hmm_neg, DNA)
-	hmm_neg_train=StringWordFeatures(charfeat.get_alphabet())
-	hmm_neg_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_hmm_neg, sg.DNA)
+	hmm_neg_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	neg=HMM(hmm_neg_train, N, M, pseudo)
 	neg.baum_welch_viterbi_train(BW_NORMAL)
 
 	# Kernel training data
-	charfeat=StringCharFeatures(fm_train_dna, DNA)
-	wordfeats_train=StringWordFeatures(charfeat.get_alphabet())
-	wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	wordfeats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
 	# Kernel testing data
-	charfeat=StringCharFeatures(fm_test_dna, DNA)
-	wordfeats_test=StringWordFeatures(charfeat.get_alphabet())
-	wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	wordfeats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
 	# get kernel on training data
 	pos.set_observations(wordfeats_train)

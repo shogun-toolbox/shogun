@@ -68,10 +68,6 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 		for (index_t j=0; j<feat_2.size(); j++)
 			EXPECT_EQ(c_feat_2[j], feat_2[j]);
 	}
-
-
-
-
 }
 
 TEST(HashedDocDotFeaturesTest, dense_dot_test)

@@ -215,6 +215,7 @@ import org.jblas.*;
 		vec[0] = value;
 		$self->put(tag_float64vec, vec);
 	}
+#elif SWIGR || SWIGOCTAVE
 	else if (Tag<SGVector<bool>> tag_boolvec(name); $self->has(tag_boolvec))
 	{
 		SGVector<bool> vec(1);
@@ -397,6 +398,7 @@ PUT_ADD(LossFunction)
 PUT_ADD(StructuredModel)
 PUT_ADD(FactorType)
 PUT_ADD(GaussianProcess)
+PUT_ADD(Alphabet)
 
 %template(create_kernel) create_kernel<float64_t, float64_t>;
 

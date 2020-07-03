@@ -9,21 +9,14 @@ parameter_list = [[traindat,testdat,4,0,False, False],[traindat,testdat,4,0,Fals
 
 def kernel_comm_word_string (fm_train_dna=traindat, fm_test_dna=testdat, order=3, gap=0, reverse = False, use_sign = False):
 
-	from shogun import CommWordStringKernel
-	from shogun import StringWordFeatures, StringCharFeatures, DNA
-
-	charfeat=StringCharFeatures(DNA)
-	charfeat.set_features(fm_train_dna)
-	feats_train=StringWordFeatures(charfeat.get_alphabet())
-	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	preproc = sg.create_transformer("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
-	charfeat=StringCharFeatures(DNA)
-	charfeat.set_features(fm_test_dna)
-	feats_test=StringWordFeatures(charfeat.get_alphabet())
-	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
 	kernel=sg.create_kernel("CommWordStringKernel", use_sign=use_sign)

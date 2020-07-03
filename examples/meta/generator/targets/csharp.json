@@ -11,6 +11,7 @@
             "Separator": ";\n",
             "InitialSeperatorWhenArgs>0": false
         },
+        "BoolVector": "var $name = new byte[$arguments]",
         "CharVector": "var $name = new char[$arguments]",
         "ByteVector": "var $name = new byte[$arguments]",
         "WordVector": "var $name = new ushort[$arguments]",
@@ -21,6 +22,7 @@
         "RealVector": "var $name = new double[$arguments]",
         "LongRealVector": "var $name = new double[$arguments]",
         "ComplexVector": "var $name = new Complex[$arguments]",
+        "BoolMatrix": "var $name = new byte[$arguments]",
         "CharMatrix": "var $name = new char[$arguments]",
         "ByteMatrix": "var $name = new byte[$arguments]",
         "WordMatrix": "var $name = new ushort[$arguments]",
@@ -33,7 +35,7 @@
         "ComplexMatrix": "var $name = new Complex[$arguments]"
     },
     "ListInit": {
-        "BoolVector": "var $name = new bool[] {$arguments}",
+        "BoolVector": "var $name = new byte[] {$arguments}",
         "CharVector": "var $name = new char[] {$arguments}",
         "ByteVector": "var $name = new byte[] {$arguments}",
         "WordVector": "var $name = new ushort[] {$arguments}",
@@ -101,14 +103,14 @@
         "Access": {
             "Vector": "$identifier[$indices]",
             "Matrix": "$identifier[$indices]",
-            "BoolVector": "$identifier.get_element($indices)",
-            "BoolMatrix": "$identifier.get_element($indices)"
+            "BoolVector": "$identifier[$indices] == 1 ? true : false",
+            "BoolMatrix": "$identifier[$indices] == 1 ? true : false"
         },
         "Assign": {
             "Vector": "$identifier[$indices] = $expr",
             "Matrix": "$identifier[$indices] = $expr",
-            "BoolVector": "$identifier.set_element($expr, $indices)",
-            "BoolMatrix": "$identifier.set_element($expr, $indices)"
+            "BoolVector": "$identifier[$indices] = $expr ? (byte)1 : (byte)0",
+            "BoolMatrix": "$identifier[$indices] = $expr ? (byte)1 : (byte)0"
         },
         "ZeroIndexed": true
     },

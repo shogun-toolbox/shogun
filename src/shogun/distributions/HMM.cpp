@@ -212,10 +212,11 @@ HMM::HMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 }
 
 HMM::HMM(
-	std::shared_ptr<StringFeatures<uint16_t>> obs, int32_t p_N, int32_t p_M,
+	const std::shared_ptr<Features>& obs, int32_t p_N, int32_t p_M,
 	float64_t p_PSEUDO)
 : RandomMixin<Distribution>(), iterations(150), epsilon(1e-4), conv_it(5)
 {
+	auto casted_obs = obs->as<StringFeatures<uint16_t>>();
 	this->N=p_N;
 	this->M=p_M;
 	model=NULL ;
@@ -225,7 +226,7 @@ HMM::HMM(
 #endif
 
 	initialize_hmm(model, p_PSEUDO);
-	set_observations(std::move(obs));
+	set_observations(std::move(casted_obs));
 }
 
 HMM::HMM(int32_t p_N, float64_t* p, float64_t* q, float64_t* a)
@@ -5249,15 +5250,14 @@ bool HMM::linear_train(bool right_align)
 		return false;
 }
 
-void HMM::set_observation_nocache(const std::shared_ptr<StringFeatures<uint16_t>>& obs)
+void HMM::set_observation_nocache(const std::shared_ptr<Features>& obs)
 {
 	ASSERT(obs)
-	p_observations=obs;
+	p_observations=obs->as<StringFeatures<uint16_t>>();
 
-
-	if (obs)
-		if (obs->get_num_symbols() > M)
-			error("number of symbols in observation ({}) larger than M ({})", (long) obs->get_num_symbols(), M);
+	if (p_observations)
+		if (p_observations->get_num_symbols() > M)
+			error("number of symbols in observation ({}) larger than M ({})", (long) p_observations->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{
@@ -5291,27 +5291,25 @@ void HMM::set_observation_nocache(const std::shared_ptr<StringFeatures<uint16_t>
 	invalidate_model();
 }
 
-void HMM::set_observations(const std::shared_ptr<StringFeatures<uint16_t>>& obs, const std::shared_ptr<HMM>& lambda)
+void HMM::set_observations(const std::shared_ptr<Features>& obs, const std::shared_ptr<HMM>& lambda)
 {
 	ASSERT(obs)
 
-	p_observations=obs;
+	p_observations=obs->as<StringFeatures<uint16_t>>();
 
 	/* from Distribution, necessary for calls to base class methods, like
 	 * get_log_likelihood_sample():
 	 */
 
-	features=obs;
-
-	SG_DEBUG("num symbols alphabet: {}", obs->get_alphabet()->get_num_symbols())
-	SG_DEBUG("num symbols: {}", obs->get_num_symbols())
+	SG_DEBUG("num symbols alphabet: {}", p_observations->get_alphabet()->get_num_symbols())
+	SG_DEBUG("num symbols: {}", p_observations->get_num_symbols())
 	SG_DEBUG("M: {}", M)
 
-	if (obs)
+	if (p_observations)
 	{
-		if (obs->get_num_symbols() > M)
+		if (p_observations->get_num_symbols() > M)
 		{
-			error("number of symbols in observation ({}) larger than M ({})", (long) obs->get_num_symbols(), M);
+			error("number of symbols in observation ({}) larger than M ({})", (long) p_observations->get_num_symbols(), M);
 		}
 	}
 
@@ -5346,7 +5344,7 @@ void HMM::set_observations(const std::shared_ptr<StringFeatures<uint16_t>>& obs,
 
 	if (obs!=NULL)
 	{
-		int32_t max_T=obs->get_max_vector_length();
+		int32_t max_T=p_observations->get_max_vector_length();
 
 		if (lambda)
 		{

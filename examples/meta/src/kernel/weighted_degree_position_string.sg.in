@@ -2,18 +2,18 @@ File traindat = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
 File testdat = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
 
 #![create_features]
-Features feats_train = create_char_string_features(traindat, enum EAlphabet.DNA)
-Features feats_test = create_char_string_features(testdat, enum EAlphabet.DNA)
+Features feats_train = create_string_features(traindat, enum EAlphabet.DNA)
+Features feats_test = create_string_features(testdat, enum EAlphabet.DNA)
 #![create_features]
 
 #![create_kernel]
 int degree = 20
-WeightedDegreePositionStringKernel kernel(feats_train, feats_train, degree)
+Kernel kernel = create_kernel("WeightedDegreePositionStringKernel", degree=degree)
 kernel.init(feats_train, feats_train)
 IntVector shifts([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-kernel.set_shifts(shifts)
+kernel.put("shifts", shifts)
 RealVector position_weights([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-kernel.set_position_weights(position_weights)
+kernel.put("position_weights", position_weights)
 
 #![create_kernel]
 

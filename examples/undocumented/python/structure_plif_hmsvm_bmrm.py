@@ -4,7 +4,7 @@ parameter_list=[[50, 125, 10, 2]]
 
 def structure_plif_hmsvm_bmrm (num_examples, example_length, num_features, num_noise_features):
 	import shogun as sg
-	from shogun import RealMatrixFeatures, TwoStateModel
+	from shogun import TwoStateModel
 	try:
 		from shogun import DualLibQPBMSOSVM
 	except ImportError:

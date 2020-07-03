@@ -1,5 +1,5 @@
-CSVFile traindat("../../data/fm_train_real.dat")
-CSVFile testdat("../../data/fm_test_real.dat")
+File traindat = read_csv("../../data/fm_train_real.dat")
+File testdat = read_csv("../../data/fm_test_real.dat")
 
 #![create_features]
 Features feats_train = create_features(traindat)

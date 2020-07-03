@@ -1,5 +1,5 @@
-CSVFile f_features_p("@SHOGUN_DATA@/two_sample_test_gaussian.dat")
-CSVFile f_features_q("@SHOGUN_DATA@/two_sample_test_laplace.dat")
+File f_features_p = read_csv("@SHOGUN_DATA@/two_sample_test_gaussian.dat")
+File f_features_q = read_csv("@SHOGUN_DATA@/two_sample_test_laplace.dat")
 
 #![create_features]
 Features features_p = create_features(f_features_p)

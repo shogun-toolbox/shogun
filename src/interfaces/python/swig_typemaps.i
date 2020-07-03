@@ -440,7 +440,6 @@ template <class type>
 static bool spmatrix_to_numpy(PyObject* &obj, SGSparseMatrix<type> sg_matrix, int typecode)
 {
     shogun::SGSparseVector<type>* sfm=sg_matrix.sparse_matrix;
-    auto num_feat=sg_matrix.num_features;
     auto num_vec=sg_matrix.num_vectors;
 
     int64_t nnz=0;
@@ -1048,8 +1047,8 @@ _FACTORIES = ["create_distance",
               "create_loss",
               "create_structured_model",
               "create_factor_type",
-              "create_gaussian_process"
-               
+              "create_gaussian_process",
+              "create_kernel_normalizer",
      ]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):

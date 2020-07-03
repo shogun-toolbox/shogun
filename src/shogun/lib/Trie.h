@@ -516,9 +516,8 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 				return;
 			SG_DEBUG("Extending TreeMem from {} to {} elements",
 					TreeMemPtrMax, (int32_t) ((float64_t)TreeMemPtrMax*1.2));
-			int32_t old_sz=TreeMemPtrMax;
 			TreeMemPtrMax = (int32_t) ((float64_t)TreeMemPtrMax*1.2);
-			TreeMem = SG_REALLOC(Trie, TreeMem, old_sz, TreeMemPtrMax);
+			TreeMem.resize(TreeMemPtrMax);
 		}
 
 		/** set weights in tree
@@ -631,7 +630,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 		/** length */
 		int32_t length;
 		/** trees */
-		int32_t * trees;
+		std::vector<int32_t> trees;
 
 		/** degree */
 		int32_t degree;
@@ -639,7 +638,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 		float64_t*  position_weights;
 
 		/** tree memory */
-		Trie* TreeMem;
+		std::vector<Trie> TreeMem;
 		/** tree memory pointer */
 		int32_t TreeMemPtr;
 		/** tree memory pointer maximum */
@@ -659,13 +658,10 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 		use_compact_terminal_nodes(false),
 		weights_in_tree(true)
 	{
-
 		TreeMemPtrMax=0;
 		TreeMemPtr=0;
-		TreeMem=NULL;
 
 		length=0;
-		trees=NULL;
 
 		NUM_SYMS=4;
 	}
@@ -678,10 +674,9 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 	{
 		TreeMemPtrMax=1024*1024/sizeof(Trie);
 		TreeMemPtr=0;
-		TreeMem=SG_MALLOC(Trie, TreeMemPtrMax);
+		TreeMem=std::vector<Trie>(TreeMemPtrMax);
 
 		length=0;
-		trees=NULL;
 
 		NUM_SYMS=4;
 	}
@@ -689,7 +684,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 	template <class Trie>
 	CTrie<Trie>::CTrie(const CTrie & to_copy)
 	: SGObject(to_copy), degree(to_copy.degree), position_weights(NULL),
-		use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
+		use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes), trees(to_copy.trees)
 	{
 		if (to_copy.position_weights!=NULL)
 		{
@@ -703,50 +698,12 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 
 		TreeMemPtrMax=to_copy.TreeMemPtrMax;
 		TreeMemPtr=to_copy.TreeMemPtr;
-		TreeMem=SG_MALLOC(Trie, TreeMemPtrMax);
-		sg_memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie));
+		TreeMem=std::vector<Trie>(to_copy.begin(), to_copy.end());
 
 		length=to_copy.length;
-		trees=SG_MALLOC(int32_t, length);
-		for (int32_t i=0; i<length; i++)
-			trees[i]=to_copy.trees[i];
 
 		NUM_SYMS=4;
 	}
-
-	template <class Trie>
-const CTrie<Trie> &CTrie<Trie>::operator=(const CTrie<Trie> & to_copy)
-{
-	degree=to_copy.degree ;
-	use_compact_terminal_nodes=to_copy.use_compact_terminal_nodes ;
-
-	SG_FREE(position_weights);
-	position_weights=NULL ;
-	if (to_copy.position_weights!=NULL)
-	{
-		position_weights=to_copy.position_weights ;
-		/*position_weights = SG_MALLOC(float64_t, to_copy.length);
-		  for (int32_t i=0; i<to_copy.length; i++)
-		  position_weights[i]=to_copy.position_weights[i] ;*/
-	}
-	else
-		position_weights=NULL ;
-
-	TreeMemPtrMax=to_copy.TreeMemPtrMax ;
-	TreeMemPtr=to_copy.TreeMemPtr ;
-	SG_FREE(TreeMem) ;
-	TreeMem = SG_MALLOC(Trie, TreeMemPtrMax);
-	sg_memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(Trie)) ;
-
-	length = to_copy.length ;
-	if (trees)
-		SG_FREE(trees);
-	trees=SG_MALLOC(int32_t, length);
-	for (int32_t i=0; i<length; i++)
-		trees[i]=to_copy.trees[i] ;
-
-	return *this ;
-}
 
 template <class Trie>
 int32_t CTrie<Trie>::find_deepest_node(
@@ -1122,23 +1079,18 @@ void CTrie<Trie>::display_node(int32_t node) const
 
 template <class Trie> CTrie<Trie>::~CTrie()
 {
-	destroy() ;
-
-	SG_FREE(TreeMem) ;
+	destroy();
 }
 
 template <class Trie> void CTrie<Trie>::destroy()
 {
-	if (trees!=NULL)
+	if (!trees.empty())
 	{
 		delete_trees();
-		for (int32_t i=0; i<length; i++)
-			trees[i] = NO_CHILD;
-		SG_FREE(trees);
+		trees.clear();
 
 		TreeMemPtr=0;
 		length=0;
-		trees=NULL;
 	}
 }
 
@@ -1153,7 +1105,7 @@ template <class Trie> void CTrie<Trie>::create(
 {
 	destroy();
 
-	trees=SG_MALLOC(int32_t, len);
+	trees=std::vector<int32_t>(len);
 	TreeMemPtr=0 ;
 	for (int32_t i=0; i<len; i++)
 		trees[i]=get_node(degree==1);
@@ -1166,7 +1118,7 @@ template <class Trie> void CTrie<Trie>::create(
 template <class Trie> void CTrie<Trie>::delete_trees(
 	bool p_use_compact_terminal_nodes)
 {
-	if (trees==NULL)
+	if (trees.empty())
 		return;
 
 	TreeMemPtr=0 ;

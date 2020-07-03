@@ -337,7 +337,7 @@ template <class ST> class SparseFeatures : public DotFeatures
 		 * @param loader File object to load data from
 		 * @return label vector
 		 */
-		SGVector<float64_t> load_with_labels(std::shared_ptr<LibSVMFile> loader);
+		SGVector<float64_t> load_with_labels(const std::shared_ptr<File>& loader);
 
 		/** save features to file
 		 *
@@ -354,7 +354,7 @@ template <class ST> class SparseFeatures : public DotFeatures
 		 * @param writer File object to write data to
 		 * @param labels vector with labels to write out
 		 */
-		void save_with_labels(std::shared_ptr<LibSVMFile> writer, SGVector<float64_t> labels);
+		void save_with_labels(const std::shared_ptr<File>& writer, SGVector<float64_t> labels);
 
 		/** ensure that features occur in ascending order, only call when no
 		 * preprocessors are attached

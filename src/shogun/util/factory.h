@@ -25,6 +25,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/normalizer/KernelNormalizer.h>
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/lib/observers/ParameterObserver.h>
 #include <shogun/loss/LossFunction.h>
@@ -54,6 +55,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(Evaluation, evaluation)
 	BASE_CLASS_FACTORY(Distance, distance)
 	BASE_CLASS_FACTORY(Kernel, kernel)
+	BASE_CLASS_FACTORY(KernelNormalizer, kernel_normalizer)
 	BASE_CLASS_FACTORY(Machine, machine)
 	BASE_CLASS_FACTORY(MulticlassStrategy, multiclass_strategy)
 	BASE_CLASS_FACTORY(ECOCEncoder, ecoc_encoder)
@@ -76,6 +78,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(Distribution, distribution)
 	BASE_CLASS_FACTORY(CombinationRule, combination_rule)
 	BASE_CLASS_FACTORY(GaussianProcess, gaussian_process)
+	BASE_CLASS_FACTORY(Alphabet, alphabet)
 
 	namespace details
 	{
@@ -154,7 +157,7 @@ namespace shogun
 			return result;
 		}
 
-		std::shared_ptr<StringFeatures<char>> string_features(
+		std::shared_ptr<Features> string_features(
 		    std::shared_ptr<File> file, EAlphabet alphabet_type = DNA,
 		    EPrimitiveType primitive_type = PT_CHAR)
 		{
@@ -166,6 +169,39 @@ namespace shogun
 			{
 				return std::make_shared<StringFeatures<char>>(
 				    file, alphabet_type);
+			}
+			case PT_UINT16:
+			{
+				return std::make_shared<StringFeatures<uint16_t>>(
+				    file, alphabet_type);
+			}
+			case PT_UINT32:
+			{
+				return std::make_shared<StringFeatures<uint32_t>>(
+				    file, alphabet_type);
+			}
+			case PT_UINT64:
+			{
+				return std::make_shared<StringFeatures<uint64_t>>(
+				    file, alphabet_type);
+			}
+			default:
+				not_implemented(SOURCE_LOCATION);
+			}
+
+			return nullptr;
+		}
+
+		std::shared_ptr<Features> string_features(
+		    const std::vector<SGVector<char>>& string_list, EAlphabet alphabet_type = DNA,
+		    EPrimitiveType primitive_type = PT_CHAR)
+		{
+			switch (primitive_type)
+			{
+			case PT_CHAR:
+			{
+				return std::make_shared<StringFeatures<char>>(
+				    string_list, alphabet_type);
 			}
 			default:
 				not_implemented(SOURCE_LOCATION);
@@ -188,7 +224,7 @@ namespace shogun
 		 * @param primitive_type primitive type of the string features
 		 * @return new instance of string features
 		 */
-		std::shared_ptr<StringFeatures<uint16_t>> string_features(
+		std::shared_ptr<Features> string_features(
 		    std::shared_ptr<Features> features, int32_t start, int32_t p_order,
 		    int32_t gap, bool rev, EPrimitiveType primitive_type = PT_UINT16)
 		{
@@ -208,13 +244,40 @@ namespace shogun
 
 			switch (primitive_type)
 			{
+			case PT_UINT8:
+			{
+				auto result = std::make_shared<StringFeatures<uint8_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string uint16 features.");
+				return result;
+			}
 			case PT_UINT16:
 			{
 				auto result = std::make_shared<StringFeatures<uint16_t>>(
 				    string_features->get_alphabet());
 				bool success = result->obtain_from_char(
 				    string_features, start, p_order, gap, rev);
-				require(success, "Failed to obtain from string char features.");
+				require(success, "Failed to obtain from string uint16 features.");
+				return result;
+			}
+			case PT_UINT32:
+			{
+				auto result = std::make_shared<StringFeatures<uint32_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string uint32 features.");
+				return result;
+			}
+			case PT_UINT64:
+			{
+				auto result = std::make_shared<StringFeatures<uint64_t>>(
+				    string_features->get_alphabet());
+				bool success = result->obtain_from_char(
+				    string_features, start, p_order, gap, rev);
+				require(success, "Failed to obtain from string uint64 features.");
 				return result;
 			}
 			default:
@@ -341,7 +404,7 @@ namespace shogun
 
 #ifndef SWIG
 	template <typename TypeName, typename... Args>
-	std::shared_ptr<TypeName> create(Args&&... args)
+	auto create(Args&&... args)
 	{
 		if constexpr (std::is_same_v<TypeName, Features>)
 		{
@@ -369,7 +432,9 @@ namespace shogun
 		}
 		else if constexpr (traits::is_any_of_v<
 		                       TypeName, StringFeatures<char>,
-		                       StringFeatures<uint16_t>>)
+		                       StringFeatures<uint16_t>,
+		                       StringFeatures<uint32_t>,
+		                       StringFeatures<uint64_t>>)
 		{
 			return details::string_features(std::forward<Args>(args)...);
 		}

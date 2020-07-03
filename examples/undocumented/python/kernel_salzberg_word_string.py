@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import shogun as sg
 from tools.load import LoadMatrix
 lm=LoadMatrix()
 traindat = lm.load_dna('../data/fm_train_dna.dat')
@@ -8,23 +9,19 @@ label_traindat = lm.load_labels('../data/label_train_dna.dat')
 parameter_list = [[traindat,testdat,label_traindat,3,0,False],[traindat,testdat,label_traindat,3,0,False]]
 def kernel_salzberg_word_string (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,
 order=3,gap=0,reverse=False):
-	from shogun import StringCharFeatures, StringWordFeatures, DNA, BinaryLabels
-	from shogun import SalzbergWordStringKernel
-	import shogun as sg
 
-	charfeat=StringCharFeatures(fm_train_dna, DNA)
-	feats_train=StringWordFeatures(charfeat.get_alphabet())
-	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
-	charfeat=StringCharFeatures(fm_test_dna, DNA)
-	feats_test=StringWordFeatures(charfeat.get_alphabet())
-	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
 	labels=sg.create_labels(label_train_dna)
 	pie=sg.create_machine("PluginEstimate", labels=labels)
 	pie.train(feats_train)
 
-	kernel=sg.SalzbergWordStringKernel(feats_train, feats_train, pie, labels)
+	kernel=sg.create_kernel("SalzbergWordStringKernel", plugin_estimate=pie, labels=labels)
+	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats_train, feats_test)

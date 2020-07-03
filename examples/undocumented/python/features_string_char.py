@@ -1,14 +1,14 @@
 #!/usr/bin/env python
+import shogun as sg
+import numpy as np
+
 strings=['hey','guys','i','am','a','string']
 
 parameter_list=[[strings]]
 
 def features_string_char (strings):
-	from shogun import StringCharFeatures, RAWBYTE
-	from numpy import array
-
 	#create string features
-	f=StringCharFeatures(strings, RAWBYTE)
+	f=sg.create_string_features(strings, sg.RAWBYTE, sg.PT_CHAR)
 
 	#and output several stats
 	#print("max string length", f.get_max_vector_length())
@@ -17,11 +17,12 @@ def features_string_char (strings):
 	#print("string[5]", ''.join(f.get_feature_vector(5)))
 	#print("strings", f.get_features())
 
-	#replace string 0
-	f.set_feature_vector(array(['t','e','s','t']), 0)
+	# FIXME: replace method?
+	# replace string 0
+	# f.put("string_list", np.array(['t','e','s','t']), 0)
 
 	#print("strings", f.get_features())
-	return f.get_string_list(), f
+	return f.get("string_list"), f
 
 if __name__=='__main__':
 	print('StringCharFeatures')

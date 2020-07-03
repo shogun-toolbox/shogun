@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from tools.load import LoadMatrix
+import shogun as sg
 import numpy as np
 lm=LoadMatrix()
 
@@ -15,37 +16,31 @@ parameter_list = [[traindat,testdat,label_traindat,1e-1,1,0,False,1], \
 
 def kernel_top (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_traindat,pseudo=1e-1,
 	order=1,gap=0,reverse=False,c=1):
-	from shogun import StringCharFeatures, StringWordFeatures, TOPFeatures, DNA
+	from shogun import TOPFeatures
 	from shogun import HMM, BW_NORMAL
-	import shogun as sg
 
 	N=1 # toy HMM with 1 state
 	M=4 # 4 observations -> DNA
 
-
 	# train HMM for positive class
-	charfeat=StringCharFeatures(fm_hmm_pos, DNA)
-	hmm_pos_train=StringWordFeatures(charfeat.get_alphabet())
-	hmm_pos_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_hmm_pos, sg.DNA)
+	hmm_pos_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	pos=HMM(hmm_pos_train, N, M, pseudo)
 	pos.baum_welch_viterbi_train(BW_NORMAL)
 
 	# train HMM for negative class
-	charfeat=StringCharFeatures(fm_hmm_neg, DNA)
-	hmm_neg_train=StringWordFeatures(charfeat.get_alphabet())
-	hmm_neg_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_hmm_neg, sg.DNA)
+	hmm_neg_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	neg=HMM(hmm_neg_train, N, M, pseudo)
 	neg.baum_welch_viterbi_train(BW_NORMAL)
 
 	# Kernel training data
-	charfeat=StringCharFeatures(fm_train_dna, DNA)
-	wordfeats_train=StringWordFeatures(charfeat.get_alphabet())
-	wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
+	wordfeats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
 	# Kernel testing data
-	charfeat=StringCharFeatures(fm_test_dna, DNA)
-	wordfeats_test=StringWordFeatures(charfeat.get_alphabet())
-	wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
+	wordfeats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
 	# get kernel on training data
 	pos.set_observations(wordfeats_train)
