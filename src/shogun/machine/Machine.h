@@ -156,12 +156,14 @@ class Machine : public StoppableSGObject
 
 		/** train machine
 		 *
-		 * @param data training data 
+		 * @param data training data
 		 * @param lab training label
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& lab);
+		virtual bool train(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& lab);
 
 		/** apply machine to data
 		 * if data is not specified apply to the current features
@@ -264,7 +266,29 @@ class Machine : public StoppableSGObject
 			return false;
 		}
 
+		virtual bool train_machine(
+		    const std::shared_ptr<Features>&, const std::shared_ptr<Labels>&)
+		{
+			error("train_machine is not yet implemented for {}!", get_name());
+			return false;
+		}
+
 		virtual bool train_dense(std::shared_ptr<Features> data)
+		{
+			not_implemented(SOURCE_LOCATION);
+			return false;
+		}
+		virtual bool train_dense(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs)
+		{
+			not_implemented(SOURCE_LOCATION);
+			return false;
+		}
+
+		virtual bool train_string(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs)
 		{
 			not_implemented(SOURCE_LOCATION);
 			return false;

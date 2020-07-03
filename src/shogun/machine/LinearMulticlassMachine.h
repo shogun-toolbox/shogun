@@ -64,11 +64,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 		void set_features(std::shared_ptr<DotFeatures> f)
 		{
 			m_features = f;
-			for (auto m: m_machines)
-			{
-				auto machine = m->as<LinearMachine>();
-				machine->set_features(f);
-			}
 		}
 
 		/** get features
@@ -91,8 +86,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 			if (data)
 				set_features(data->as<DotFeatures>());
 
-			m_machine->as<LinearMachine>()->set_features(m_features);
-
 			return true;
 		}
 
@@ -101,14 +94,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 		{
 			if (data)
 				set_features(data->as<DotFeatures>());
-
-			for (auto m: m_machines)
-			{
-				auto machine = m->as<LinearMachine>();
-				ASSERT(m_features)
-				ASSERT(machine)
-				machine->set_features(m_features);
-			}
 
 			return true;
 		}

@@ -27,14 +27,12 @@ LibLinearRegression::LibLinearRegression() :
 	init_defaults();
 }
 
-LibLinearRegression::LibLinearRegression(float64_t C, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs) :
-	RandomMixin<LinearMachine>()
+LibLinearRegression::LibLinearRegression(float64_t C)
+    : RandomMixin<LinearMachine>()
 {
 	register_parameters();
 	init_defaults();
 	set_C(C);
-	set_features(std::move(feats));
-	set_labels(std::move(labs));
 }
 
 void LibLinearRegression::init_defaults()
@@ -71,25 +69,15 @@ LibLinearRegression::~LibLinearRegression()
 {
 }
 
-bool LibLinearRegression::train_machine(std::shared_ptr<Features> data)
+bool LibLinearRegression::train_machine(
+    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 
-	if (data)
-		set_features(data->as<DotFeatures>());
+	const auto features = data->as<DotFeatures>();
+	auto labels = labs->as<RegressionLabels>();
 
-	ASSERT(features)
-	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION)
-
-	auto num_train_labels=m_labels->get_num_labels();
 	auto num_feat=features->get_dim_feature_space();
 	auto num_vec=features->get_num_vectors();
-
-	if (num_vec!=num_train_labels)
-	{
-		error("number of vectors {} does not match "
-				"number of training labels {}",
-				num_vec, num_train_labels);
-	}
 
 	SGVector<float64_t> w;
 	auto prob = liblinear_problem();
@@ -112,7 +100,6 @@ bool LibLinearRegression::train_machine(std::shared_ptr<Features> data)
 	}
 	prob.l=num_vec;
 	prob.x=features;
-	auto labels = regression_labels(m_labels);
 
 	// store reference to vector locally in order to prevent free-ing
 	auto lab = labels->get_labels();

@@ -23,8 +23,9 @@ KernelRidgeRegression::KernelRidgeRegression()
 	init();
 }
 
-KernelRidgeRegression::KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k)
-: KernelMachine()
+KernelRidgeRegression::KernelRidgeRegression(
+    float64_t tau, std::shared_ptr<Kernel> k)
+    : KernelMachine()
 {
 	init();
 
@@ -65,8 +66,9 @@ bool KernelRidgeRegression::solve_krr_system()
 
 bool KernelRidgeRegression::train_machine(std::shared_ptr<Features >data)
 {
-	require(m_labels->get_num_labels() == data->get_num_vectors(), 
-		"Number of training vectors does not match number of labels");
+	require(
+	    m_labels->get_num_labels() == data->get_num_vectors(),
+	    "Number of training vectors does not match number of labels");
 	require(kernel, "Kernel not set");
 	kernel->init(data, data);
 

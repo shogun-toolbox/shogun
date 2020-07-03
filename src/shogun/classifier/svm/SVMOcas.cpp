@@ -33,16 +33,12 @@ SVMOcas::SVMOcas(E_SVM_TYPE type)
 	method=type;
 }
 
-SVMOcas::SVMOcas(
-	float64_t C, const std::shared_ptr<Features>& traindat, std::shared_ptr<Labels> trainlab)
-: LinearMachine()
+SVMOcas::SVMOcas(float64_t C) : LinearMachine()
 {
 	init();
 	C1=C;
 	C2=C;
 
-	set_features(std::dynamic_pointer_cast<DotFeatures>(traindat));
-	set_labels(std::move(trainlab));
 }
 
 
@@ -50,24 +46,17 @@ SVMOcas::~SVMOcas()
 {
 }
 
-bool SVMOcas::train_machine(std::shared_ptr<Features> data)
+bool SVMOcas::train_machine(
+    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = {}", get_bias_enabled())
 
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-	ASSERT(features)
-
+	const auto features = data->as<DotFeatures>();
+	m_features = features;
 	int32_t num_vec=features->get_num_vectors();
 	lab = SGVector<float64_t>(num_vec);
-	auto labels = binary_labels(m_labels);
+	auto labels = binary_labels(labs);
 	for (int32_t i=0; i<num_vec; i++)
 		lab[i] = labels->get_label(i);
 
@@ -185,7 +174,7 @@ int SVMOcas::add_new_cut(
 	uint32_t nSel, void* ptr)
 {
 	auto o = (SVMOcas*)ptr;
-	auto f = o->features;
+	auto f = o->m_features;
 	uint32_t nDim=(uint32_t) o->current_w.vlen;
 	float64_t* y = o->lab.vector;
 
@@ -270,7 +259,7 @@ int SVMOcas::sort(float64_t* vals, float64_t* data, uint32_t size)
 int SVMOcas::compute_output(float64_t *output, void* ptr)
 {
 	auto o = (SVMOcas*)ptr;
-	auto f=o->features;
+	auto f = o->m_features;
 	int32_t nData=f->get_num_vectors();
 
 	float64_t* y = o->lab.vector;

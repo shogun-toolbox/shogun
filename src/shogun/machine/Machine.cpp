@@ -71,9 +71,38 @@ bool Machine::train(std::shared_ptr<Features> data)
 	return result;
 }
 
-bool Machine::train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& lab){
-	set_labels(lab);
-	return train(data);
+bool Machine::train(
+    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& lab)
+{
+
+	auto sub = connect_to_signal_handler();
+	bool result = false;
+
+	if (support_feature_dispatching())
+	{
+		require(data != NULL, "Features not provided!");
+		require(
+		    data->get_num_vectors() == lab->get_num_labels(),
+		    "Number of training vectors ({}) does not match number of "
+		    "labels ({})",
+		    data->get_num_vectors(), lab->get_num_labels());
+
+		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
+			result = train_dense(data);
+		else if (
+		    support_string_dispatching() &&
+		    data->get_feature_class() == C_STRING)
+			result = train_string(data);
+		else
+			error("Training with {} is not implemented!", data->get_name());
+	}
+	else
+		result = train_machine(data, lab);
+
+	sub.unsubscribe();
+	reset_computation_variables();
+
+	return result;
 }
 
 void Machine::set_labels(std::shared_ptr<Labels> lab)

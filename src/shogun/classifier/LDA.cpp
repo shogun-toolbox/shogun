@@ -31,19 +31,6 @@ LDA::LDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
 	m_bdc_svd = bdc_svd;
 }
 
-LDA::LDA(
-    float64_t gamma, const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab,
-    ELDAMethod method, bool bdc_svd)
-    : DenseRealDispatch<LDA, LinearMachine>(), m_gamma(gamma)
-{
-	init();
-
-	features = traindat;
-	m_labels = std::move(trainlab);
-	m_method = method;
-	m_gamma = gamma;
-	m_bdc_svd = bdc_svd;
-}
 
 void LDA::init()
 {
@@ -63,12 +50,10 @@ void LDA::init()
 	    SG_OPTIONS(AUTO_LDA, SVD_LDA, FLD_LDA))
 }
 
-LDA::~LDA()
-{
-}
-
 template <typename ST, typename U>
-bool LDA::train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data)
+bool LDA::train_machine_templated(
+    const std::shared_ptr<DenseFeatures<ST>>& data,
+    const std::shared_ptr<Labels>& labs)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
@@ -76,15 +61,17 @@ bool LDA::train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data
 	bool lda_more_efficient = (m_method == AUTO_LDA && num_vec <= num_feat);
 
 	if (m_method == SVD_LDA || lda_more_efficient)
-		return solver_svd<ST>(data);
+		return solver_svd<ST>(data, labs);
 	else
-		return solver_classic<ST>(data);
+		return solver_classic<ST>(data, labs);
 }
 
 template <typename ST>
-bool LDA::solver_svd(std::shared_ptr<DenseFeatures<ST>> data)
+bool LDA::solver_svd(
+    std::shared_ptr<DenseFeatures<ST>> data,
+    const std::shared_ptr<Labels>& labs)
 {
-	auto labels = multiclass_labels(m_labels);
+	auto labels = multiclass_labels(labs);
 	require(
 	    labels->get_num_classes() == 2, "Number of classes ({}) must be 2",
 	    labels->get_num_classes());
@@ -118,9 +105,11 @@ bool LDA::solver_svd(std::shared_ptr<DenseFeatures<ST>> data)
 }
 
 template <typename ST>
-bool LDA::solver_classic(std::shared_ptr<DenseFeatures<ST>> data)
+bool LDA::solver_classic(
+    std::shared_ptr<DenseFeatures<ST>> data,
+    const std::shared_ptr<Labels>& labs)
 {
-	auto labels = multiclass_labels(m_labels);
+	auto labels = multiclass_labels(labs);
 	require(
 	    labels->get_num_classes() == 2, "Number of classes ({}) must be 2",
 	    labels->get_num_classes());

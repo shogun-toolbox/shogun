@@ -95,19 +95,14 @@ class LinearMachine : public Machine
 		 */
 		virtual float64_t get_bias() const;
 
-		/** set features
-		 *
-		 * @param feat features to set
-		 */
-		virtual void set_features(std::shared_ptr<DotFeatures> feat);
-
 		/** apply linear machine to data
 		 * for binary classification problem
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<BinaryLabels>
+		apply_binary(std::shared_ptr<Features> data);
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -115,16 +110,12 @@ class LinearMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<RegressionLabels>
+		apply_regression(std::shared_ptr<Features> data);
 
 		/** applies to one vector */
-		virtual float64_t apply_one(int32_t vec_idx);
-
-		/** get features
-		 *
-		 * @return features
-		 */
-		virtual std::shared_ptr<DotFeatures> get_features();
+		virtual float64_t apply_one(
+		    const std::shared_ptr<DotFeatures>& features, int32_t vec_idx);
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -151,10 +142,7 @@ class LinearMachine : public Machine
 		SGVector<float64_t> m_w;
 
 		/** bias */
-		float64_t bias;
-
-		/** features */
-		std::shared_ptr<DotFeatures> features;
+		float64_t bias = 0.0;
 };
 }
 #endif

@@ -56,7 +56,9 @@ namespace shogun
 			return m_complete;
 		}
 
-		virtual bool continue_train()
+		virtual bool continue_train(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs)
 		{
 			this->reset_computation_variables();
 			//this->put("features", m_continue_features);
@@ -65,7 +67,7 @@ namespace shogun
 			while (m_current_iteration < m_max_iterations && !m_complete)
 			{
 				COMPUTATION_CONTROLLERS
-				iteration();
+				iteration(data, labs);
 				m_current_iteration++;
 				pb.print_progress();
 			}
@@ -92,28 +94,27 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL)
+		virtual bool train_machine(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& lab) override
 		{
-			if (data)
-			{
-
-
-				m_continue_features = data;
-			}
+			m_continue_features = data;
 			m_current_iteration = 0;
 			m_complete = false;
 			init_model(data);
-			return continue_train();
+			return continue_train(data, lab);
 		}
 
 		/** To be overloaded by sublcasses to implement custom single
 		  * iterations of training loop.
 		  */
-		virtual void iteration() = 0;
+		virtual void iteration(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs) = 0;
 
 		/** To be overloaded in subclasses to initialize the model for training
 		  */
-		virtual void init_model(std::shared_ptr<Features> data = NULL) = 0;
+		virtual void init_model(const std::shared_ptr<Features>& data) = 0;
 
 		/** Can be overloaded in subclasses to show more information
 		  * and/or clean up states

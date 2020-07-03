@@ -40,22 +40,10 @@ void AveragedPerceptron::init()
 	    ParameterProperties::MODEL)
 }
 
-void AveragedPerceptron::init_model(std::shared_ptr<Features> data)
+void AveragedPerceptron::init_model(const std::shared_ptr<Features>& data)
 {
-	ASSERT(m_labels)
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-	ASSERT(features)
-
-	SGVector<int32_t> train_labels = binary_labels(m_labels)->get_int_labels();
+	const auto features = data->as<DotFeatures>();
 	int32_t num_feat = features->get_dim_feature_space();
-	int32_t num_vec = features->get_num_vectors();
-	ASSERT(num_vec == train_labels.vlen)
-
 	SGVector<float64_t> w(num_feat);
 	cached_w = SGVector<float64_t>(num_feat);
 	// start with uniform w, bias=0, tmp_bias=0
@@ -66,13 +54,14 @@ void AveragedPerceptron::init_model(std::shared_ptr<Features> data)
 	set_w(w);
 }
 
-void AveragedPerceptron::iteration()
+void AveragedPerceptron::iteration(
+    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	bool converged = true;
 
 	SGVector<float64_t> w = get_w();
-	auto labels = binary_labels(m_labels)->get_int_labels();
-
+	auto labels = binary_labels(labs)->get_int_labels();
+	const auto features = data->as<DotFeatures>();
 	int32_t num_vec = features->get_num_vectors();
 	// this assumes that m_current_iteration starts at 0
 	int32_t num_prev_weights = num_vec * m_current_iteration + 1;
