@@ -148,7 +148,7 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 */
 		template <typename ST>
 		bool solver_svd(
-		    std::shared_ptr<DenseFeatures<ST>> data,
+		    const std::shared_ptr<DenseFeatures<ST>>& data,
 		    const std::shared_ptr<Labels>& labs);
 
 		/**
@@ -159,7 +159,7 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 */
 		template <typename ST>
 		bool solver_classic(
-		    std::shared_ptr<DenseFeatures<ST>> data,
+		    const std::shared_ptr<DenseFeatures<ST>>& data,
 		    const std::shared_ptr<Labels>& labs);
 
 	protected:

@@ -68,7 +68,7 @@ bool LDA::train_machine_templated(
 
 template <typename ST>
 bool LDA::solver_svd(
-    std::shared_ptr<DenseFeatures<ST>> data,
+    const std::shared_ptr<DenseFeatures<ST>>& data,
     const std::shared_ptr<Labels>& labs)
 {
 	auto labels = multiclass_labels(labs);
@@ -106,7 +106,7 @@ bool LDA::solver_svd(
 
 template <typename ST>
 bool LDA::solver_classic(
-    std::shared_ptr<DenseFeatures<ST>> data,
+    const std::shared_ptr<DenseFeatures<ST>>& data,
     const std::shared_ptr<Labels>& labs)
 {
 	auto labels = multiclass_labels(labs);
