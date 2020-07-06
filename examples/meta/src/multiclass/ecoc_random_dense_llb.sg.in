@@ -27,7 +27,7 @@ Machine mc_classifier=create_machine("LinearMulticlassMachine", multiclass_strat
 
 #![train_and_apply]
 mc_classifier.train(features_train)
-MulticlassLabels labels_predict = mc_classifier.apply_multiclass(features_test)
+Labels labels_predict = mc_classifier.apply(features_test)
 #![train_and_apply]
 
 #![evaluate_accuracy]
@@ -36,4 +36,4 @@ real accuracy = eval.evaluate(labels_predict, labels_test)
 #![evaluate_accuracy]
 
 # integration testing variables
-RealVector output = labels_predict.get_labels()
+RealVector output = labels_predict.get_real_vector("labels")
