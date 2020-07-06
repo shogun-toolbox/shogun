@@ -1,0 +1,39 @@
+CSVFile f_feats_train("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+CSVFile f_feats_test("@SHOGUN_DATA@/classifier_4class_2d_linear_features_test.dat")
+CSVFile f_labels_train("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
+CSVFile f_labels_test("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
+#![create_features]
+
+#![create_classifier]
+Machine classifier = create_machine("LibLinear", seed=1)
+#![create_classifier]
+
+#![choose_strategy]
+ECOCEncoder encoder=create_ecoc_encoder("ECOCRandomDenseEncoder")
+encoder.put("seed", 1)
+ECOCDecoder decoder=create_ecoc_decoder("ECOCAEDDecoder")
+MulticlassStrategy rnd_dense_strategy=create_multiclass_strategy("ECOCStrategy", encoder=encoder, decoder=decoder)
+#![choose_strategy]
+
+#![create_instance]
+Machine mc_classifier=create_machine("LinearMulticlassMachine", multiclass_strategy=rnd_dense_strategy, machine=classifier, labels=labels_train)
+#![create_instance]
+
+#![train_and_apply]
+mc_classifier.train(features_train)
+MulticlassLabels labels_predict = mc_classifier.apply_multiclass(features_test)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+Evaluation eval = create_evaluation("MulticlassAccuracy")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# integration testing variables
+RealVector output = labels_predict.get_labels()
