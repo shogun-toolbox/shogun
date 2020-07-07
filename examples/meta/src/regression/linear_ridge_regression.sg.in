@@ -11,11 +11,11 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine lrr = create_machine("LinearRidgeRegression", tau=0.001, labels=labels_train)
+Machine lrr = create_machine("LinearRidgeRegression", tau=0.001)
 #![create_instance]
 
 #![train_and_apply]
-lrr.train(features_train)
+lrr.train(features_train, labels_train)
 Labels labels_predict = lrr.apply(features_test)
 #![train_and_apply]
 
@@ -25,8 +25,8 @@ RealVector w = lrr.get_real_vector("w")
 #[!extract_w]
 
 #[!manual_bias]
-Machine lrr2 = create_machine("LinearRidgeRegression", tau=0.001, labels=labels_train, use_bias=False)
-lrr2.train(features_train)
+Machine lrr2 = create_machine("LinearRidgeRegression", tau=0.001, use_bias=False)
+lrr2.train(features_train, labels_train)
 real my_bias = 0.1
 lrr2.put("bias", my_bias)
 Labels labels_predict2 = lrr2.apply(features_test)

@@ -12,7 +12,7 @@ Labels labels_test = create_labels(f_labels_test)
 
 
 #![create_instance]
-Machine classifier = create_machine("MulticlassLogisticRegression", m_z=1.0, labels=labels_train)
+Machine classifier = create_machine("MulticlassLogisticRegression", m_z=1.0, labels = labels_train)
 #![create_instance]
 
 #![train_and_apply]

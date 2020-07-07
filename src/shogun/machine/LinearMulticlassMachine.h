@@ -76,16 +76,14 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 	protected:
-		bool train_machine(const std::shared_ptr<Features>& data, 
-			const std::shared_ptr<Labels>& labs) override{
+		bool train_machine(std::shared_ptr<Features> data) override{
+			m_features = data->as<DotFeatures>();
 			require(m_multiclass_strategy, "Multiclass strategy not set");
-			 int32_t num_classes = labs->as<MulticlassLabels>()->get_num_classes();
+			 int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
    			 m_multiclass_strategy->set_num_classes(num_classes);
 
 			m_machines.clear();
 			auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
-
-			m_machine->set_labels(train_labels);
 
 			m_multiclass_strategy->train_start(
 				multiclass_labels(m_labels), train_labels);
@@ -98,7 +96,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 					add_machine_subset(subset);
 				}
 
-				m_machine->train(data, labs);
+				m_machine->train(data, train_labels);
 				m_machines.push_back(get_machine_from_trained(m_machine));
 
 				if (subset.vlen)

@@ -12,7 +12,7 @@ Machine svm= create_machine("MulticlassLibLinear", C=1.0, labels=labels_train)
 
 #![train_and_apply]
 svm.train(feats_train)
-Labels labels_predicted = svm.apply()
+Labels labels_predicted = svm.apply(feats_train)
 RealVector labels = labels_predicted.get_real_vector("labels")
 #![train_and_apply]
 

@@ -11,11 +11,11 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine svm = create_machine("NewtonSVM", labels=labels_train)
+Machine svm = create_machine("NewtonSVM")
 #![create_instance]
 
 #![train_and_apply]
-svm.train(features_train)
+svm.train(features_train, labels_train)
 BinaryLabels labels_predict = svm.apply_binary(features_test)
 #![train_and_apply]
 

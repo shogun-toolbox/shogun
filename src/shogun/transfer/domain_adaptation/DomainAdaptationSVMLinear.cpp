@@ -25,7 +25,7 @@ DomainAdaptationSVMLinear::DomainAdaptationSVMLinear() : LibLinear(L2R_L1LOSS_SV
 }
 
 
-DomainAdaptationSVMLinear::DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<DotFeatures> f, std::shared_ptr<Labels> lab, std::shared_ptr<LinearMachine> pre_svm, float64_t B_param) : LibLinear(C, std::move(f), std::move(lab))
+DomainAdaptationSVMLinear::DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<LinearMachine> pre_svm, float64_t B_param) : LibLinear(C)
 {
 	init(std::move(pre_svm), B_param);
 
@@ -80,9 +80,6 @@ bool DomainAdaptationSVMLinear::is_presvm_sane()
             error("presvm bias not set to zero");
         }
 
-        if (presvm->get_features()->get_feature_type() != this->get_features()->get_feature_type()) {
-            error("feature types do not agree");
-        }
     }
 
 	return true;
@@ -90,30 +87,11 @@ bool DomainAdaptationSVMLinear::is_presvm_sane()
 }
 
 
-bool DomainAdaptationSVMLinear::train_machine(std::shared_ptr<Features> train_data)
+bool DomainAdaptationSVMLinear::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 
-	std::shared_ptr<DotFeatures> tmp_data;
-
-	if (m_labels->get_label_type() != LT_BINARY)
-		error("DomainAdaptationSVMLinear requires binary labels");
-
-	if (train_data)
-	{
-		if (!train_data->has_property(FP_DOT))
-			error("DotFeatures expected");
-
-		if (m_labels->as<BinaryLabels>()->get_num_labels() != train_data->get_num_vectors())
-			error("Number of training vectors does not match number of labels");
-
-		tmp_data = train_data->as<DotFeatures>();
-	}
-	else
-	{
-		tmp_data = features;
-	}
-
-	auto labels = binary_labels(get_labels());
+	const auto train_data = data->as<DotFeatures>();
+	auto labels = binary_labels(labs);
 	int32_t num_training_points = labels->get_num_labels();
 
 	std::vector<float64_t> lin_term = std::vector<float64_t>(num_training_points);
@@ -123,7 +101,7 @@ bool DomainAdaptationSVMLinear::train_machine(std::shared_ptr<Features> train_da
 	ASSERT(presvm->get_bias() == 0.0)
 
         // bias of parent SVM was set to zero in constructor, already contains B
-        auto parent_svm_out = presvm->apply_binary(tmp_data);
+        auto parent_svm_out = presvm->apply_binary(train_data);
 
         SG_DEBUG("pre-computing linear term from presvm")
 
@@ -161,20 +139,7 @@ bool DomainAdaptationSVMLinear::train_machine(std::shared_ptr<Features> train_da
     set_w(tmp_w_copy, w_dim);
     SG_FREE(tmp_w_copy);
 	*/
-
-	bool success = false;
-
-	//train SVM
-	if (train_data)
-	{
-		success = LibLinear::train_machine(train_data);
-	} else {
-		success = LibLinear::train_machine();
-	}
-
-	//ASSERT(presvm)
-
-	return success;
+	return LibLinear::train_machine(train_data, labs);
 
 }
 

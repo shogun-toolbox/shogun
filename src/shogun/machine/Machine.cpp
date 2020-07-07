@@ -84,7 +84,7 @@ bool Machine::train(
 		else if (
 		    support_string_dispatching() &&
 		    data->get_feature_class() == C_STRING)
-			result = train_string(data);
+			result = train_string(data, labs);
 		else
 			error("Training with {} is not implemented!", data->get_name());
 	}
