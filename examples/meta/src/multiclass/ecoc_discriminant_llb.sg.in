@@ -1,0 +1,40 @@
+File f_feats_train = read_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_features_train.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_features_test.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_train.dat")
+File f_labels_test = read_csv("@SHOGUN_DATA@/classifier_4class_2d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
+#![create_features]
+
+#![create_classifier]
+Machine classifier = create_machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC", use_bias=True)
+#![create_classifier]
+
+#![choose_strategy]
+ECOCEncoder encoder=create_ecoc_encoder("ECOCDiscriminantEncoder")
+encoder.put("labels", labels_train)
+encoder.put("features", features_train)
+ECOCDecoder decoder=create_ecoc_decoder("ECOCLLBDecoder")
+MulticlassStrategy strategy = create_multiclass_strategy("ECOCStrategy", encoder=encoder, decoder=decoder)
+#![choose_strategy]
+
+#![create_instance]
+Machine mc_classifier = create_machine("LinearMulticlassMachine", multiclass_strategy=strategy, machine=classifier, labels=labels_train)
+#![create_instance]
+
+#![train_and_apply]
+mc_classifier.train(features_train)
+Labels labels_predict = mc_classifier.apply(features_test)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+Evaluation eval = create_evaluation("MulticlassAccuracy")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]
+
+# integration testing variables
+RealVector output = labels_predict.get_real_vector("labels")
