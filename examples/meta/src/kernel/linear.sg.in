@@ -8,7 +8,7 @@ Features feats_test = create_features(testdat)
 
 #![create_kernel]
 Kernel kernel = create_kernel("LinearKernel")
-AvgDiagKernelNormalizer normalizer(1.2)
+KernelNormalizer normalizer = create_kernel_normalizer("AvgDiagKernelNormalizer", scale=1.2)
 kernel.set_normalizer(normalizer)
 kernel.init(feats_train, feats_train)
 #![create_kernel]

@@ -107,6 +107,7 @@ namespace shogun
 					{
 						auto dist = EuclideanDistance(std::static_pointer_cast<DotFeatures>(lhs), 
 													  std::static_pointer_cast<DotFeatures>(rhs));
+						dist.set_disable_sqrt(true);
 						const auto& distance_matrix = dist.get_distance_matrix<float64_t>();
 
 						auto result = SGVector<float64_t>(
@@ -114,7 +115,7 @@ namespace shogun
 						     lhs->get_num_vectors()) /
 						    2);
 
-						// copy upper triangular wihout a particular order
+						// copy upper triangular wihout any particular order
 						index_t idx = 0;
 						for (auto j: range(lhs->get_num_vectors()))
 						{
@@ -124,7 +125,8 @@ namespace shogun
 								++idx;
 							}
 						}
-						width = std::sqrt(linalg::median(result) / 2.0);
+						// width = 2 * (median-non-sqrt-dist ^ 0.5) ^ 2  = 2 * median-non-sqrt-dist
+						width = 2 * linalg::median(result);
 					} break;
 					default:
 						width = m_alternative_value;

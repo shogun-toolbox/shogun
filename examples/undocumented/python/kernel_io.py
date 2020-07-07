@@ -2,7 +2,7 @@
 traindat = '../data/fm_train_real.dat'
 testdat = '../data/fm_test_real.dat'
 
-parameter_list=[[traindat,testdat,1.9],[traindat,testdat,1.7]]
+parameter_list=[[traindat,testdat,1.0],[traindat,testdat,1.2]]
 
 def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
 	from tempfile import NamedTemporaryFile
@@ -11,7 +11,7 @@ def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
 	feats_train=sg.create_features(sg.read_csv(train_fname))
 	feats_test=sg.create_features(sg.read_csv(test_fname))
 
-	kernel=sg.create_kernel("GaussianKernel", log_width=width)
+	kernel=sg.create_kernel("GaussianKernel", width=width)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 	tmp_train_csv = NamedTemporaryFile(suffix='train.csv')

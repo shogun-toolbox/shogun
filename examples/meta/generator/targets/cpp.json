@@ -150,7 +150,8 @@
             "create_combination_rule": "create<CombinationRule>($arguments)",
             "create_string_features": "details::string_features($arguments)",
             "create_subset_features": "create<DenseSubsetFeatures<float64_t>>($arguments)",
-            "create_gaussian_process": "create<GaussianProcess>($arguments)"
+            "create_gaussian_process": "create<GaussianProcess>($arguments)",
+            "create_kernel_normalizer": "create<KernelNormalizer>($arguments)"
         },
         "Identifier": "$identifier",
         "Enum":"$typeName::$value"

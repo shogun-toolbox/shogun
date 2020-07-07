@@ -41,9 +41,9 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
 
     # kernel, different Gaussians combined
     kernel=sg.create_kernel("CombinedKernel")
-    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=np.log(0.1)))
-    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=np.log(1)))
-    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=np.log(2)))
+    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", width=0.1))
+    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", width=1))
+    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", width=2))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
     svm=MKLMulticlass(1.0,kernel,labels);

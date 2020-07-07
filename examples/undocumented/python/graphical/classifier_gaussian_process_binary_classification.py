@@ -43,7 +43,7 @@ def gaussian_process_binary_classification_laplace(X_train, y_train, n_test=50):
     test_features = sg.create_features(X_test)
 
     # create Gaussian kernel with width = 2.0
-    kernel = sg.create_kernel('GaussianKernel', log_width=np.log(2.0))
+    kernel = sg.create_kernel('GaussianKernel', width=2.0)
 
     # create zero mean function
     mean =  sg.gp_mean("ZeroMean")
