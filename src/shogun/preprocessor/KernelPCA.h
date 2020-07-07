@@ -51,9 +51,6 @@ public:
 		 */
 		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
-		/// cleanup
-		virtual void cleanup();
-
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(std::shared_ptr<Features> features);
 
 		/// apply preproc on single feature vector

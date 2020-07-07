@@ -24,11 +24,6 @@ NormOne::~NormOne()
 {
 }
 
-/// clean up allocated memory
-void NormOne::cleanup()
-{
-}
-
 /// initialize preprocessor from file
 bool NormOne::load(FILE* f)
 {

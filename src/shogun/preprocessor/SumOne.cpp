@@ -21,11 +21,6 @@ SumOne::~SumOne()
 {
 }
 
-/// clean up allocated memory
-void SumOne::cleanup()
-{
-}
-
 /// initialize preprocessor from file
 bool SumOne::load(FILE* f)
 {

@@ -32,8 +32,6 @@ public:
 	/** destructor */
 	virtual ~SortWordString();
 
-	/// cleanup
-	virtual void cleanup();
 	/// initialize preprocessor from file
 	virtual bool load(FILE* f);
 	/// save preprocessor init-data to file

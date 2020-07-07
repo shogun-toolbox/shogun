@@ -82,13 +82,6 @@ FeatureSelection<ST>::~FeatureSelection()
 
 }
 
-
-template <class ST>
-void FeatureSelection<ST>::cleanup()
-{
-	m_subset->remove_all_subsets();
-}
-
 template <class ST>
 std::shared_ptr<Features> FeatureSelection<ST>::apply_backward_elimination(std::shared_ptr<Features> features)
 {

@@ -82,9 +82,6 @@ public:
 
 	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace) = 0;
 
-	/** clean-up. should be called (if necessary) after processing */
-	virtual void cleanup()=0;
-
 	/** @return type of objects preprocessor can deal with */
 	virtual EFeatureType get_feature_type()=0;
 

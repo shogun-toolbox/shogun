@@ -21,11 +21,6 @@ SortUlongString::~SortUlongString()
 {
 }
 
-/// clean up allocated memory
-void SortUlongString::cleanup()
-{
-}
-
 /// initialize preprocessor from file
 bool SortUlongString::load(FILE* f)
 {

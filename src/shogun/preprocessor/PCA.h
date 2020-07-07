@@ -132,9 +132,6 @@ class PCA : public DensePreprocessor<float64_t>
 
 		virtual void fit(std::shared_ptr<Features> features);
 
-		/** cleanup */
-		virtual void cleanup();
-
 		/** apply preprocessor to feature vector
 		 * @param vector feature vector
 		 * @return processed feature vector

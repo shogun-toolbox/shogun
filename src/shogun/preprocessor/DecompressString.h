@@ -43,9 +43,6 @@ template <class ST> class DecompressString : public StringPreprocessor<ST>
 		/** destructor */
 		virtual ~DecompressString();
 
-		/// cleanup
-		virtual void cleanup();
-
 		/// initialize preprocessor from file
 		bool load(FILE* f);
 

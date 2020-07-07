@@ -24,13 +24,11 @@ PruneVarSubMean::PruneVarSubMean(bool divide)
 
 PruneVarSubMean::~PruneVarSubMean()
 {
-	cleanup();
+
 }
 
 void PruneVarSubMean::fit(std::shared_ptr<Features> features)
 {
-	if (m_fitted)
-		cleanup();
 
 	auto simple_features = features->as<DenseFeatures<float64_t>>();
 	auto num_examples = simple_features->get_num_vectors();
@@ -88,15 +86,6 @@ void PruneVarSubMean::fit(std::shared_ptr<Features> features)
 	m_mean = new_mean;
 
 	m_fitted = true;
-}
-
-/// clean up allocated memory
-void PruneVarSubMean::cleanup()
-{
-	m_idx=SGVector<int32_t>();
-	m_mean=SGVector<float64_t>();
-	m_std=SGVector<float64_t>();
-	m_fitted = false;
 }
 
 SGMatrix<float64_t>

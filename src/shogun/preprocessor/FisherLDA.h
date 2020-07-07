@@ -127,9 +127,6 @@ class MulticlassLabels;
 		 */
 		virtual void fit(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels);
 
-		/** cleanup */
-		virtual void cleanup();
-
 		/** apply preprocessor to feature vector
 		 * @param vector features on which the learned transformation has to be applied.
 		 * @return processed feature vector with reduced dimensions.

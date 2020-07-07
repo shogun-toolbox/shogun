@@ -23,11 +23,6 @@ DecompressString<ST>::~DecompressString()
 }
 
 template <class ST>
-void DecompressString<ST>::cleanup()
-{
-}
-
-template <class ST>
 bool DecompressString<ST>::load(FILE* f)
 {
 	SG_SET_LOCALE_C;

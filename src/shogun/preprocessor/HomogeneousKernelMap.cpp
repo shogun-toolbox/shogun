@@ -43,13 +43,6 @@ HomogeneousKernelMap::~HomogeneousKernelMap()
 {
 }
 
-
-void HomogeneousKernelMap::cleanup()
-{
-	m_table=SGVector<float64_t>();
-}
-
-
 void HomogeneousKernelMap::init()
 {
 	SG_DEBUG ("Initialising homogeneous kernel map...")

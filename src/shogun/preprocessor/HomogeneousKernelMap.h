@@ -69,9 +69,6 @@ namespace shogun
 			/** destructor */
 			virtual ~HomogeneousKernelMap();
 
-			/** cleanup */
-			virtual void cleanup();
-
 			/** applies to feature vector
 			 * @param vector features vector
 			 * @return transformed feature vector

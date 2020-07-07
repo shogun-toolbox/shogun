@@ -195,13 +195,6 @@ void FisherLDA::solver_classic(
 	}
 }
 
-void FisherLDA::cleanup()
-{
-	m_transformation_matrix=SGMatrix<float64_t>();
-	m_mean_vector=SGVector<float64_t>();
-	m_eigenvalues_vector=SGVector<float64_t>();
-}
-
 SGMatrix<float64_t> FisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	auto num_vectors = matrix.num_cols;

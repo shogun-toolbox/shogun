@@ -41,11 +41,6 @@ namespace shogun
 		virtual void fit(std::shared_ptr<Features> features);
 
 		/**
-		 * Cleanup
-		 */
-		virtual void cleanup();
-
-		/**
 		 * Apply preproc on a single feature vector
 		 */
 		virtual SGVector<float64_t>

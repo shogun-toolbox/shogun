@@ -38,9 +38,6 @@ class PruneVarSubMean : public DensePreprocessor<float64_t>
 		/// Fit preprocessor into features
 		virtual void fit(std::shared_ptr<Features> features);
 
-		/// cleanup
-		virtual void cleanup();
-
 		/// apply preproc on single feature vector
 		/// result in feature matrix
 		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
