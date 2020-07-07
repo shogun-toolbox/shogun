@@ -123,28 +123,6 @@ public:
 		return std::get<float64_t>(m_width);
 	}
 
-	/**
-	 * Converts width to log_width.
-	 *
-	 * @param log_width the kernel log width
-	 * @return the kernel width
-	 */
-	static float64_t from_log_width(float64_t log_width) noexcept
-	{
-		return std::exp(log_width * 2.0) * 2.0;
-	}
-
-	/**
-	 * Converts log_width to width.
-	 *
-	 * @param width the kernel width
-	 * @return the kernel log width
-	 */
-	static float64_t to_log_width(float64_t width) noexcept
-	{
-		return std::log(width / 2.0) / 2.0;
-	}
-
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param param the parameter

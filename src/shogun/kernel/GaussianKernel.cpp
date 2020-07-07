@@ -83,6 +83,8 @@ SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(Parameters::const_ref
 	require(lhs, "Left hand side features must be set!");
 	require(rhs, "Rightt hand side features must be set!");
 
+	// this is not the actual derivative wrt to the kernel width
+	// but rather derivative wrt log_width = log(width /2 ) / 2
 	if (param.first == "width")
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);

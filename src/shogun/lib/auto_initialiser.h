@@ -124,7 +124,7 @@ namespace shogun
 								++idx;
 							}
 						}
-						width = linalg::median(result);
+						width = std::sqrt(linalg::median(result) / 2.0);
 					} break;
 					default:
 						width = m_alternative_value;
