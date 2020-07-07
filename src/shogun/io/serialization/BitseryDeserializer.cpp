@@ -68,7 +68,7 @@ public:
 		{
 			SG_DEBUG("auto parameter has a value")
 			*is_empty = false;
-			m_auto_value = obj_magic;
+			m_auto_value = *reinterpret_cast<float64_t*>(&obj_magic);
 		}
 	}
 
