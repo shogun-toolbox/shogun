@@ -34,7 +34,7 @@ def transfer_multitask_trace_logistic_regression (fm_train=traindat,fm_test=test
 	mtlr.set_max_iter(10)
 	mtlr.train(features,labels)
 	mtlr.set_current_task(0)
-	out = mtlr.apply_regression().get_labels()
+	out = mtlr.apply_regression(features).get_labels()
 
 	return out
 

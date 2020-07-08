@@ -34,7 +34,7 @@ def transfer_multitask_leastsquares_regression (fm_train=traindat,fm_test=testda
 	mtlsr.set_tolerance(1e-2) # use 1e-2 tolerance
 	mtlsr.train(features,labels)
 	mtlsr.set_current_task(0)
-	out = mtlsr.apply_regression().get_labels()
+	out = mtlsr.apply_regression(features).get_labels()
 	return out
 
 if __name__=='__main__':

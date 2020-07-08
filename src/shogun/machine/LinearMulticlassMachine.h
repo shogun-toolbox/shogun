@@ -76,11 +76,13 @@ class LinearMulticlassMachine : public MulticlassMachine
 		}
 
 	protected:
-		bool train_machine(std::shared_ptr<Features> data) override{
+
+		bool train_machine(std::shared_ptr<Features> data) override
+		{
 			m_features = data->as<DotFeatures>();
 			require(m_multiclass_strategy, "Multiclass strategy not set");
-			 int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
-   			 m_multiclass_strategy->set_num_classes(num_classes);
+			int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
+   			m_multiclass_strategy->set_num_classes(num_classes);
 
 			m_machines.clear();
 			auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());

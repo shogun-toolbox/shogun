@@ -60,7 +60,7 @@ class Perceptron : public IterativeMachine<LinearMachine>
 
 	protected:
 		void init_model(const std::shared_ptr<Features>& data) override;
-		virtual void iteration(
+		void iteration(
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs) override;
 

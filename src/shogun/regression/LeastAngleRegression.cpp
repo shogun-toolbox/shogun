@@ -124,7 +124,7 @@ bool LeastAngleRegression::train_machine_templated(
 	m_is_active.resize(n_fea);
 	fill(m_is_active.begin(), m_is_active.end(), false);
 
-	SGVector<ST> y = labs->as<RegressionLabels>()->template get_labels_t<ST>();
+	SGVector<ST> y = regression_labels(labs)->template get_labels_t<ST>();
 	typename SGVector<ST>::EigenVectorXtMap map_y(y.vector, y.size());
 
 	// transpose(X) is more convenient to work with since we care

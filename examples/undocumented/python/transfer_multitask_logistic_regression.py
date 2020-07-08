@@ -34,7 +34,7 @@ def transfer_multitask_logistic_regression (fm_train=traindat,fm_test=testdat,la
 	mtlr.set_tolerance(1e-2) # use 1e-2 tolerance
 	mtlr.train(features,labels)
 	mtlr.set_current_task(0)
-	out = mtlr.apply().get("labels")
+	out = mtlr.apply(features).get("labels")
 
 	return out
 

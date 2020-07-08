@@ -37,7 +37,7 @@ def transfer_multitask_clustered_logistic_regression (fm_train=traindat,fm_test=
 	mtlr.train(features,labels)
 	mtlr.set_current_task(0)
 	#print mtlr.get_w()
-	out = mtlr.apply_regression().get("labels")
+	out = mtlr.apply_regression(features).get("labels")
 
 	return out
 
