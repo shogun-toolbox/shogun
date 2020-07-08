@@ -44,10 +44,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override
-		{
-			return LinearMachine::train_machine(data, labs);
-		}
+		
 
 		virtual bool train_function(std::shared_ptr<Features> data=NULL)
 		{
@@ -127,12 +124,12 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 * initialized with train data)
 		 *
 		 * NOT IMPLEMENTED!
-		 *
+		 *	
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL)
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override
 		{
-			return train_function(data);
+			return LinearMachine::train_machine(data, labs);
 		}
 };
 

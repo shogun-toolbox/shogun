@@ -57,7 +57,7 @@ namespace shogun
 		}
 
 		virtual bool continue_train(
-		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& labs)
 		{
 			this->reset_computation_variables();
@@ -95,7 +95,7 @@ namespace shogun
 
 	protected:
 		virtual bool train_machine(
-		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& lab) override
 		{
 			m_continue_features = data;
@@ -109,12 +109,12 @@ namespace shogun
 		  * iterations of training loop.
 		  */
 		virtual void iteration(
-		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& labs) = 0;
 
 		/** To be overloaded in subclasses to initialize the model for training
 		  */
-		virtual void init_model(const std::shared_ptr<Features>& data) = 0;
+		virtual void init_model(const std::shared_ptr<DotFeatures>& data) = 0;
 
 		/** Can be overloaded in subclasses to show more information
 		  * and/or clean up states

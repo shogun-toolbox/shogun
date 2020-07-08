@@ -45,9 +45,8 @@ NewtonSVM::~NewtonSVM()
 {
 }
 
-void NewtonSVM::init_model(const std::shared_ptr<Features>& data)
+void NewtonSVM::init_model(const std::shared_ptr<DotFeatures>& features)
 {
-	const auto features = data->as<DotFeatures>();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -68,10 +67,9 @@ void NewtonSVM::init_model(const std::shared_ptr<Features>& data)
 }
 
 void NewtonSVM::iteration(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
-	obj_fun_linear(data, labs);
-	const auto features = data->as<DotFeatures>();
+	obj_fun_linear(features, labs);
 	SGVector<float64_t> weights = get_w();
 
 	SGVector<float64_t> sgv;
@@ -120,7 +118,7 @@ void NewtonSVM::iteration(
 	for (int32_t i = 0; i < x_d + 1; i++)
 		step[i] = -s2[i];
 
-	line_search_linear(step, data, labs);
+	line_search_linear(step, features, labs);
 
 	SGVector<float64_t> tmp_step(step.data(), x_d, false);
 	linalg::add(weights, tmp_step, weights, 1.0, t);
@@ -132,11 +130,10 @@ void NewtonSVM::iteration(
 }
 
 void NewtonSVM::line_search_linear(
-    const SGVector<float64_t>& d, const std::shared_ptr<Features>& data,
+    const SGVector<float64_t>& d, const std::shared_ptr<DotFeatures>& features,
     const std::shared_ptr<Labels>& labs)
 {
 	SGVector<float64_t> Y = binary_labels(labs)->get_labels();
-	const auto features = data->as<DotFeatures>();
 	SGVector<float64_t> outz(x_n);
 	SGVector<float64_t> temp1(x_n);
 	SGVector<float64_t> temp1forout(x_n);
@@ -205,11 +202,10 @@ void NewtonSVM::line_search_linear(
 }
 
 void NewtonSVM::obj_fun_linear(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 	SGVector<float64_t> weights = get_w();
 	SGVector<float64_t> v = binary_labels(labs)->get_labels();
-	const auto features = data->as<DotFeatures>();
 	for (int32_t i=0; i<x_n; i++)
 	{
 		if (out[i]<0)

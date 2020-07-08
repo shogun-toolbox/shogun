@@ -126,7 +126,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override;
 	protected:
 
 		/** SVM to regularize against */

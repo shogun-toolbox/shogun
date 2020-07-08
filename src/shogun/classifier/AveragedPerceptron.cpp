@@ -40,9 +40,8 @@ void AveragedPerceptron::init()
 	    ParameterProperties::MODEL)
 }
 
-void AveragedPerceptron::init_model(const std::shared_ptr<Features>& data)
+void AveragedPerceptron::init_model(const std::shared_ptr<DotFeatures>& features)
 {
-	const auto features = data->as<DotFeatures>();
 	int32_t num_feat = features->get_dim_feature_space();
 	SGVector<float64_t> w(num_feat);
 	cached_w = SGVector<float64_t>(num_feat);
@@ -55,13 +54,12 @@ void AveragedPerceptron::init_model(const std::shared_ptr<Features>& data)
 }
 
 void AveragedPerceptron::iteration(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 	bool converged = true;
 
 	SGVector<float64_t> w = get_w();
 	auto labels = binary_labels(labs)->get_int_labels();
-	const auto features = data->as<DotFeatures>();
 	int32_t num_vec = features->get_num_vectors();
 	// this assumes that m_current_iteration starts at 0
 	int32_t num_prev_weights = num_vec * m_current_iteration + 1;

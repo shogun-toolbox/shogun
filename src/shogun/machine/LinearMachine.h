@@ -15,6 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/features/DotFeatures.h>
 
 
 namespace shogun
@@ -133,6 +134,18 @@ class LinearMachine : public Machine
 		 */
 		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
 
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) final
+		{
+			const auto dot_feat = std::dynamic_pointer_cast<DotFeatures>(data);
+			require(dot_feat, "Expected DotFeatures type");
+			return train_machine(dot_feat, labs);
+		}
+
+		virtual bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs)
+		{
+			not_implemented(SOURCE_LOCATION);
+			return false;
+		}
 	private:
 
 		void init();

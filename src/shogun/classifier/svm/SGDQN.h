@@ -98,7 +98,7 @@ class SGDQN : public LinearMachine
 
 	protected:
 		bool train_machine(
-		    const std::shared_ptr<Features>&,
+		    const std::shared_ptr<DotFeatures>&,
 		    const std::shared_ptr<Labels>&) override;
 
 		/** calibrate */

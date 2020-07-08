@@ -70,12 +70,10 @@ LibLinearRegression::~LibLinearRegression()
 }
 
 bool LibLinearRegression::train_machine(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
-
-	const auto features = data->as<DotFeatures>();
 	auto labels = labs->as<RegressionLabels>();
-
+	
 	auto num_feat=features->get_dim_feature_space();
 	auto num_vec=features->get_num_vectors();
 

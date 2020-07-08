@@ -47,12 +47,11 @@ SVMOcas::~SVMOcas()
 }
 
 bool SVMOcas::train_machine(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 	SG_DEBUG("use_bias = {}", get_bias_enabled())
 
-	const auto features = data->as<DotFeatures>();
 	m_features = features;
 	int32_t num_vec=features->get_num_vectors();
 	lab = SGVector<float64_t>(num_vec);

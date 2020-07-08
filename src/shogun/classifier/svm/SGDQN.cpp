@@ -68,15 +68,14 @@ void SGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1
 	}
 }
 bool SGDQN::train_machine(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 
 	const auto binary_labels = labs->as<BinaryLabels>();
 
 	int32_t num_train_labels = binary_labels->get_num_labels();
-	int32_t num_vec = data->get_num_vectors();
+	int32_t num_vec = features->get_num_vectors();
 
-	const auto features = data->as<DotFeatures>();
 	SGVector<float64_t> w(features->get_dim_feature_space());
 	w.zero();
 

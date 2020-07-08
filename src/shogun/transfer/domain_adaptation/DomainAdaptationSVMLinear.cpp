@@ -87,10 +87,9 @@ bool DomainAdaptationSVMLinear::is_presvm_sane()
 }
 
 
-bool DomainAdaptationSVMLinear::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+bool DomainAdaptationSVMLinear::train_machine(const std::shared_ptr<DotFeatures>& train_data, const std::shared_ptr<Labels>& labs)
 {
 
-	const auto train_data = data->as<DotFeatures>();
 	auto labels = binary_labels(labs);
 	int32_t num_training_points = labels->get_num_labels();
 

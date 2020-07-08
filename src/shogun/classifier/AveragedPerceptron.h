@@ -69,9 +69,9 @@ namespace shogun
 		/** registers and initializes parameters */
 		void init();
 
-		void init_model(const std::shared_ptr<Features>& data) override;
+		void init_model(const std::shared_ptr<DotFeatures>& data) override;
 		void iteration(
-		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& labs) override;
 
 	protected:

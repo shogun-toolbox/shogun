@@ -69,11 +69,10 @@ LibLinear::~LibLinear()
 }
 
 bool LibLinear::train_machine(
-    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 
 	init_linear_term(labs);
-	const auto features = data->as<DotFeatures>();
 
 	int32_t num_train_labels = labs->get_num_labels();
 	int32_t num_feat = features->get_dim_feature_space();

@@ -58,13 +58,12 @@ LibLinearMTL::~LibLinearMTL()
 {
 }
 
-bool LibLinearMTL::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+bool LibLinearMTL::train_machine(const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 	int32_t num_labels=labs->get_num_labels();
 	require(num_labels==m_linear_term.vlen, "Number of labels ({}) does not match number"
 						" of entries ({}) in linear term ", num_labels,
 						m_linear_term.vlen);
-	const auto features = data->as<DotFeatures>();
 	labs->ensure_valid();
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();

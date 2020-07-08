@@ -93,18 +93,18 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		void init_model(const std::shared_ptr<Features>& data) override;
+		void init_model(const std::shared_ptr<DotFeatures>& data) override;
 		virtual void iteration(
-		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& labs) override;
 
 	private:
 		void obj_fun_linear(
-		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& labs);
 
 		void line_search_linear(
-		    const SGVector<float64_t>& d, const std::shared_ptr<Features>& data,
+		    const SGVector<float64_t>& d, const std::shared_ptr<DotFeatures>& data,
 		    const std::shared_ptr<Labels>& labs);
 
 	protected:
