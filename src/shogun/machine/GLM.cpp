@@ -17,6 +17,8 @@
 #include <shogun/optimization/SGDMinimizer.h>
 #include <shogun/optimization/GradientDescendUpdater.h>
 #include <shogun/optimization/ConstLearningRate.h>
+
+#include<iostream>
 // #include <utility>
 #include <cmath>
 
@@ -28,16 +30,23 @@ using namespace shogun;
 
 GLM::GLM()
 {
+	std::cout<<"Entered non-parameterized constructor.\n";
 	SG_ADD(&distribution, "distribution_type", "variable to store name of distribution type", ParameterProperties::HYPER);
 	SG_ADD(&m_eta, "eta", "threshold parameter that linearizes the exp() function above eta", ParameterProperties::HYPER);
 	SG_ADD(&m_lambda, "lambda", "regularization parameter of penalty term", ParameterProperties::HYPER);
 	SG_ADD(&m_alpha, "alpha", "weighting between L1 penalty and L2 penalty term of the loss function", ParameterProperties::HYPER);
 	SG_ADD(&m_tolerance, "tolerance", "convergence threshold or stopping criteria", ParameterProperties::HYPER);
 	
+	m_gradient_updater = std::make_shared<GradientDescendUpdater>();
+	m_learning_rate = std::make_shared<ConstLearningRate>();
+	m_penalty = std::make_shared<ElasticNetPenalty>();
+	m_cost_function = std::make_shared<GLMCostFunction>();
+
 }
 
 GLM::GLM(GLM_DISTRIBUTION distr, float64_t alpha, float64_t lambda, float64_t learning_rate, int32_t max_iterations, float64_t tolerance, float64_t eta): RandomMixin<IterativeMachine<LinearMachine>>()
 {
+	std::cout<<"Entered parameterized constructor.\n";
 	distribution=distr;
 	m_alpha=alpha;
 	m_lambda=lambda;
