@@ -69,6 +69,11 @@ private:
 	// A flag to find best match between predicted labels and the ground truth
 	// before evaluation
 	bool m_use_best_map;
+
+#ifndef SWIG
+public:
+	static constexpr std::string_view kBestMap = "use_best_map";
+#endif
 };
 
 } // namespace shogun

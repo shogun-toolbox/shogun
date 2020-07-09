@@ -96,6 +96,10 @@ namespace shogun
 		private:
 			void init();
 			void register_parameters();
+		#ifndef SWIG
+		public:
+			static constexpr std::string_view kWeights = "weights";
+		#endif
 	};
 }
 

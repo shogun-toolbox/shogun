@@ -19,7 +19,7 @@ using namespace std;
 ClusteringEvaluation::ClusteringEvaluation() : Evaluation()
 {
 	m_use_best_map = true;
-	SG_ADD(&m_use_best_map, "use_best_map",
+	SG_ADD(&m_use_best_map, kBestMap,
 		"Find best match between predicted labels and the ground truth");
 }
 

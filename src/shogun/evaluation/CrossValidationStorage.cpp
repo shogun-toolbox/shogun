@@ -44,28 +44,28 @@ using namespace shogun;
 CrossValidationFoldStorage::CrossValidationFoldStorage() : EvaluationResult()
 {
 	SG_ADD(
-	    &m_current_run_index, "run_index", "The current run index of this fold",
+	    &m_current_run_index, kCurrentRunIndex, "The current run index of this fold",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_current_fold_index, "fold_index", "The current fold index",
+	    &m_current_fold_index, kCurrentFoldIndex, "The current fold index",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_trained_machine, "trained_machine",
+	    &m_trained_machine, kTrainedMachine,
 	    "The machine trained by this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_test_result, "predicted_labels",
+	    &m_test_result, kTestResult,
 	    "The test result of this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_test_true_result, "ground_truth_labels",
+	    &m_test_true_result, kTestTrueResult,
 	    "The true test result for this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_train_indices, "train_indices", "Indices used for training",
+	    &m_train_indices, kTrainIndices, "Indices used for training",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_test_indices, "test_indices", "Indices used for testing",
+	    &m_test_indices, kTestIndices, "Indices used for testing",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_evaluation_result, "evaluation_result", "Result of the evaluation",
+	    &m_evaluation_result, kEvalulationResult, "Result of the evaluation",
 	    ParameterProperties::HYPER);
 }
 
@@ -92,13 +92,13 @@ CrossValidationStorage::CrossValidationStorage() : EvaluationResult()
 	m_num_folds = 0;
 
 	SG_ADD(
-	    &m_num_runs, "num_runs", "The total number of cross-validation runs",
+	    &m_num_runs, kNumRuns, "The total number of cross-validation runs",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_num_folds, "num_folds", "The total number of cross-validation folds",
+	    &m_num_folds, kNumFold, "The total number of cross-validation folds",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_original_labels, "labels",
+	    &m_original_labels, kOriginalLabels,
 	    "The labels used for this cross-validation",
 	    ParameterProperties::HYPER);
 	this->watch_param(
