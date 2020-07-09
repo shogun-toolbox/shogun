@@ -188,6 +188,11 @@ namespace shogun
 
 		/** number of evaluation runs for one fold */
 		int32_t m_num_runs;
+
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kNumRuns = "num_runs";
+	#endif
 	};
 }
 

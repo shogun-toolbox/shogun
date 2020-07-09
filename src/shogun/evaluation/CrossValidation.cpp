@@ -51,7 +51,7 @@ void CrossValidation::init()
 {
 	m_num_runs = 1;
 
-	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions");
+	SG_ADD(&m_num_runs, kNumRuns, "Number of repetitions");
 }
 
 std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl() const
