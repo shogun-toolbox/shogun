@@ -29,7 +29,7 @@ void GradientEvaluation::init()
 	m_diff=NULL;
 
 	SG_ADD(
-	    &m_diff, "differentiable_function", "Differentiable function",
+	    &m_diff, kDifferentiableFunction, "Differentiable function",
 	    ParameterProperties::HYPER);
 }
 

@@ -80,6 +80,10 @@ protected:
 
 	/** number of graph results */
 	int32_t m_num_graph_results;
+#ifndef SWIG
+public:
+	static constexpr std::string_view kBinaryEvaluation = "binary_evaluation";
+#endif
 
 };
 

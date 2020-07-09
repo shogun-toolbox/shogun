@@ -86,6 +86,10 @@ private:
 
 	/** parameter dictionary of differentiable function */
 	mutable std::map<Parameters::value_type, std::shared_ptr<SGObject>> m_parameter_dictionary; 
+#ifndef SWIG
+public:
+	static constexpr std::string_view kDifferentiableFunction = "differentiable_function";
+#endif
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */
