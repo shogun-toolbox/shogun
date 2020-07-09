@@ -103,6 +103,18 @@ namespace shogun
 
 		/** Evaluation result for this fold */
 		float64_t m_evaluation_result{};
+
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kCurrentRunIndex = "run_index";
+		static constexpr std::string_view kCurrentFoldIndex = "fold_index";
+		static constexpr std::string_view kTrainedMachine = "trained_machine";
+		static constexpr std::string_view kTestResult = "predicted_labels";
+		static constexpr std::string_view kTestTrueResult = "ground_truth_labels";
+		static constexpr std::string_view kTrainIndices = "train_indices";
+		static constexpr std::string_view kTestIndices = "test_indices";
+		static constexpr std::string_view kEvalulationResult = "evaluation_result";
+	#endif
 	};
 
 	/**
@@ -159,14 +171,6 @@ namespace shogun
 	
 	#ifndef SWIG
 	public:
-		static constexpr std::string_view kCurrentRunIndex = "run_index";
-		static constexpr std::string_view kCurrentFoldIndex = "fold_index";
-		static constexpr std::string_view kTrainedMachine = "trained_machine";
-		static constexpr std::string_view kTestResult = "predicted_labels";
-		static constexpr std::string_view kTestTrueResult = "ground_truth_labels";
-		static constexpr std::string_view kTrainIndices = "train_indices";
-		static constexpr std::string_view kTestIndices = "test_indices";
-		static constexpr std::string_view kEvalulationResult = "evaluation_result";
 		static constexpr std::string_view kNumRuns = "num_runs";
 		static constexpr std::string_view kNumFold = "num_folds";
 		static constexpr std::string_view kOriginalLabels = "labels";
