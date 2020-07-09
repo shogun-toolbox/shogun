@@ -133,7 +133,7 @@ namespace shogun
 		}
 
 	private:
-		std::string msg;
+		mutable std::string msg;
 		std::function<void(const T&)> m_func;
 	};
 
