@@ -106,6 +106,13 @@ protected:
 	/** flag to check whether there is a set of index sets stored. If not,
 	 * call build_subsets() */
 	bool m_is_filled;
+#ifndef SWIG
+public:
+	static constexpr std::string_view kLabels = "labels";
+	static constexpr std::string_view kSubsetIndices = "subset_indices";
+	static constexpr std::string_view kIsFilled = "is_filled";
+	static constexpr std::string_view kSumSubsets = "num_subsets";
+#endif
 };
 }
 

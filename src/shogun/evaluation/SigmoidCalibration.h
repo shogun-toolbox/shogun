@@ -139,6 +139,15 @@ namespace shogun
 		float64_t m_sigma;
 		/** Stopping criteria of search */
 		float64_t m_epsilon;
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kSigmoidAs = "m_sigmoid_as";
+		static constexpr std::string_view kSigmoidBs = "m_sigmoid_bs";
+		static constexpr std::string_view kMaxiter = "m_maxiter";
+		static constexpr std::string_view kMinstep = "m_minstep";
+		static constexpr std::string_view kSigma = "m_sigma";
+		static constexpr std::string_view kEpsilon = "m_epsilon";
+	#endif
 	};
 }
 #endif

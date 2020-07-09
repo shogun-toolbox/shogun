@@ -50,13 +50,13 @@ void SplittingStrategy::init()
 	m_is_filled=false;
 	m_num_subsets=0;
 
-	SG_ADD(&m_labels, "labels", "Labels for subsets");
+	SG_ADD(&m_labels, kLabels, "Labels for subsets");
 	SG_ADD(
-	    &m_subset_indices, "subset_indices", "Set of sets of subset indices");
+	    &m_subset_indices, kSubsetIndices, "Set of sets of subset indices");
 	SG_ADD(
-	    &m_is_filled, "is_filled", "Whether ther are index sets");
+	    &m_is_filled, kIsFilled, "Whether ther are index sets");
 	SG_ADD(
-	    &m_num_subsets, "num_subsets", "Number of index sets");
+	    &m_num_subsets, kSumSubsets, "Number of index sets");
 }
 
 SplittingStrategy::~SplittingStrategy()
