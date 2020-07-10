@@ -31,6 +31,10 @@ namespace params {
  *
  * where \f$\tau\f$ is the kernel width.
  *
+ * If the kernel width is not provided it will be computed automatically using
+ * the median heuristics as described in 
+ * http://www.stats.ox.ac.uk/~sejdinov/talks/pdf/2016-09-07_RSSManchester.pdf,
+ * where \f$\tau=2\theta^2\f$ and \f$\theta = median(||{\bf x}-{\bf x'}||^2)\f$.
  */
 class GaussianKernel: public ShiftInvariantKernel
 {
