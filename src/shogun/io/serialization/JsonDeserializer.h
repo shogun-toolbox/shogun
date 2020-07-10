@@ -18,7 +18,7 @@ namespace shogun
 			~JsonDeserializer() override;
 			std::shared_ptr<SGObject> read_object() override;
 			void read(std::shared_ptr<SGObject> _this) override;
-			virtual const char* get_name() const
+			const char* get_name() const override
 			{
 				return "JsonDeserializer";
 			}

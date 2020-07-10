@@ -44,7 +44,7 @@ class Hierarchical : public DistanceMachine
 		 * @param d distance
 		 */
 		Hierarchical(int32_t merges, std::shared_ptr<Distance> d);
-		virtual ~Hierarchical();
+		~Hierarchical() override;
 
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS);
@@ -53,7 +53,7 @@ class Hierarchical : public DistanceMachine
 		 *
 		 * @return classifier type HIERARCHICAL
 		 */
-		virtual EMachineType get_classifier_type();
+		EMachineType get_classifier_type() override;
 
 		/** load distance machine from file
 		 *
@@ -101,9 +101,9 @@ class Hierarchical : public DistanceMachine
 		SGMatrix<int32_t> get_cluster_pairs();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Hierarchical"; }
+		const char* get_name() const override { return "Hierarchical"; }
 
-		virtual bool train_require_labels() const
+		bool train_require_labels() const override
 		{
 			return false;
 		}
@@ -117,7 +117,7 @@ class Hierarchical : public DistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		/** Initialize attributes */

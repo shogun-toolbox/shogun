@@ -100,7 +100,7 @@ public:
 	DeepBeliefNetwork(int32_t num_visible_units,
 		ERBMVisibleUnitType unit_type = RBMVUT_BINARY);
 
-	virtual ~DeepBeliefNetwork();
+	~DeepBeliefNetwork() override;
 
 	/** Adds a layer of hidden units. The layer is connected to the layer that
 	 * was added directly before it.
@@ -209,7 +209,7 @@ public:
 	virtual SGVector<float64_t> get_biases(int32_t index,
 		SGVector<float64_t> p = SGVector<float64_t>());
 
-	virtual const char* get_name() const { return "DeepBeliefNetwork"; }
+	const char* get_name() const override { return "DeepBeliefNetwork"; }
 
 protected:
 	/** Computes the states of some layer using the states of the layer above it */

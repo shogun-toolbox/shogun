@@ -55,19 +55,19 @@ public:
 	 */
 	KLDualInferenceMethodMinimizer(std::shared_ptr<FirstOrderCostFunction >fun): LBFGSMinimizer(fun) { init(); }
   
-	virtual ~KLDualInferenceMethodMinimizer() {}
+	~KLDualInferenceMethodMinimizer() override {}
 
 	/** Do minimization and get the optimal value 
 	 *  
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
-	virtual const char* get_name() const { return "KLDualInferenceMethodMinimizer"; }
+	const char* get_name() const override { return "KLDualInferenceMethodMinimizer"; }
   
 protected:
 	/** Init before minimization */
-	virtual void init_minimization();
+	void init_minimization() override;
 
 private:
 	/** A helper function is used in the C-style LBFGS API
@@ -123,19 +123,19 @@ public:
 	KLDualInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~KLDualInferenceMethod();
+	~KLDualInferenceMethod() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name KLDualInferenceMethod
 	 */
-	virtual const char* get_name() const { return "KLDualInferenceMethod"; }
+	const char* get_name() const override { return "KLDualInferenceMethod"; }
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type KL_DUAL
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_KL_DUAL; }
+	EInferenceType get_inference_type() const override { return INF_KL_DUAL; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -154,7 +154,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** get diagonal vector
 	 *
@@ -167,19 +167,19 @@ public:
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
 	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 	/** set variational likelihood model
 	 *
 	 * @param mod model to set
 	 */
-	void set_model(std::shared_ptr<LikelihoodModel> mod);
+	void set_model(std::shared_ptr<LikelihoodModel> mod) override;
 
 	/** Set a minimizer
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
+	void register_minimizer(std::shared_ptr<Minimizer> minimizer) override;
 protected:
 
 	/** compute the gradient wrt variational parameters
@@ -187,7 +187,7 @@ protected:
 	 *
 	 * @return gradient of negative log marginal likelihood
 	 */
-	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient){};
+	void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient) override{};
 
 	/** this method is used to dynamic-cast the likelihood model, m_model,
 	 * to dual variational likelihood model.
@@ -202,25 +202,25 @@ protected:
 	virtual void check_dual_inference(std::shared_ptr<LikelihoodModel> mod) const;
 
 	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
+	void update_approx_cov() override;
 
 	/** update alpha matrix */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** update cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** the helper function to compute
 	 * the negative log marginal likelihood
 	 *
 	 * @return negative log marginal likelihood
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood_helper();
+	float64_t get_negative_log_marginal_likelihood_helper() override;
 
 	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
@@ -230,7 +230,7 @@ protected:
 	 *
 	 * @return true if precomputed parameters are valid
 	 */
-	virtual bool precompute();
+	bool precompute() override;
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
@@ -244,10 +244,10 @@ protected:
 	 *
 	 * @return the gradient wrt hyperparameter related to cov
 	 */
-	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
+	float64_t get_derivative_related_cov(SGMatrix<float64_t> dK) override;
 
 	/** Using L-BFGS to estimate posterior parameters */
-	virtual float64_t optimization();
+	float64_t optimization() override;
 
 	/** compute the objective value for LBFGS optimizer
 	 *

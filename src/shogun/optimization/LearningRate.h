@@ -47,7 +47,7 @@ namespace shogun
 class LearningRate: public SGObject
 {
 public:
-	virtual ~LearningRate() {};
+	~LearningRate() override {};
 
 	/** Get a learning rate for descent direction
 	 * Note that the learning rate usually is positive

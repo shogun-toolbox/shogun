@@ -103,22 +103,22 @@ public:
 	CARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune);
 
 	/** destructor */
-	virtual ~CARTree();
+	~CARTree() override;
 
 	/** set labels - automagically switch machine problem type based on type of labels supplied
 	 * @param lab labels
 	 */
-	virtual void set_labels(std::shared_ptr<Labels> lab);
+	void set_labels(std::shared_ptr<Labels> lab) override;
 
 	/** get name
 	 * @return class name CARTree
 	 */
-	virtual const char* get_name() const { return "CARTree"; }
+	const char* get_name() const override { return "CARTree"; }
 
 	/** get problem type - multiclass classification or regression
 	 * @return PT_MULTICLASS or PT_REGRESSION
 	 */
-	virtual EProblemType get_machine_problem_type() const { return m_mode; }
+	EProblemType get_machine_problem_type() const override { return m_mode; }
 
 	/** set problem type - multiclass classification or regression
 	 * @param mode EProblemType PT_MULTICLASS or PT_REGRESSION
@@ -129,19 +129,19 @@ public:
 	 * @param lab labels supplied
 	 * @return true for valid labels, false for invalid labels
 	 */
-	virtual bool is_label_valid(std::shared_ptr<Labels> lab) const;
+	bool is_label_valid(std::shared_ptr<Labels> lab) const override;
 
 	/** classify data using Classification Tree
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** Get regression labels using Regression Tree
 	 * @param data data whose regression output is needed
 	 * @return Regression output for various test vectors
 	 */
-	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 	/** uses test dataset to choose best pruned subtree
 	 *
@@ -248,7 +248,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	/** CARTtrain - recursive CART training method
 	 *

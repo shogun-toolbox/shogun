@@ -274,7 +274,7 @@ public:
 	static SGVector<int32_t> sample_indices(int32_t sample_size, int32_t N, PRNG& prng);
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "Statistics";
 	}

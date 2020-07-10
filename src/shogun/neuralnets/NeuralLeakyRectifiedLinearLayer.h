@@ -59,7 +59,7 @@ public:
 	 */
 	NeuralLeakyRectifiedLinearLayer(int32_t num_neurons);
 
-	virtual ~NeuralLeakyRectifiedLinearLayer() {}
+	~NeuralLeakyRectifiedLinearLayer() override {}
 
 	/** Sets the value of alpha used to calculate max(alpha*(W*x+b),W*x+b)
 	 *
@@ -83,11 +83,11 @@ public:
 	 * being used with
 	 *
 	 */
-	virtual void compute_activations(
+	void compute_activations(
 		SGVector<float64_t> parameters,
-		const std::vector<std::shared_ptr<NeuralLayer>>& layers);
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers) override;
 
-	virtual const char* get_name() const { return "NeuralLeakyRectifiedLinearLayer"; }
+	const char* get_name() const override { return "NeuralLeakyRectifiedLinearLayer"; }
 
 protected:
 	/** Parameter used to calculate max(alpha*(W*x+b),W*x+b).

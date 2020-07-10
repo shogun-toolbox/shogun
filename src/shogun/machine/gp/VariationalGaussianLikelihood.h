@@ -52,7 +52,7 @@ public:
 	/** default constructor */
 	VariationalGaussianLikelihood();
 
-	virtual ~VariationalGaussianLikelihood() {};
+	~VariationalGaussianLikelihood() override {};
 
 	/** set the variational distribution given data and parameters
 	 *
@@ -82,7 +82,7 @@ protected:
 	SGVector<float64_t> m_s2;
 
 	/** this method is called to initialize m_likelihood in init()*/
-	virtual void init_likelihood()=0;
+	void init_likelihood() override =0;
 
 private:
 	void init();

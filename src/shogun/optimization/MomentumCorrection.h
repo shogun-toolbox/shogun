@@ -52,7 +52,7 @@ public:
 	}
 
 	/*  Destructor */
-	virtual ~MomentumCorrection() {};
+	~MomentumCorrection() override {};
 
 	/**  Is the m_previous_descend_direction initialized?
 	 *
@@ -76,8 +76,8 @@ public:
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 
 	 */
-	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx)=0;
+	DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx) override =0;
 
 
 	/** Get the previous descend direction (velocity) given the index

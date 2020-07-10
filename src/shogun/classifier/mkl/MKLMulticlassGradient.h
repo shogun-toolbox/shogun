@@ -30,7 +30,7 @@ public:
 	/** Class default Destructor
 	 *
 	 */
-   virtual ~MKLMulticlassGradient();
+   ~MKLMulticlassGradient() override;
 
 	/** Class Copy Constructor
 	 *
@@ -48,7 +48,7 @@ public:
 	 *
 	 *
 	 */
-	virtual void setup(const int32_t numkernels2);
+	void setup(const int32_t numkernels2) override;
 
 	/** adds a constraint to the LP arising in L1 MKL based on two parameters
 	 *
@@ -58,23 +58,23 @@ public:
     * MKLMulticlass.h, it depends on the formulation of the underlying GMNPSVM.
 	 *
 	 */
-	virtual void addconstraint(const ::std::vector<float64_t> & normw2,
-			const float64_t sumofpositivealphas);
+	void addconstraint(const ::std::vector<float64_t> & normw2,
+			const float64_t sumofpositivealphas) override;
 
 	/** computes MKL weights
 	 *
 	 * @param weights2 stores the new weights
 	 *
 	 */
-	virtual void computeweights(std::vector<float64_t> & weights2);
+	void computeweights(std::vector<float64_t> & weights2) override;
 
 	/** @return object name */
-	virtual const char* get_name() const { return "MKLMulticlassGradient"; }
+	const char* get_name() const override { return "MKLMulticlassGradient"; }
 
 	/** sets p-norm parameter for MKL
 	*	 @param norm the MKL norm
 	*/
-	virtual void set_mkl_norm(float64_t norm);
+	void set_mkl_norm(float64_t norm) override;
 
 protected:
 	/** helper routine for MKL optimization, performs linesearch

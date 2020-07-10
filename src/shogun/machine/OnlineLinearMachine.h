@@ -53,7 +53,7 @@ class OnlineLinearMachine : public Machine
 	public:
 		/** default constructor */
 		OnlineLinearMachine();
-		virtual ~OnlineLinearMachine();
+		~OnlineLinearMachine() override;
 
 		/**
 		 * Get w as a _new_ float64_t array
@@ -137,7 +137,7 @@ class OnlineLinearMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 		/** apply linear machine to data
 		 * for binary classification problems
@@ -145,10 +145,10 @@ class OnlineLinearMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 		/// get output for example "vec_idx"
-		virtual float64_t apply_one(int32_t vec_idx)
+		float64_t apply_one(int32_t vec_idx) override
 		{
 			not_implemented(SOURCE_LOCATION);
 			return Math::INFTY;
@@ -182,7 +182,7 @@ class OnlineLinearMachine : public Machine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "OnlineLinearMachine"; }
+		const char* get_name() const override { return "OnlineLinearMachine"; }
 
 		/** Start training of the online machine, sub-class should override
 		 * this if some preparations are to be done
@@ -206,7 +206,7 @@ class OnlineLinearMachine : public Machine
 		virtual void train_example(std::shared_ptr<StreamingDotFeatures >feature, float64_t label) { not_implemented(SOURCE_LOCATION); }
 
 		/** whether train require labels */
-		virtual bool train_require_labels() const
+		bool train_require_labels() const override
 		{
 			return false;
 		}
@@ -220,7 +220,7 @@ class OnlineLinearMachine : public Machine
 		 *
 		 * @return Whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** get real outputs
 		 *

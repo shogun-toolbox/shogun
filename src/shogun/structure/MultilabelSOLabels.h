@@ -41,7 +41,7 @@ public:
 	SparseMultilabel(SGVector<int32_t> label) : StructuredData(), m_label(label) { }
 
 	/** destructor */
-	~SparseMultilabel() { }
+	~SparseMultilabel() override { }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -62,7 +62,7 @@ public:
 	}
 
 	/** @return name of SGSerializable */
-	virtual const char * get_name() const
+	const char * get_name() const override
 	{
 		return "SparseMultilabel";
 	}
@@ -109,16 +109,16 @@ public:
 	MultilabelSOLabels(std::shared_ptr<MultilabelLabels > multilabel_labels);
 
 	/** destructor */
-	~MultilabelSOLabels();
+	~MultilabelSOLabels() override;
 
 	/** @return name of the SGSerializable */
-	virtual const char * get_name() const
+	const char * get_name() const override
 	{
 		return "MultilabelSOLabels";
 	}
 
 	/** @return number of stored labels */
-	virtual int32_t get_num_labels() const;
+	int32_t get_num_labels() const override;
 
 	/** @return number of classes (per label) */
 	virtual int32_t get_num_classes() const;
@@ -144,14 +144,14 @@ public:
 	 * @param j label index
 	 * @param label sparse label
 	 */
-	virtual bool set_label(int32_t j, std::shared_ptr<StructuredData > label);
+	bool set_label(int32_t j, std::shared_ptr<StructuredData > label) override;
 
 	/** add a new label to the vector of labels.
 	 * This method should be used when inserting labels for the first time.
 	 *
 	 * @param label sparse label to add
 	 */
-	virtual void add_label(std::shared_ptr<StructuredData > label);
+	void add_label(std::shared_ptr<StructuredData > label) override;
 
 	/** get sparse assigment for j-th label
 	 *
@@ -163,13 +163,13 @@ public:
 	 *
 	 * @param j label index
 	 */
-	virtual std::shared_ptr<StructuredData > get_label(int32_t j);
+	std::shared_ptr<StructuredData > get_label(int32_t j) override;
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR
 	 *
 	 * @param context optional message to convey the context
 	 */
-	virtual void ensure_valid(const char * context = NULL);
+	void ensure_valid(const char * context = NULL) override;
 
 	/** Convert sparse labels to dense. The dense vector would be {d_true;
 	 * d_false}^dense_dim. Indices in sparse would be marked "d_true",

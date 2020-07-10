@@ -58,7 +58,7 @@ public:
 	 */
 	NeuralLogisticLayer(int32_t num_neurons);
 
-	virtual ~NeuralLogisticLayer() {}
+	~NeuralLogisticLayer() override {}
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -69,9 +69,9 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(
+	void compute_activations(
 		SGVector<float64_t> parameters,
-		const std::vector<std::shared_ptr<NeuralLayer>>& layers);
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers) override;
 
 	/** Computes
 	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
@@ -86,7 +86,7 @@ public:
 	 * @param parameters Vector of size get_num_parameters(), contains the
 	 * parameters of the layer
 	 */
-	virtual float64_t compute_contraction_term(SGVector<float64_t> parameters);
+	float64_t compute_contraction_term(SGVector<float64_t> parameters) override;
 
 	/** Adds the gradients of
 	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]
@@ -103,8 +103,8 @@ public:
 	 * @param gradients Vector of size get_num_parameters(). Gradients of the
 	 * contraction term will be added to it
 	 */
-	virtual void compute_contraction_term_gradients(
-		SGVector<float64_t> parameters, SGVector<float64_t> gradients);
+	void compute_contraction_term_gradients(
+		SGVector<float64_t> parameters, SGVector<float64_t> gradients) override;
 
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients.
@@ -116,9 +116,9 @@ public:
 	 * being used as an output layer, targets is the desired values for the
 	 * layer's activations, otherwise it's an empty matrix
 	 */
-	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
+	void compute_local_gradients(SGMatrix<float64_t> targets) override;
 
-	virtual const char* get_name() const { return "NeuralLogisticLayer"; }
+	const char* get_name() const override { return "NeuralLogisticLayer"; }
 };
 
 }

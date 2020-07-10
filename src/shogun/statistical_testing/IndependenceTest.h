@@ -66,7 +66,7 @@ public:
 	IndependenceTest();
 
 	/** Destructor */
-	virtual ~IndependenceTest();
+	~IndependenceTest() override;
 
 	/**
 	 * Method that sets the kernel to be used for performing the test for the
@@ -95,17 +95,17 @@ public:
 	 *
 	 * @return test statistic for the given data/parameters/methods
 	 */
-	virtual float64_t compute_statistic()=0;
+	float64_t compute_statistic() override =0;
 
 	/**
 	 * Interface for computing the samples under the null-hypothesis.
 	 *
 	 * @return vector of all statistics
 	 */
-	virtual SGVector<float64_t> sample_null()=0;
+	SGVector<float64_t> sample_null() override =0;
 
 	/** @return The name of the class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 protected:
 	internal::KernelManager& get_kernel_mgr();
 	const internal::KernelManager& get_kernel_mgr() const;

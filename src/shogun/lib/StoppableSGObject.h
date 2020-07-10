@@ -29,7 +29,7 @@ namespace shogun
 		StoppableSGObject();
 
 		/** destructor */
-		virtual ~StoppableSGObject();
+		~StoppableSGObject() override;
 
 #ifndef SWIG
 		/** @return whether the algorithm needs to be stopped */
@@ -71,7 +71,7 @@ namespace shogun
 		 */
 		void set_callback(std::function<bool()> callback);
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "StoppableSGObject";
 		}

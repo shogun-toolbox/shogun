@@ -49,14 +49,14 @@ public:
 	{
 		init();
 	}
-	virtual ~PNormMappingFunction() {}
+	~PNormMappingFunction() override {}
 
 
 	/** returns the name of the class
 	 *
 	 * @return name PNormMappingFunction
 	 */
-	virtual const char* get_name() const { return "PNormMappingFunction"; }
+	const char* get_name() const override { return "PNormMappingFunction"; }
 
 
 	/** Get the degree of the Norm   
@@ -70,7 +70,7 @@ public:
 	 * @return dual variable 
 	 *
 	 */
-	virtual SGVector<float64_t> get_dual_variable(SGVector<float64_t> variable);
+	SGVector<float64_t> get_dual_variable(SGVector<float64_t> variable) override;
 	
 	/** Update primal variable in place given dual variable
 	 *
@@ -78,7 +78,7 @@ public:
 	 * @param dual_variable dual variable are known
 	 *
 	 */
-	virtual void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable);
+	void update_variable(SGVector<float64_t> variable, SGVector<float64_t> dual_variable) override;
 protected:
 	/** P-norm  */
 	float64_t m_p;

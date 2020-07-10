@@ -27,7 +27,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if init was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 	{
 		DenseDistance<float64_t>::init(l,r);
 
@@ -41,20 +41,20 @@ public:
 	 *
 	 * @return feature type DREAL
 	 */
-	virtual EFeatureType get_feature_type() { return F_DREAL; }
+	EFeatureType get_feature_type() override { return F_DREAL; }
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
 	 *
 	 * @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const { return "RealDistance"; }
+	const char* get_name() const override { return "RealDistance"; }
 
 	/** cleanup distance
 	 *
 	 * abstract base method
 	 */
-	virtual void cleanup()=0;
+	void cleanup() override =0;
 
 	/** get distance type we are
 	 *
@@ -62,13 +62,13 @@ public:
 	 *
 	 * @return distance type
 	 */
-	virtual EDistanceType get_distance_type()=0 ;
+	EDistanceType get_distance_type() override =0 ;
 
 protected:
 	/// compute distance function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	virtual float64_t compute(int32_t x, int32_t y)=0;
+	float64_t compute(int32_t x, int32_t y) override =0;
 };
 } // namespace shogun
 #endif

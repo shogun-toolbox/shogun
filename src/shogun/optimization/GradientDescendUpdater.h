@@ -51,13 +51,13 @@ public:
 	GradientDescendUpdater();
 
 	/* Destructor */
-	virtual ~GradientDescendUpdater();
+	~GradientDescendUpdater() override;
 
 	/** returns the name of the class
 	 *
 	 * @return name GradientDescendUpdater
 	 */
-	virtual const char* get_name() const { return "GradientDescendUpdater"; }
+	const char* get_name() const override { return "GradientDescendUpdater"; }
 
 protected:
 	/** Get the negative descend direction given current variable and gradient
@@ -71,8 +71,8 @@ protected:
 	 * 
 	 * @return negative descend direction (that is, the given gradient in the class)
 	 */
-	virtual float64_t get_negative_descend_direction(float64_t variable,
-		float64_t gradient, index_t idx, float64_t learning_rate);
+	float64_t get_negative_descend_direction(float64_t variable,
+		float64_t gradient, index_t idx, float64_t learning_rate) override;
 
 private:
 	/*  Init */

@@ -42,7 +42,7 @@ class Plif: public PlifBase
 		 * @param len len
 		 */
 		Plif(int32_t len=0);
-		virtual ~Plif();
+		~Plif() override;
 
 		/** init penalty struct cache */
 		void init_penalty_struct_cache();
@@ -63,7 +63,7 @@ class Plif: public PlifBase
 		 * @return the penalty
 		 */
 		float64_t lookup_penalty(
-			float64_t p_value, float64_t* svm_values) const;
+			float64_t p_value, float64_t* svm_values) const override;
 
 		/** lookup penalty int32_t
 		 *
@@ -71,7 +71,7 @@ class Plif: public PlifBase
 		 * @param svm_values SVM values
 		 * @return the penalty
 		 */
-		float64_t lookup_penalty(int32_t p_value, float64_t* svm_values) const;
+		float64_t lookup_penalty(int32_t p_value, float64_t* svm_values) const override;
 
 		/** lookup
 		 *
@@ -85,7 +85,7 @@ class Plif: public PlifBase
 		}
 
 		/** penalty clear derivative */
-		void penalty_clear_derivative();
+		void penalty_clear_derivative() override;
 
 		/** penalty add derivative SVM
 		 *
@@ -102,7 +102,7 @@ class Plif: public PlifBase
 		 * @param svm_values SVM values
 		 * @param factor factor weighting the added value
 		 */
-		void penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor);
+		void penalty_add_derivative(float64_t p_value, float64_t* svm_values, float64_t factor) override;
 
 		/** get cum derivative
 		 *
@@ -166,7 +166,7 @@ class Plif: public PlifBase
 		 *
 		 * @return maximum ID
 		 */
-		int32_t get_max_id() const
+		int32_t get_max_id() const override
 		{
 			return get_id();
 		}
@@ -194,7 +194,7 @@ class Plif: public PlifBase
 		 *
 		 * @return if plif uses SVM values
 		 */
-		virtual bool uses_svm_values() const
+		bool uses_svm_values() const override
 		{
 			return (get_use_svm()!=0);
 		}
@@ -335,7 +335,7 @@ class Plif: public PlifBase
 		 *
 		 * @return maximum value
 		 */
-		virtual float64_t get_max_value() const
+		float64_t get_max_value() const override
 		{
 			return max_value;
 		}
@@ -354,7 +354,7 @@ class Plif: public PlifBase
 		 *
 		 * @return minimum value
 		 */
-		virtual float64_t get_min_value() const
+		float64_t get_min_value() const override
 		{
 			return min_value;
 		}
@@ -386,7 +386,7 @@ class Plif: public PlifBase
 		/** get SVM_ids and number of SVMs used
 		 *
 		 */
-		void get_used_svms(int32_t* num_svms, int32_t* svm_ids);
+		void get_used_svms(int32_t* num_svms, int32_t* svm_ids) override;
 
 		/** get plif len
 		 *
@@ -401,7 +401,7 @@ class Plif: public PlifBase
 		 *
 		 * lists some properties of the PLIF
 		 */
-		virtual void list_plif() const
+		void list_plif() const override
 		{
 			io::print("CPlif(min_value={:1.2f}, max_value={:1.2f}, use_svm={})\n", min_value, max_value, use_svm);
 		}
@@ -414,7 +414,7 @@ class Plif: public PlifBase
 		static void delete_penalty_struct(std::vector<std::shared_ptr<Plif>>& PEN, int32_t P);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Plif"; }
+		const char* get_name() const override { return "Plif"; }
 
 	protected:
 		/** len */

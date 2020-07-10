@@ -38,16 +38,16 @@ public:
 	MulticlassOneVsRestStrategy(EProbHeuristicType prob_heuris);
 
 	/** destructor */
-	virtual ~MulticlassOneVsRestStrategy() {}
+	~MulticlassOneVsRestStrategy() override {}
 
 	/** start training */
-	virtual void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels)
+	void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels) override
 	{
 		MulticlassStrategy::train_start(orig_labels, train_labels);
 	}
 
 	/** has more training phase */
-	virtual bool train_has_more()
+	bool train_has_more() override
 	{
 		return m_train_iter < m_num_classes;
 	}
@@ -55,28 +55,28 @@ public:
 	/** prepare for the next training phase.
 	 * @return NULL, since no subset is needed in one-vs-rest strategy
 	 */
-	virtual SGVector<int32_t> train_prepare_next();
+	SGVector<int32_t> train_prepare_next() override;
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
-	virtual int32_t decide_label(SGVector<float64_t> outputs);
+	int32_t decide_label(SGVector<float64_t> outputs) override;
 
 	/** decide the final label.
 	 * @param outputs a vector of output from each machine (in that order)
 	 * @param n_outputs number of outputs
 	 */
-	virtual SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs);
+	SGVector<index_t> decide_label_multiple_output(SGVector<float64_t> outputs, int32_t n_outputs) override;
 
 	/** get number of machines used in this strategy.
 	 */
-	virtual int32_t get_num_machines()
+	int32_t get_num_machines() override
 	{
 		return m_num_classes;
 	}
 
 	/** get name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MulticlassOneVsRestStrategy";
 	};
@@ -84,7 +84,7 @@ public:
 	/** rescale multiclass outputs according to the selected heuristic
 	 * @param outputs a vector of output from each machine (in that order)
 	 */
-	virtual void rescale_outputs(SGVector<float64_t> outputs);
+	void rescale_outputs(SGVector<float64_t> outputs) override;
 
 	/** rescale multiclass outputs according to the selected heuristic
 	 * this function only being called with OVA_SOFTMAX heuristic
@@ -92,8 +92,8 @@ public:
 	 * @param As fitted sigmoid parameters a one for each machine
 	 * @param Bs fitted sigmoid parameters b one for each machine
 	 */
-	virtual void rescale_outputs(SGVector<float64_t> outputs,
-			const SGVector<float64_t> As, const SGVector<float64_t> Bs);
+	void rescale_outputs(SGVector<float64_t> outputs,
+			const SGVector<float64_t> As, const SGVector<float64_t> Bs) override;
 
 protected:
 	/** OVA normalization heuristic

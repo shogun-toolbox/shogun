@@ -77,7 +77,7 @@ public:
 			bool cov_is_factor=false);
 
 	/** Destructor */
-	virtual ~GaussianDistribution();
+	~GaussianDistribution() override;
 
 	/** Samples from the distribution multiple times
 	 *
@@ -87,8 +87,8 @@ public:
 	 * will be modified.
 	 * @return matrix with samples (column vectors)
 	 */
-	virtual SGMatrix<float64_t> sample(int32_t num_samples,
-			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>()) const;
+	SGMatrix<float64_t> sample(int32_t num_samples,
+			SGMatrix<float64_t> pre_samples=SGMatrix<float64_t>()) const override;
 
 	/** Computes the log-pdf for all provided samples. That is
 	 *
@@ -106,10 +106,10 @@ public:
 	 * @param samples samples to compute log-pdf of (column vectors)
 	 * @return vector with log-pdfs of given samples
 	 */
-	virtual SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> samples) const;
+	SGVector<float64_t> log_pdf_multiple(SGMatrix<float64_t> samples) const override;
 
 	/** @return name of the SGSerializable */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "GaussianDistribution";
 	}

@@ -72,7 +72,7 @@ public:
 			float64_t width);
 
 	/** destructor */
-	virtual ~SpectrumMismatchRBFKernel();
+	~SpectrumMismatchRBFKernel() override;
 
 	/** initialize kernel
 	 *
@@ -80,16 +80,16 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/** clean up kernel */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** return what type of kernel we are
 	 *
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type()
+	EKernelType get_kernel_type() override
 	{
 		return K_SPECTRUMMISMATCHRBF;
 	}
@@ -98,7 +98,7 @@ public:
 	 *
 	 * @return name
 	 */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "SpectrumMismatchRBFKernel";
 	}
@@ -195,11 +195,11 @@ protected:
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b
 	 */
-	float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	/** register the parameters
 	 */
-	virtual void register_params();
+	void register_params() override;
 	/** register the alphabet
 	 */
 	void register_alphabet();

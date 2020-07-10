@@ -27,7 +27,7 @@ class PositionalPWM : public Distribution
 		/** default constructor */
 		PositionalPWM();
 
-		virtual ~PositionalPWM();
+		~PositionalPWM() override;
 
 		/** learn distribution
 		 *
@@ -35,20 +35,20 @@ class PositionalPWM : public Distribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** get number of parameters in model
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters();
+		int32_t get_num_model_parameters() override;
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic) if num_param < m_dim returns
 		 * an element from the mean, else return an element from the covariance
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param);
+		float64_t get_log_model_parameter(int32_t num_param) override;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -56,8 +56,8 @@ class PositionalPWM : public Distribution
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+		float64_t get_log_derivative(
+			int32_t num_param, int32_t num_example) override;
 
 		/** compute log likelihood for example
 		 *
@@ -66,7 +66,7 @@ class PositionalPWM : public Distribution
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		float64_t get_log_likelihood_example(int32_t num_example) override;
 
 		/** get log likelihood window
 		 * @param window
@@ -153,7 +153,7 @@ class PositionalPWM : public Distribution
 		void compute_scoring(int32_t max_degree);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "PositionalPWM"; }
+		const char* get_name() const override { return "PositionalPWM"; }
 
 	private:
 		/** Initialize parameters for serialization */

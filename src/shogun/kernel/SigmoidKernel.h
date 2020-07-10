@@ -54,7 +54,7 @@ class SigmoidKernel: public DotKernel
 		SigmoidKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t size,
 			float64_t gamma, float64_t coef0);
 
-		virtual ~SigmoidKernel();
+		~SigmoidKernel() override;
 
 		/** initialize kernel
 		 *
@@ -62,22 +62,22 @@ class SigmoidKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type SIGMOID
 		 */
-		virtual EKernelType get_kernel_type() { return K_SIGMOID; }
+		EKernelType get_kernel_type() override { return K_SIGMOID; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Sigmoid
 		 */
-		virtual const char* get_name() const { return "SigmoidKernel"; }
+		const char* get_name() const override { return "SigmoidKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -88,7 +88,7 @@ class SigmoidKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		float64_t compute(int32_t idx_a, int32_t idx_b) override
 		{
 			return tanh(std::get<float64_t>(m_gamma)*DotKernel::compute(idx_a,idx_b)+coef0);
 		}

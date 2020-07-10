@@ -30,7 +30,7 @@ public:
 	SortWordString();
 
 	/** destructor */
-	virtual ~SortWordString();
+	~SortWordString() override;
 
 	/// initialize preprocessor from file
 	virtual bool load(FILE* f);
@@ -39,16 +39,16 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual uint16_t* apply_to_string(uint16_t* f, int32_t &len);
+	uint16_t* apply_to_string(uint16_t* f, int32_t &len) override;
 
 	/** @return object name */
-	virtual const char* get_name() const { return "SortWordString"; }
+	const char* get_name() const override { return "SortWordString"; }
 
 	/// return a type of preprocessor
-	virtual EPreprocessorType get_type() const { return P_SORTWORDSTRING; }
+	EPreprocessorType get_type() const override { return P_SORTWORDSTRING; }
 
 protected:
-	virtual void apply_to_string_list(std::vector<SGVector<uint16_t>>& string_list);
+	void apply_to_string_list(std::vector<SGVector<uint16_t>>& string_list) override;
 };
 }
 #endif

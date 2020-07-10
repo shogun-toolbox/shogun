@@ -88,11 +88,11 @@ public:
 	 *
 	 * @return name NesterovMomentumCorrection
 	 */
-	virtual const char* get_name() const { return "NesterovMomentumCorrection"; }
+	const char* get_name() const override { return "NesterovMomentumCorrection"; }
 
 
 	/*  Destructor */
-	virtual ~NesterovMomentumCorrection() {}
+	~NesterovMomentumCorrection() override {}
 
 	/** Get corrected descend direction
 	 *
@@ -100,8 +100,8 @@ public:
 	 * @param idx the index of the direction
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	*/
-	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx);
+	DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx) override;
 
 private:
 	/*  Init */

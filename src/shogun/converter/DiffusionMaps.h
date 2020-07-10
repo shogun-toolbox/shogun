@@ -40,12 +40,12 @@ public:
 	DiffusionMaps();
 
 	/** destructor */
-	virtual ~DiffusionMaps();
+	~DiffusionMaps() override;
 
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** embed distance
 	 * @param distance to use for embedding
@@ -74,7 +74,7 @@ public:
 	float64_t get_width() const;
 
 	/** get name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 protected:
 

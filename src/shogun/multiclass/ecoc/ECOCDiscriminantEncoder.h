@@ -37,7 +37,7 @@ public:
     ECOCDiscriminantEncoder();
 
     /** destructor */
-    virtual ~ECOCDiscriminantEncoder();
+    ~ECOCDiscriminantEncoder() override;
 
     /** set features */
     void set_features(const std::shared_ptr<Features >&features);
@@ -55,12 +55,12 @@ public:
     int32_t get_sffs_iterations() const { return m_iterations; }
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCDiscriminantEncoder"; }
+    const char* get_name() const override { return "ECOCDiscriminantEncoder"; }
 
     /** init codebook.
      * @param num_classes number of classes in this problem
      */
-    virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
+    SGMatrix<int32_t> create_codebook(int32_t num_classes) override;
 
 protected:
 	/** init parameters */

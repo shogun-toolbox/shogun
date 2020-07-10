@@ -50,7 +50,7 @@ namespace shogun
 class ProximalPenalty: public Penalty
 {
 public:
-	virtual ~ProximalPenalty() {}; 
+	~ProximalPenalty() override {}; 
 
 	/** Do proximal projection/operation in place
 	 * @param variable the raw variable

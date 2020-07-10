@@ -33,7 +33,7 @@ class SumOne : public DensePreprocessor<float64_t>
 		SumOne();
 
 		/** destructor */
-		virtual ~SumOne();
+		~SumOne() override;
 
 		/// initialize preprocessor from file
 		virtual bool load(FILE* f);
@@ -42,16 +42,16 @@ class SumOne : public DensePreprocessor<float64_t>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SumOne"; }
+		const char* get_name() const override { return "SumOne"; }
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type() const { return P_SUMONE; }
+		EPreprocessorType get_type() const override { return P_SUMONE; }
 
 	protected:
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 };
 }
 #endif

@@ -66,7 +66,7 @@ class DynamicObjectArray : public SGObject
 			init();
 		}
 
-		virtual ~DynamicObjectArray() { }
+		~DynamicObjectArray() override = default;
 
 		/** get array size (including granularity buffer)
 		 *
@@ -324,8 +324,10 @@ class DynamicObjectArray : public SGObject
 #endif // SWIG
 
 		/** @return object name */
-		virtual const char* get_name() const
-		{ return "DynamicObjectArray"; }
+		const char* get_name() const override
+		{ 
+			return "DynamicObjectArray"; 
+		}
 
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -335,7 +337,7 @@ class DynamicObjectArray : public SGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_pre() noexcept(false)
+		void save_serializable_pre() override
 		{
 			SGObject::save_serializable_pre();
 			m_array.shrink_to_fit();

@@ -111,7 +111,7 @@ class Alphabet : public SGObject
 		 * @param alpha alphabet to use
 		 */
 		Alphabet(const std::shared_ptr<Alphabet>& alpha);
-		virtual ~Alphabet();
+		~Alphabet() override;
 
 		/** set alphabet and initialize mapping table (for remap)
 		 *
@@ -254,7 +254,7 @@ class Alphabet : public SGObject
 
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Alphabet"; }
+		const char* get_name() const override { return "Alphabet"; }
 
 		/** translate from single order
 		 *
@@ -302,7 +302,7 @@ class Alphabet : public SGObject
 		template <class ST>
 		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const;
+		std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override;
 
 	private:
 		/** Do basic initialisations like default settings
@@ -343,7 +343,7 @@ class Alphabet : public SGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() noexcept(false);
+		void load_serializable_post() override;
 
 	protected:
 		/** alphabet */

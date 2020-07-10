@@ -55,13 +55,13 @@ public:
 	ElasticNetPenalty()
 		:SparsePenalty() {init();}
 
-	virtual ~ElasticNetPenalty();
+	~ElasticNetPenalty() override;
 
 	/** returns the name of the class
 	 *
 	 * @return name ElasticNetPenalty
 	 */
-	virtual const char* get_name() const { return "ElasticNetPenalty"; }
+	const char* get_name() const override { return "ElasticNetPenalty"; }
 
 	/** set l1_ratio
 	 *
@@ -75,7 +75,7 @@ public:
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
-	virtual float64_t get_penalty(float64_t variable);
+	float64_t get_penalty(float64_t variable) override;
 
 	/** Return the gradient of the penalty wrt a target variable
 	 *
@@ -83,8 +83,8 @@ public:
 	 * @param gradient_of_variable unregularized/unpenalized gradient of the variable
 	 * @return the gradient of the penalty wrt the variable
 	 */
-	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable);
+	float64_t get_penalty_gradient(float64_t variable,
+		float64_t gradient_of_variable) override;
 
 	/** Set the rounding epsilon for L1 penalty
 	 *
@@ -100,15 +100,15 @@ public:
 	 * @param variable the raw variable
 	 * @param proximal_weight weight of the penalty
 	 */
-	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
-		float64_t proximal_weight);
+	void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight) override;
 
 	/** Get the sparse variable
 	 * @param variable the raw variable
 	 * @param penalty_weight weight of the penalty
 	 * @return sparse value of the variable
 	 */
-	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight);
+	float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight) override;
 
 protected:
 

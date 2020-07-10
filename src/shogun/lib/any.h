@@ -839,7 +839,7 @@ namespace shogun
 		/** Returns type-name as string.
 		 * @return name of type class
 		 */
-		virtual std::string type() const override
+		std::string type() const override
 		{
 			return demangled_type<T>();
 		}
@@ -847,7 +847,7 @@ namespace shogun
 		/** Returns type info
 		 * @return type info of value's type
 		 */
-		virtual const std::type_info& type_info() const override
+		const std::type_info& type_info() const override
 		{
 			return typeid(T);
 		}
@@ -856,24 +856,24 @@ namespace shogun
 		 * @param ti type information
 		 * @return true if type matches
 		 */
-		virtual bool matches_type(const std::type_info& ti) const override
+		bool matches_type(const std::type_info& ti) const override
 		{
 			return typeid(T) == ti;
 		}
 
-		virtual bool is_functional() const override
+		bool is_functional() const override
 		{
 			return traits::is_functional<T>::value;
 		}
 
-		virtual bool is_void() const override
+		bool is_void() const override
 		{
 			if constexpr (traits::is_functional<T>::value)
 				return std::is_same_v<typename T::result_type, void>;
 			return std::is_same_v<T, void>;
 		}
 
-		virtual bool is_nothrow() const override
+		bool is_nothrow() const override
 		{
 			if constexpr (traits::is_functional<T>::value)
 				return std::is_nothrow_invocable_v<T>;
@@ -892,12 +892,12 @@ namespace shogun
 		 * @param storage pointer to a pointer to storage
 		 * @param v pointer to value
 		 */
-		virtual void set(void** storage, const void* v) const override
+		void set(void** storage, const void* v) const override
 		{
 			*(storage) = new T(value_of(typed_pointer<T>(v)));
 		}
 
-		virtual bool should_inherit_storage() const override
+		bool should_inherit_storage() const override
 		{
 			return false;
 		}
@@ -906,7 +906,7 @@ namespace shogun
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
 		 */
-		virtual void clone(void** storage, const void* from) const override
+		void clone(void** storage, const void* from) const override
 		{
 			any_detail::clone(storage, value_of(typed_pointer<T>(from)));
 		}
@@ -914,7 +914,7 @@ namespace shogun
 		/** Clears storage.
 		 * @param storage pointer to a pointer to storage
 		 */
-		virtual void clear(void** storage) const override
+		void clear(void** storage) const override
 		{
 			delete typed_pointer<T>(*storage);
 		}
@@ -923,7 +923,7 @@ namespace shogun
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(const BaseAnyPolicy* other) const override;
+		bool matches_policy(const BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -944,12 +944,12 @@ namespace shogun
 		 * @param storage pointer to a pointer to storage
 		 * @param visitor abstract visitor to use
 		 */
-		virtual void visit(void* storage, AnyVisitor* visitor) const override
+		void visit(void* storage, AnyVisitor* visitor) const override
 		{
 			visitor->on(static_cast<T*>(storage));
 		}
 
-		virtual size_t hash(void* storage) const override
+		size_t hash(void* storage) const override
 		{
 			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}
@@ -963,12 +963,12 @@ namespace shogun
 		 * @param storage pointer to a pointer to storage
 		 * @param v pointer to value
 		 */
-		virtual void set(void** storage, const void* v) const override
+		void set(void** storage, const void* v) const override
 		{
 			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
 		}
 
-		virtual bool should_inherit_storage() const override
+		bool should_inherit_storage() const override
 		{
 			return true;
 		}
@@ -977,7 +977,7 @@ namespace shogun
 		 * @param storage pointer to a pointer to storage
 		 * @param from pointer to value to clone
 		 */
-		virtual void clone(void** storage, const void* from) const override
+		void clone(void** storage, const void* from) const override
 		{
 			any_detail::clone(storage, value_of(typed_pointer<T>(from)));
 		}
@@ -985,7 +985,7 @@ namespace shogun
 		/** Clears storage.
 		 * @param storage pointer to a pointer to storage
 		 */
-		virtual void clear(void** storage) const override
+		void clear(void** storage) const override
 		{
 		}
 
@@ -993,7 +993,7 @@ namespace shogun
 		 * @param other other policy
 		 * @return true if policies do match
 		 */
-		virtual bool matches_policy(const BaseAnyPolicy* other) const override;
+		bool matches_policy(const BaseAnyPolicy* other) const override;
 
 		/** Compares two storages.
 		 * @param storage pointer to a pointer to storage
@@ -1014,12 +1014,12 @@ namespace shogun
 		 * @param storage pointer to storage
 		 * @param visitor abstract visitor to use
 		 */
-		virtual void visit(void* storage, AnyVisitor* visitor) const override
+		void visit(void* storage, AnyVisitor* visitor) const override
 		{
 			visitor->on(static_cast<T*>(storage));
 		}
 
-		virtual size_t hash(void* storage) const override
+		size_t hash(void* storage) const override
 		{
 			return any_detail::hash(value_of(typed_pointer<T>(storage)));
 		}

@@ -34,7 +34,7 @@ class FastICA: public RandomMixin<ICAConverter>
 		FastICA();
 
 		/** destructor */
-		virtual ~FastICA();
+		~FastICA() override;
 
 		/** setter for whiten flag
 		 * whether to whiten the data or not
@@ -48,14 +48,14 @@ class FastICA: public RandomMixin<ICAConverter>
 		bool get_whiten() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FastICA"; };
+		const char* get_name() const override { return "FastICA"; };
 
 	protected:
 
 		/** init */
 		void init();
 
-		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
+		void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) override;
 
 	private:
 

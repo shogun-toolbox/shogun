@@ -79,19 +79,19 @@ public:
 	ContingencyTableEvaluation(EContingencyTableMeasureType type);
 
 	/** destructor */
-	virtual ~ContingencyTableEvaluation() {};
+	~ContingencyTableEvaluation() override {};
 
 	/** evaluate labels
 	 * @param predicted labels
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
-	virtual EEvaluationDirection get_evaluation_direction() const;
+	EEvaluationDirection get_evaluation_direction() const override;
 
 	/** get name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "ContingencyTableEvaluation";
 	}
@@ -286,9 +286,9 @@ public:
 	/* constructor */
 	AccuracyMeasure() : ContingencyTableEvaluation(ACCURACY) {};
 	/* virtual destructor */
-	virtual ~AccuracyMeasure() {};
+	~AccuracyMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "AccuracyMeasure"; };
+	const char* get_name() const override { return "AccuracyMeasure"; };
 };
 
 /** @brief class ErrorRateMeasure
@@ -306,9 +306,9 @@ public:
 	/* constructor */
 	ErrorRateMeasure() : ContingencyTableEvaluation(ERROR_RATE) {};
 	/* virtual destructor */
-	virtual ~ErrorRateMeasure() {};
+	~ErrorRateMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "ErrorRateMeasure"; };
+	const char* get_name() const override { return "ErrorRateMeasure"; };
 };
 
 /** @brief class BALMeasure
@@ -326,9 +326,9 @@ public:
 	/* constructor */
 	BALMeasure() : ContingencyTableEvaluation(BAL) {};
 	/* virtual destructor */
-	virtual ~BALMeasure() {};
+	~BALMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "BALMeasure"; };
+	const char* get_name() const override { return "BALMeasure"; };
 };
 
 /** @brief class WRACCMeasure
@@ -346,9 +346,9 @@ public:
 	/* constructor */
 	WRACCMeasure() : ContingencyTableEvaluation(WRACC) {};
 	/* virtual destructor */
-	virtual ~WRACCMeasure() {};
+	~WRACCMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "WRACCMeasure"; };
+	const char* get_name() const override { return "WRACCMeasure"; };
 };
 
 /** @brief class F1Measure
@@ -366,9 +366,9 @@ public:
 	/* constructor */
 	F1Measure() : ContingencyTableEvaluation(F1) {};
 	/* virtual destructor */
-	virtual ~F1Measure() {};
+	~F1Measure() override {};
 	/* name */
-	virtual const char* get_name() const { return "F1Measure"; };
+	const char* get_name() const override { return "F1Measure"; };
 };
 
 /** @brief class CrossCorrelationMeasure
@@ -386,9 +386,9 @@ public:
 	/* constructor */
 	CrossCorrelationMeasure() : ContingencyTableEvaluation(CROSS_CORRELATION) {};
 	/* virtual destructor */
-	virtual ~CrossCorrelationMeasure() {};
+	~CrossCorrelationMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "CrossCorrelationMeasure"; };
+	const char* get_name() const override { return "CrossCorrelationMeasure"; };
 };
 
 /** @brief class RecallMeasure
@@ -406,9 +406,9 @@ public:
 	/* constructor */
 	RecallMeasure() : ContingencyTableEvaluation(RECALL) {};
 	/* virtual destructor */
-	virtual ~RecallMeasure() {};
+	~RecallMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "RecallMeasure"; };
+	const char* get_name() const override { return "RecallMeasure"; };
 };
 
 /** @brief class PrecisionMeasure
@@ -426,9 +426,9 @@ public:
 	/* constructor */
 	PrecisionMeasure() : ContingencyTableEvaluation(PRECISION) {};
 	/* virtual destructor */
-	virtual ~PrecisionMeasure() {};
+	~PrecisionMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "PrecisionMeasure"; };
+	const char* get_name() const override { return "PrecisionMeasure"; };
 };
 
 /** @brief class SpecificityMeasure
@@ -446,9 +446,9 @@ public:
 	/* constructor */
 	SpecificityMeasure() : ContingencyTableEvaluation(SPECIFICITY) {};
 	/* virtual destructor */
-	virtual ~SpecificityMeasure() {};
+	~SpecificityMeasure() override {};
 	/* name */
-	virtual const char* get_name() const { return "SpecificityMeasure"; };
+	const char* get_name() const override { return "SpecificityMeasure"; };
 };
 }
 #endif /* CONTINGENCYTABLEEVALUATION_H_ */

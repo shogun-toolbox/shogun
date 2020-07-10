@@ -49,7 +49,7 @@ class DistanceKernel: public Kernel
 		DistanceKernel(
 			std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t width, std::shared_ptr<Distance> dist);
 
-		virtual ~DistanceKernel();
+		~DistanceKernel() override;
 
 		/** initialize kernel
 		 *
@@ -57,35 +57,35 @@ class DistanceKernel: public Kernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** register the parameters (serialization support)
 		 *
 		*/
-		virtual void register_params();
+		void register_params() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type DISTANCE
 		 */
-		virtual EKernelType get_kernel_type() { return K_DISTANCE; }
+		EKernelType get_kernel_type() override { return K_DISTANCE; }
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type of distance used
 		 */
-		virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+		EFeatureType get_feature_type() override { return distance->get_feature_type(); }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class of distance used
 		 */
-		virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+		EFeatureClass get_feature_class() override { return distance->get_feature_class(); }
 
 		/** return the kernel's name
 		 *
 		 * @return name Distance
 		 */
-		virtual const char* get_name() const { return "DistanceKernel"; }
+		const char* get_name() const override { return "DistanceKernel"; }
 
 		/** set the kernel's width
 		 *
@@ -115,7 +115,7 @@ class DistanceKernel: public Kernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 		/** distance */
 		std::shared_ptr<Distance> distance;

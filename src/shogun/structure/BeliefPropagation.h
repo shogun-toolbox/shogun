@@ -76,12 +76,12 @@ public:
 	BeliefPropagation();
 	BeliefPropagation(std::shared_ptr<FactorGraph> fg);
 
-	virtual ~BeliefPropagation();
+	~BeliefPropagation() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "BeliefPropagation"; }
+	const char* get_name() const override { return "BeliefPropagation"; }
 
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	float64_t inference(SGVector<int32_t> assignment) override;
 
 protected:
 	float64_t m_map_energy;
@@ -105,12 +105,12 @@ public:
 	TreeMaxProduct();
 	TreeMaxProduct(std::shared_ptr<FactorGraph> fg);
 
-	virtual ~TreeMaxProduct();
+	~TreeMaxProduct() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "TreeMaxProduct"; }
+	const char* get_name() const override { return "TreeMaxProduct"; }
 
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	float64_t inference(SGVector<int32_t> assignment) override;
 
 protected:
 	void bottom_up_pass();

@@ -49,7 +49,7 @@ public:
 
 	/** Destructor
 	 */
-	virtual ~NearestCentroid();
+	~NearestCentroid() override;
 
 	/** Set shrinking constant
 	 *
@@ -79,7 +79,7 @@ public:
 	 *
 	 * @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const { return "NearestCentroid"; }
+	const char* get_name() const override { return "NearestCentroid"; }
 
 protected:
 	/** train Nearest Centroid classifier
@@ -90,7 +90,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	/** Stores feature data of underlying model.
 	 *

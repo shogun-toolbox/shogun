@@ -169,7 +169,7 @@ template<class T> class SGVector : public SGReferencedData
 		void set(SGVector<T> orig);
 
 		/** Empty destructor */
-		virtual ~SGVector();
+		~SGVector() override;
 
 		/** Size */
 		inline int32_t size() const { return vlen; }
@@ -577,13 +577,13 @@ template<class T> class SGVector : public SGReferencedData
 #endif // #ifndef SWIG // SWIG should skip this part
 	protected:
 		/** needs to be overridden to copy data */
-		virtual void copy_data(const SGReferencedData &orig);
+		void copy_data(const SGReferencedData &orig) override;
 
 		/** needs to be overridden to initialize empty data */
-		virtual void init_data();
+		void init_data() override;
 
 		/** needs to be overridden to free data */
-		virtual void free_data();
+		void free_data() override;
 
 	private:
 #ifdef HAVE_VIENNACL

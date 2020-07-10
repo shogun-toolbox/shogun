@@ -64,7 +64,12 @@ class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix",
         "MedianHeuristic", "WeightedMaxMeasure", "WeightedMaxTestPower",
         "Seedable", "ShogunEnv", "ShapeVisitor", "FeatureImportanceTree",
         "ParameterPutInterface", "ParameterGetterInterface",
-        "GaussianWidthAutoInit"]
+        "GaussianWidthAutoInit", "Converter", "EmbeddingConverter",
+        "AttributeFeatures", "DotKernel", "ShiftInvariantKernel", "DenseLabels",
+        "NumericalVGLikelihood", "SingleFITCInference", "VariationalGaussianLikelihood",
+        "RationalApproximation", "FirstOrderStochasticMinimizer", "IndependenceTest",
+        "TwoDistributionTest", "TwoSampleTest", "RealDistance", "BinaryClassEvaluation",
+        "MomentumCorrection", "OneDistributionTest", "DependenceMaximization"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
 SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"

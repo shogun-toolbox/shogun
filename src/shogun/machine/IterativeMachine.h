@@ -45,7 +45,7 @@ namespace shogun
 			SG_ADD(
 			    &m_continue_features, "continue_features", "Continue Features");
 		}
-		virtual ~IterativeMachine()
+		~IterativeMachine() override
 		{
 
 		}
@@ -56,7 +56,7 @@ namespace shogun
 			return m_complete;
 		}
 
-		virtual bool continue_train()
+		bool continue_train() override
 		{
 			this->reset_computation_variables();
 			//this->put("features", m_continue_features);
@@ -92,7 +92,7 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL)
+		bool train_machine(std::shared_ptr<Features> data = NULL) override
 		{
 			if (data)
 			{

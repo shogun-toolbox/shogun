@@ -45,13 +45,13 @@ class SGDQN : public LinearMachine
 			float64_t C, std::shared_ptr<DotFeatures> traindat,
 			std::shared_ptr<Labels> trainlab);
 
-		virtual ~SGDQN();
+		~SGDQN() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type SVMSGDQN
 		 */
-		virtual EMachineType get_classifier_type() { return CT_SGDQN; }
+		EMachineType get_classifier_type() override { return CT_SGDQN; }
 
 		/** train classifier
 		 *
@@ -61,7 +61,7 @@ class SGDQN : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** set C
 		 *
@@ -114,7 +114,7 @@ class SGDQN : public LinearMachine
 		inline std::shared_ptr<LossFunction> get_loss_function() {  return loss; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SGDQN"; }
+		const char* get_name() const override { return "SGDQN"; }
 
 	protected:
 		/** calibrate */

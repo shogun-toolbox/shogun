@@ -50,7 +50,7 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~SqrtDiagKernelNormalizer() = default;
+		~SqrtDiagKernelNormalizer() override = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
@@ -84,8 +84,8 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			float64_t sqrt_both=sqrtdiag_lhs[idx_lhs]*sqrtdiag_rhs[idx_rhs];
 			return value/sqrt_both;
@@ -95,7 +95,7 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+		float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 		{
 			return value/sqrtdiag_lhs[idx_lhs];
 		}
@@ -104,13 +104,13 @@ class SqrtDiagKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+		float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 		{
 			return value/sqrtdiag_rhs[idx_rhs];
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SqrtDiagKernelNormalizer"; }
+		const char* get_name() const override { return "SqrtDiagKernelNormalizer"; }
 
     protected:
 		/**

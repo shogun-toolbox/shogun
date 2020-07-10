@@ -29,7 +29,7 @@ namespace shogun
 		ICAConverter();
 
 		/** destructor */
-		virtual ~ICAConverter();
+		~ICAConverter() override;
 
 		/** Fit the ICA converter to features
 		 * Subclasses should implement this method to calculate the mixing
@@ -37,7 +37,7 @@ namespace shogun
 		 * @param features the training features, should be an instance of
 		 * DenseFeatures<float64_t>
 		 */
-		virtual void fit(std::shared_ptr<Features> features);
+		void fit(std::shared_ptr<Features> features) override;
 
 		/** Apply the ICA converter to features by multiplying the feature
 		 * matrix by the unmixing matirx.
@@ -46,7 +46,7 @@ namespace shogun
 		 * @param inplace transform in place
 		 * @return the result feature object after applying the ICA converter
 		 */
-		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		/** Inverse apply the ICA converter to features by multiplying the
 		 * feature matrix by the mixing matirx.
@@ -56,8 +56,8 @@ namespace shogun
 		 * @return the result feature object after inverse applying the ICA
 		 * converter
 		 */
-		virtual std::shared_ptr<Features>
-		inverse_transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features>
+		inverse_transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		/** setter for mixing matrix, if the mixing matrix is set it will be
 		 * used as an initial guess if supported by the algorithm
@@ -92,7 +92,7 @@ namespace shogun
 		float64_t get_tol() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "ICAConverter"; };
+		const char* get_name() const override { return "ICAConverter"; };
 
 	protected:
 		/** init */

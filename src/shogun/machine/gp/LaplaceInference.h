@@ -65,19 +65,19 @@ public:
 	LaplaceInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~LaplaceInference();
+	~LaplaceInference() override;
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type Laplace
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_LAPLACE; }
+	EInferenceType get_inference_type() const override { return INF_LAPLACE; }
 
 	/** returns the name of the inference method
 	 *
 	 * @return name Laplace
 	 */
-	virtual const char* get_name() const { return "LaplaceInference"; }
+	const char* get_name() const override { return "LaplaceInference"; }
 
 	/** get alpha vector
 	 *
@@ -92,7 +92,7 @@ public:
 	 * and \f$meanf\f$ is the mean prior fomr MeanFunction
 	 *
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** get Cholesky decomposition matrix
 	 *
@@ -116,7 +116,7 @@ public:
          * where C is the number of classes and C should be greater than 1.
 	 *
 	 */
-	virtual SGMatrix<float64_t> get_cholesky();
+	SGMatrix<float64_t> get_cholesky() override;
 
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
 	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
@@ -128,10 +128,10 @@ public:
 	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_covariance();
+	SGMatrix<float64_t> get_posterior_covariance() override;
 
 	/** update all matrices except gradients*/
-	virtual void update();
+	void update() override;
 
 private:
 	/** init */
@@ -139,7 +139,7 @@ private:
 
 protected:
 	/** update gradients */
-	virtual void compute_gradient();
+	void compute_gradient() override;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov()=0;

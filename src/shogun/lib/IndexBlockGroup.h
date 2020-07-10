@@ -30,7 +30,7 @@ public:
 	IndexBlockGroup();
 
 	/** destructor */
-	virtual ~IndexBlockGroup();
+	~IndexBlockGroup() override;
 
 	/** add IndexBlock to the group
 	 * @param block IndexBlock to add
@@ -47,10 +47,10 @@ public:
 	 */
 	SGVector<index_t> get_SLEP_ind();
 
-	virtual EIndexBlockRelationType get_relation_type() const { return GROUP; }
+	EIndexBlockRelationType get_relation_type() const override { return GROUP; }
 
 	/** get name */
-	const char* get_name() const { return "IndexBlockGroup"; };
+	const char* get_name() const override { return "IndexBlockGroup"; };
 
 protected:
 

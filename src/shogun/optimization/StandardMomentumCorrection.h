@@ -72,10 +72,10 @@ public:
 	 *
 	 * @return name StandardMomentumCorrection
 	 */
-	virtual const char* get_name() const { return "StandardMomentumCorrection"; }
+	const char* get_name() const override { return "StandardMomentumCorrection"; }
 
 	/*  Destructor */
-	virtual ~StandardMomentumCorrection() {}
+	~StandardMomentumCorrection() override {}
 
 	/** Get corrected descend direction
 	 *
@@ -83,8 +83,8 @@ public:
 	 * @param idx the index of the direction
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	*/
-	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx);
+	DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx) override;
 private:
 	/*  Init */
 	void init();

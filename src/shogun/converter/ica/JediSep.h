@@ -36,7 +36,7 @@ class JediSep: public ICAConverter
 		JediSep();
 
 		/** destructor */
-		virtual ~JediSep();
+		~JediSep() override;
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -54,14 +54,14 @@ class JediSep: public ICAConverter
 		SGNDArray<float64_t> get_covs() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "JediSep"; };
+		const char* get_name() const override { return "JediSep"; };
 
 	protected:
 
 		/** init */
 		void init();
 
-		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
+		void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) override;
 
 	private:
 

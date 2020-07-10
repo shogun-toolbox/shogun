@@ -71,7 +71,7 @@ class FirstOrderSAGCostFunction
 	: public FirstOrderStochasticCostFunction
 {
 public:
-	virtual ~FirstOrderSAGCostFunction() {};
+	~FirstOrderSAGCostFunction() override {};
 
 	/** Get the sample size 
 	 *
@@ -110,7 +110,7 @@ public:
 	 *
 	 * @return sample gradient of target variables
 	 */
-	virtual SGVector<float64_t> get_gradient()=0;
+	SGVector<float64_t> get_gradient() override =0;
 
 	/** Get the cost given current target variables 
 	 *
@@ -118,7 +118,7 @@ public:
 	 *
 	 * @return cost
 	 */
-	virtual float64_t get_cost()=0;
+	float64_t get_cost() override =0;
 };
 
 }

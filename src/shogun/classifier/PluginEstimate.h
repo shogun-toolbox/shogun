@@ -42,14 +42,14 @@ class PluginEstimate: public Machine
 		 * @param neg_pseudo pseudo for negative model
 		 */
 		PluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
-		virtual ~PluginEstimate();
+		~PluginEstimate() override;
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 		/** set features
 		 *
@@ -69,7 +69,7 @@ class PluginEstimate: public Machine
 		virtual std::shared_ptr<StringFeatures<uint16_t>> get_features() {  return features; }
 
 		/// classify the test feature vector indexed by vec_idx
-		float64_t apply_one(int32_t vec_idx);
+		float64_t apply_one(int32_t vec_idx) override;
 
 		/** obsolete posterior log odds
 		 *
@@ -195,7 +195,7 @@ class PluginEstimate: public Machine
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "PluginEstimate"; }
+		const char* get_name() const override { return "PluginEstimate"; }
 
 	protected:
 		/** train plugin estimate classifier
@@ -206,7 +206,7 @@ class PluginEstimate: public Machine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	protected:
 		/** pseudo count for positive class */

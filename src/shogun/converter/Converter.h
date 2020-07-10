@@ -27,12 +27,10 @@ public:
 	Converter() : Transformer(){};
 
 	/** destructor */
-	virtual ~Converter() {};
+	~Converter() override {};
 
 	/** get name */
-	virtual const char* get_name() const { return "Converter"; }
-
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) = 0;
+	const char* get_name() const override { return "Converter"; }
 };
 }
 #endif /* CONVERTER_H_ */

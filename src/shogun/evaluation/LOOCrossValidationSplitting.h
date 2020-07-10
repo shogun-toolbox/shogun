@@ -29,7 +29,7 @@ public:
 	LOOCrossValidationSplitting(const std::shared_ptr<Labels>& labels);
 
 	/** @return name of the SGSerializable */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "LOOCrossValidationSplitting";
 	}

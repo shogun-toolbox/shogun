@@ -84,13 +84,13 @@ public:
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
 			std::shared_ptr<Features> inducing_features);
 
-	virtual ~SingleFITCInference();
+	~SingleFITCInference() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name SingleFITCInference
 	 */
-	virtual const char* get_name() const { return "SingleFITCInference"; }
+	const char* get_name() const override { return "SingleFITCInference"; }
 
 protected:
 
@@ -107,8 +107,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual float64_t get_derivative_related_cov(SGVector<float64_t> ddiagKi,
-		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui);
+	float64_t get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui) override;
 
 	/** compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt cov-like hyperparameter \f$\theta\f$
@@ -152,8 +152,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-		Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inducing_noise(
+		Parameters::const_reference param) override;
 
 	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt the diagonal part of cov-like hyperparameter \f$\theta\f$
@@ -183,15 +183,15 @@ protected:
 	SGMatrix<float64_t> BdK, Parameters::const_reference param);
 
 	/** update alpha vector */
-	virtual void update_alpha()=0;
+	void update_alpha() override =0;
 
 	/** update cholesky matrix */
-	virtual void update_chol()=0;
+	void update_chol() override =0;
 
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv()=0;
+	void update_deriv() override =0;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -200,8 +200,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override =0;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -210,8 +210,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt inducing features (input)
 	 * Note that in order to call this method, kernel must support FITC inference,
@@ -222,7 +222,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param) override;
 
 	/** Note that alpha is NOT post.alpha
 	 * alpha and post.alpha are defined in infFITC.m and infFITC_Laplace.m

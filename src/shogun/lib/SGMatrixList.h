@@ -33,7 +33,7 @@ template<class T> class SGMatrixList : public SGReferencedData
 		SGMatrixList(SGMatrixList const & orig);
 
 		/** destructor */
-		virtual ~SGMatrixList();
+		~SGMatrixList() override;
 
 		/** get a matrix of the list
 		 *
@@ -75,13 +75,13 @@ template<class T> class SGMatrixList : public SGReferencedData
 
 	protected:
 		/** copy data */
-		virtual void copy_data(const SGReferencedData &orig);
+		void copy_data(const SGReferencedData &orig) override;
 
 		/** initialize empty data */
-		virtual void init_data();
+		void init_data() override;
 
 		/** free data */
-		virtual void free_data();
+		void free_data() override;
 
 	public:
 		/** matrix list */

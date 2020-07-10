@@ -36,13 +36,13 @@ class GMNPSVM : public MulticlassSVM
 		GMNPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~GMNPSVM();
+		~GMNPSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type GMNPSVM
 		 */
-		virtual EMachineType get_classifier_type() { return CT_GMNPSVM; }
+		EMachineType get_classifier_type() override { return CT_GMNPSVM; }
 
 		/** required for MKLMulticlass constraint computation
 		 *
@@ -56,7 +56,7 @@ class GMNPSVM : public MulticlassSVM
 		float64_t* get_basealphas_ptr(index_t* y, index_t* x);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GMNPSVM"; }
+		const char* get_name() const override { return "GMNPSVM"; }
 
 	protected:
 		/** train SVM
@@ -67,7 +67,7 @@ class GMNPSVM : public MulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	protected:
 		/** required for MKLMulticlass

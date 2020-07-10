@@ -83,21 +83,21 @@ public:
 	MultiLaplaceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~MultiLaplaceInferenceMethod();
+	~MultiLaplaceInferenceMethod() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name MultiLaplace
 	 *
 	 */
-	virtual const char* get_name() const { return "MultiLaplaceInferenceMethod"; }
+	const char* get_name() const override { return "MultiLaplaceInferenceMethod"; }
 
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type Laplace
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_LAPLACE_MULTIPLE; }
+	EInferenceType get_inference_type() const override { return INF_LAPLACE_MULTIPLE; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -117,20 +117,20 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
 	 * \f$\theta\f$ represent hyperparameters.
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood();
+	float64_t get_negative_log_marginal_likelihood() override;
 
 	/** get diagonal vector
 	 * where the vector, \f$\pi\f$, defined in the algorithm 3.3 of the GPML textbook
 	 *
 	 * @return the vector used for inference
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 	/**
 	 * @return whether combination of Laplace approximation inference method and
 	 * given likelihood function supports multi classification
 	 */
-	virtual bool supports_multiclass() const
+	bool supports_multiclass() const override
 	{
 		check_members();
 		return m_model->supports_multiclass();
@@ -148,7 +148,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_mean();
+	SGVector<float64_t> get_posterior_mean() override;
 
 	/** get tolerance for newton iterations
 	 *
@@ -201,21 +201,21 @@ public:
 protected:
 
 	/** check if members of object are valid for inference */
-	virtual void check_members() const;
+	void check_members() const override;
 
 	/** update alpha matrix */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** update cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
+	void update_approx_cov() override;
 
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class
@@ -224,8 +224,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -234,8 +234,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -244,8 +244,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -254,8 +254,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override;
 private:
 
 	void init();

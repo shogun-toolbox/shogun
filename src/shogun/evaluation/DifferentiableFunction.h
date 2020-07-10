@@ -24,7 +24,7 @@ public:
 	/** default constructor */
 	DifferentiableFunction(): SGObject() {}
 
-	virtual ~DifferentiableFunction() {}
+	~DifferentiableFunction() override {}
 
 	/** get the gradient
 	 *

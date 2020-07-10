@@ -104,7 +104,7 @@ public:
 	QuadraticTimeMMD();
 
 	/** Destructor */
-	virtual ~QuadraticTimeMMD();
+	~QuadraticTimeMMD() override;
 
 	/**
 	 * Method that initializes/replaces samples from p. It will invalidate
@@ -114,7 +114,7 @@ public:
 	 *
 	 * @param samples_from_p Samples from p.
 	 */
-	virtual void set_p(std::shared_ptr<Features> samples_from_p);
+	void set_p(std::shared_ptr<Features> samples_from_p) override;
 
 	/**
 	 * Method that initializes/replaces samples from q. It will invalidate
@@ -124,7 +124,7 @@ public:
 	 *
 	 * @param samples_from_p Samples from q.
 	 */
-	virtual void set_q(std::shared_ptr<Features> samples_from_q);
+	void set_q(std::shared_ptr<Features> samples_from_q) override;
 
 	/**
 	 * Method that creates a merged copy of Features instance from both
@@ -147,7 +147,7 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	virtual void set_kernel(std::shared_ptr<Kernel> kernel);
+	void set_kernel(std::shared_ptr<Kernel> kernel) override;
 
 	/**
 	 * Method that learns/selects the kernel from a set of provided kernel
@@ -157,7 +157,7 @@ public:
 	 *
 	 * Please make sure to set the train-test mode on before using this method.
 	 */
-	virtual void select_kernel();
+	void select_kernel() override;
 
 	/**
 	 * Method that computes the estimator of MMD^2 (biased/unbiased/incomplete)
@@ -165,7 +165,7 @@ public:
 	 *
 	 * @return A normalized value of the MMD^2 estimator.
 	 */
-	virtual float64_t compute_statistic();
+	float64_t compute_statistic() override;
 
 	/**
 	 * Method that returns a number of null-samples, based on the null approximation
@@ -173,7 +173,7 @@ public:
 	 *
 	 * @return Normalized values of the MMD^2 estimates under null hypothesis.
 	 */
-	virtual SGVector<float64_t> sample_null();
+	SGVector<float64_t> sample_null() override;
 
 	/**
 	 * Method that computes the p-value from the provided statistic.
@@ -181,7 +181,7 @@ public:
 	 * @param statistic The test statistic
 	 * @return The p-value computed using the null-appriximation method specified.
 	 */
-	virtual float64_t compute_p_value(float64_t statistic);
+	float64_t compute_p_value(float64_t statistic) override;
 
 	/**
 	 * Method that computes the threshold from the provided significance level (alpha).
@@ -189,7 +189,7 @@ public:
 	 * @param alpha The significance level (value should be between 0 and 1)
 	 * @return The threshold computed using the null-approximation method specified.
 	 */
-	virtual float64_t compute_threshold(float64_t alpha);
+	float64_t compute_threshold(float64_t alpha) override;
 
 	/**
 	 * Method that computes an estimate of the variance of the unbiased MMD^2 estimator
@@ -260,10 +260,10 @@ public:
 	SGMatrix<index_t> get_permutation_inds() const;
 
 	/** @return The name of the class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 protected:
-	virtual float64_t normalize_statistic(float64_t statistic) const;
+	float64_t normalize_statistic(float64_t statistic) const override;
 
 private:
 	struct Self;

@@ -68,7 +68,7 @@ class WeightedCommWordStringKernel: public CommWordStringKernel
 			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
 			bool use_sign=false, int32_t size=10);
 
-		virtual ~WeightedCommWordStringKernel();
+		~WeightedCommWordStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -76,24 +76,24 @@ class WeightedCommWordStringKernel: public CommWordStringKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** compute optimized
 		*
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		float64_t compute_optimized(int32_t idx) override;
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		void add_to_normal(int32_t idx, float64_t weight) override;
 
 		/** merge normal */
 		void merge_normal();
@@ -115,19 +115,19 @@ class WeightedCommWordStringKernel: public CommWordStringKernel
 		 *
 		 * @return kernel type WEIGHTEDCOMMWORDSTRING
 		 */
-		virtual EKernelType get_kernel_type() { return K_WEIGHTEDCOMMWORDSTRING; }
+		EKernelType get_kernel_type() override { return K_WEIGHTEDCOMMWORDSTRING; }
 
 		/** return the kernel's name
 		 *
 		 * @return name WeightedCommWordString
 		 */
-		virtual const char* get_name() const { return "WeightedCommWordStringKernel"; }
+		const char* get_name() const override { return "WeightedCommWordStringKernel"; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type WORD
 		 */
-		virtual EFeatureType get_feature_type() { return F_WORD; }
+		EFeatureType get_feature_type() override { return F_WORD; }
 
 		/** compute scoring
 		 *
@@ -141,10 +141,10 @@ class WeightedCommWordStringKernel: public CommWordStringKernel
 		 * @param do_init if initialization shall be performed
 		 * @return computed score
 		 */
-		virtual float64_t* compute_scoring(
+		float64_t* compute_scoring(
 			int32_t max_degree, int32_t& num_feat, int32_t& num_sym,
 			float64_t* target, int32_t num_suppvec, int32_t* IDX,
-			float64_t* alphas, bool do_init=true);
+			float64_t* alphas, bool do_init=true) override;
 
 	protected:
 		/** helper for compute
@@ -153,8 +153,8 @@ class WeightedCommWordStringKernel: public CommWordStringKernel
 		 * @param idx_b index b
 		 * @param do_sort if sorting shall be performed
 		 */
-		virtual float64_t compute_helper(
-			int32_t idx_a, int32_t idx_b, bool do_sort);
+		float64_t compute_helper(
+			int32_t idx_a, int32_t idx_b, bool do_sort) override;
 
 	private:
 		void init();

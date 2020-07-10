@@ -40,13 +40,13 @@ public:
 	LaplacianEigenmaps();
 
 	/** destructor */
-	virtual ~LaplacianEigenmaps();
+	~LaplacianEigenmaps() override;
 
 	/** apply to features
 	 * @param features to embed
 	 * @return embedded features
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** embed distance
 	 * @param distance to use for embedding
@@ -74,7 +74,7 @@ public:
 	float64_t get_tau() const;
 
 	/** get name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 protected:
 

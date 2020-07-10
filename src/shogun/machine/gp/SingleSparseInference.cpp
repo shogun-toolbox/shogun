@@ -56,8 +56,8 @@ class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFu
 {
 public:
         SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
-        virtual ~SingleSparseInferenceCostFunction() {  }
-	virtual const char* get_name() const { return "SingleSparseInferenceCostFunction"; }
+        ~SingleSparseInferenceCostFunction() override {  }
+	const char* get_name() const override { return "SingleSparseInferenceCostFunction"; }
         void set_target(const std::shared_ptr<SingleSparseInference >&obj)
 	{
 		require(obj,"Object not set");
@@ -68,19 +68,19 @@ public:
 			require(m_obj->m_fully_sparse,"Can not compute gradient");
 		}
 	}
-        virtual float64_t get_cost()
+        float64_t get_cost() override
 	{
 		require(m_obj,"Object not set");
 		float64_t nlz=m_obj->get_negative_log_marginal_likelihood();
 		return nlz;
 	}
-        virtual SGVector<float64_t> obtain_variable_reference()
+        SGVector<float64_t> obtain_variable_reference() override
 	{
 		require(m_obj,"Object not set");
 		auto lat_m = m_obj->m_inducing_features->as<DotFeatures>();
 		return lat_m->get_computed_dot_feature_matrix();
 	}
-        virtual SGVector<float64_t> get_gradient()
+        SGVector<float64_t> get_gradient() override
 	{
 		require(m_obj,"Object not set");
 		m_obj->compute_gradient();
@@ -89,12 +89,12 @@ public:
 		SGVector<float64_t> derivatives=m_obj->get_derivative_wrt_inducing_features(*param);
 		return derivatives;
 	}
-        virtual SGVector<float64_t> get_lower_bound()
+        SGVector<float64_t> get_lower_bound() override
 	{
 		require(m_obj,"Object not set");
 		return m_obj->m_lower_bound;
 	}
-        virtual SGVector<float64_t> get_upper_bound()
+        SGVector<float64_t> get_upper_bound() override
 	{
 		require(m_obj,"Object not set");
 		return m_obj->m_upper_bound;

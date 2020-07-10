@@ -57,7 +57,7 @@ public:
 	CSVFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
-	virtual ~CSVFile();
+	~CSVFile() override;
 
 	/** set order for data in file
 	 *
@@ -92,18 +92,18 @@ public:
 	 * and return the vector and its length len by reference
 	 */
 	//@{
-	virtual void get_vector(int8_t*& vector, int32_t& len);
-	virtual void get_vector(uint8_t*& vector, int32_t& len);
-	virtual void get_vector(char*& vector, int32_t& len);
-	virtual void get_vector(int32_t*& vector, int32_t& len);
-	virtual void get_vector(uint32_t*& vector, int32_t& len);
-	virtual void get_vector(float64_t*& vector, int32_t& len);
-	virtual void get_vector(float32_t*& vector, int32_t& len);
-	virtual void get_vector(floatmax_t*& vector, int32_t& len);
-	virtual void get_vector(int16_t*& vector, int32_t& len);
-	virtual void get_vector(uint16_t*& vector, int32_t& len);
-	virtual void get_vector(int64_t*& vector, int32_t& len);
-	virtual void get_vector(uint64_t*& vector, int32_t& len);
+	void get_vector(int8_t*& vector, int32_t& len) override;
+	void get_vector(uint8_t*& vector, int32_t& len) override;
+	void get_vector(char*& vector, int32_t& len) override;
+	void get_vector(int32_t*& vector, int32_t& len) override;
+	void get_vector(uint32_t*& vector, int32_t& len) override;
+	void get_vector(float64_t*& vector, int32_t& len) override;
+	void get_vector(float32_t*& vector, int32_t& len) override;
+	void get_vector(floatmax_t*& vector, int32_t& len) override;
+	void get_vector(int16_t*& vector, int32_t& len) override;
+	void get_vector(uint16_t*& vector, int32_t& len) override;
+	void get_vector(int64_t*& vector, int32_t& len) override;
+	void get_vector(uint64_t*& vector, int32_t& len) override;
 	//@}
 
 	/** @name Matrix Access Functions
@@ -114,30 +114,30 @@ public:
 	 * by reference
 	 */
 	//@{
-	virtual void get_matrix(
-			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			int8_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			char*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_matrix(
-			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec);
+	void get_matrix(
+			uint8_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			int8_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			char*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			int32_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			uint32_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			int64_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			uint64_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			float32_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			float64_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			floatmax_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			int16_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_matrix(
+			uint16_t*& matrix, int32_t& num_feat, int32_t& num_vec) override;
 	//@}
 
 	/** @name N-Dimensional Array Access Functions
@@ -148,20 +148,20 @@ public:
 	 * by reference
 	 */
 	//@{
-	virtual void get_ndarray(
-			uint8_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			char*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			int32_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			float32_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			float64_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			int16_t*& array, int32_t*& dims, int32_t& num_dims);
-	virtual void get_ndarray(
-			uint16_t*& array, int32_t*& dims, int32_t& num_dims);
+	void get_ndarray(
+			uint8_t*& array, int32_t*& dims, int32_t& num_dims) override;
+	void get_ndarray(
+			char*& array, int32_t*& dims, int32_t& num_dims) override;
+	void get_ndarray(
+			int32_t*& array, int32_t*& dims, int32_t& num_dims) override;
+	void get_ndarray(
+			float32_t*& array, int32_t*& dims, int32_t& num_dims) override;
+	void get_ndarray(
+			float64_t*& array, int32_t*& dims, int32_t& num_dims) override;
+	void get_ndarray(
+			int16_t*& array, int32_t*& dims, int32_t& num_dims) override;
+	void get_ndarray(
+			uint16_t*& array, int32_t*& dims, int32_t& num_dims) override;
 	//@}
 
 	/** @name Sparse Matrix Access Functions
@@ -172,32 +172,32 @@ public:
 	 * by reference
 	 */
 	//@{
-	virtual void get_sparse_matrix(
-			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-		SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	void get_sparse_matrix(
+			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+		SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
 	//@}
 
 	/** @name String Access Functions
@@ -208,42 +208,42 @@ public:
 	 * by reference
 	 */
 	//@{
-	virtual void get_string_list(
+	void get_string_list(
 			SGVector<uint8_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<int8_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<char>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<int32_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<uint32_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<int16_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<uint16_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<int64_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<uint64_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<float32_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<float64_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
-	virtual void get_string_list(
+			int32_t& max_string_len) override;
+	void get_string_list(
 			SGVector<floatmax_t>*& strings, int32_t& num_str,
-			int32_t& max_string_len);
+			int32_t& max_string_len) override;
 	//@}
 
 	/** vector access functions */
@@ -256,18 +256,18 @@ public:
 	 * to e.g. a file
 	 */
 	//@{
-	virtual void set_vector(const int8_t* vector, int32_t len);
-	virtual void set_vector(const uint8_t* vector, int32_t len);
-	virtual void set_vector(const char* vector, int32_t len);
-	virtual void set_vector(const int32_t* vector, int32_t len);
-	virtual void set_vector(const uint32_t* vector, int32_t len);
-	virtual void set_vector(const float32_t* vector, int32_t len);
-	virtual void set_vector(const float64_t* vector, int32_t len);
-	virtual void set_vector(const floatmax_t* vector, int32_t len);
-	virtual void set_vector(const int16_t* vector, int32_t len);
-	virtual void set_vector(const uint16_t* vector, int32_t len);
-	virtual void set_vector(const int64_t* vector, int32_t len);
-	virtual void set_vector(const uint64_t* vector, int32_t len);
+	void set_vector(const int8_t* vector, int32_t len) override;
+	void set_vector(const uint8_t* vector, int32_t len) override;
+	void set_vector(const char* vector, int32_t len) override;
+	void set_vector(const int32_t* vector, int32_t len) override;
+	void set_vector(const uint32_t* vector, int32_t len) override;
+	void set_vector(const float32_t* vector, int32_t len) override;
+	void set_vector(const float64_t* vector, int32_t len) override;
+	void set_vector(const floatmax_t* vector, int32_t len) override;
+	void set_vector(const int16_t* vector, int32_t len) override;
+	void set_vector(const uint16_t* vector, int32_t len) override;
+	void set_vector(const int64_t* vector, int32_t len) override;
+	void set_vector(const uint64_t* vector, int32_t len) override;
 	//@}
 
 	/** @name Matrix Access Functions
@@ -277,30 +277,30 @@ public:
 	 * num_vec columns to e.g. a file
 	 */
 	//@{
-	virtual void set_matrix(
-			const uint8_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const int8_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const char* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const int32_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const uint32_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const int64_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const uint64_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const float32_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const float64_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const floatmax_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const int16_t* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_matrix(
-			const uint16_t* matrix, int32_t num_feat, int32_t num_vec);
+	void set_matrix(
+			const uint8_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const int8_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const char* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const int32_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const uint32_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const int64_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const uint64_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const float32_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const float64_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const floatmax_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const int16_t* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_matrix(
+			const uint16_t* matrix, int32_t num_feat, int32_t num_vec) override;
 	//@}
 
 	/** @name Sparse Matrix Access Functions
@@ -310,32 +310,32 @@ public:
 	 * num_vec columns to e.g. a file
 	 */
 	//@{
-	virtual void set_sparse_matrix(
-			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void set_sparse_matrix(
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec) override;
 	//@}
 
 	/** @name String Access Functions
@@ -346,34 +346,34 @@ public:
 	 * and strings is a pointer to a string structure.
 	 */
 	//@{
-	virtual void set_string_list(
-			const SGVector<uint8_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<int8_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<char>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<int32_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<uint32_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<int16_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<uint16_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<int64_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<uint64_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<float32_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<float64_t>* strings, int32_t num_str);
-	virtual void set_string_list(
-			const SGVector<floatmax_t>* strings, int32_t num_str);
+	void set_string_list(
+			const SGVector<uint8_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<int8_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<char>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<int32_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<uint32_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<int16_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<uint16_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<int64_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<uint64_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<float32_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<float64_t>* strings, int32_t num_str) override;
+	void set_string_list(
+			const SGVector<floatmax_t>* strings, int32_t num_str) override;
 	//@}
 #endif // #ifndef SWIG
 
-	virtual const char* get_name() const { return "CSVFile"; }
+	const char* get_name() const override { return "CSVFile"; }
 
 private:
 	/** class initialization */

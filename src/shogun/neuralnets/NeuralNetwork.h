@@ -159,14 +159,14 @@ public:
 	 */
 	virtual void initialize_neural_network(float64_t sigma = 0.01f);
 
-	virtual ~NeuralNetwork();
+	~NeuralNetwork() override;
 
 	/** apply machine to data in means of binary classification problem */
-	virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data);
+	std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data) override;
 	/** apply machine to data in means of regression problem */
-	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data);
+	std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data) override;
 	/** apply machine to data in means of multiclass classification problem */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data) override;
 
 	/** Applies the network as a feature transformation
 	 *
@@ -184,16 +184,16 @@ public:
 	*
 	* @param lab labels
 	*/
-	virtual void set_labels(std::shared_ptr<Labels> lab);
+	void set_labels(std::shared_ptr<Labels> lab) override;
 
 	/** get classifier type
 	 *
 	 * @return classifier type CT_NEURALNETWORK
 	 */
-	virtual EMachineType get_classifier_type() { return CT_NEURALNETWORK; }
+	EMachineType get_classifier_type() override { return CT_NEURALNETWORK; }
 
 	/** returns type of problem machine solves */
-	virtual EProblemType get_machine_problem_type() const;
+	EProblemType get_machine_problem_type() const override;
 
 	/** Checks if the gradients computed using backpropagation are correct by
 	 * comparing them with gradients computed using numerical approximation.
@@ -240,7 +240,7 @@ public:
 	/** Returns an array holding the network's layers */
 	const std::vector<std::shared_ptr<NeuralLayer>>& get_layers() const;
 
-	virtual const char* get_name() const { return "NeuralNetwork";}
+	const char* get_name() const override { return "NeuralNetwork";}
 
 	/** Sets optimization method
 	 * default is NNOM_LBFGS
@@ -469,7 +469,7 @@ public:
 
 protected:
 	/** trains the network */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	/** trains the network using gradient descent*/
 	virtual bool train_gradient_descent(SGMatrix<float64_t> inputs,
@@ -548,7 +548,7 @@ protected:
 	 */
 	virtual float64_t compute_error(SGMatrix<float64_t> targets);
 
-	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const;
+	bool is_label_valid(std::shared_ptr<Labels >lab) const override;
 
 	/** returns a pointer to layer i in the network */
 	std::shared_ptr<NeuralLayer> get_layer(int32_t i) const;

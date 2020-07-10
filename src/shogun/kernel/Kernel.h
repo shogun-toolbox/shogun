@@ -188,7 +188,7 @@ class Kernel : public SGObject
 		 */
 		Kernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, int32_t size);
 
-		virtual ~Kernel();
+		~Kernel() override;
 
 		/** get kernel function for lhs feature vector a
 		 * and rhs feature vector b
@@ -936,7 +936,7 @@ class Kernel : public SGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() noexcept(false);
+		void load_serializable_post() override;
 
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -946,7 +946,7 @@ class Kernel : public SGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_pre() noexcept(false);
+		void save_serializable_pre() override;
 
 		/** Can (optionally) be overridden to post-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
@@ -956,7 +956,7 @@ class Kernel : public SGObject
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void save_serializable_post() noexcept(false);
+		void save_serializable_post() override;
 
 		/** Separate the function of parameter registration
 		 *	This can be the first stage of a *general* framework for

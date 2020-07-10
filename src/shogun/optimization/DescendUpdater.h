@@ -48,7 +48,7 @@ namespace shogun
 class DescendUpdater: public SGObject
 {
 public:
-	virtual ~DescendUpdater() {};
+	~DescendUpdater() override {};
 
 	/** Update the target variable based on the given negative descend direction
 	 *

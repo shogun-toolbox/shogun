@@ -75,7 +75,7 @@ class PeriodicKernel: public DotKernel
 		PeriodicKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 			float64_t length_scale, float64_t period, int32_t size=10);
 
-		virtual ~PeriodicKernel() { };
+		~PeriodicKernel() override { };
 
 		/** initialize kernel
 		 *
@@ -83,19 +83,19 @@ class PeriodicKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type PERIODIC
 		 */
-		virtual EKernelType get_kernel_type() { return K_PERIODIC; }
+		EKernelType get_kernel_type() override { return K_PERIODIC; }
 
 		/** return the kernel's name
 		 *
 		 * @return name PeriodicKernel
 		 */
-		virtual const char* get_name() const { return "PeriodicKernel"; }
+		const char* get_name() const override { return "PeriodicKernel"; }
 
 		/** set the kernel's length scale
 		 *
@@ -128,8 +128,8 @@ class PeriodicKernel: public DotKernel
 		 *
 		 * @return gradient with respect to parameter
 		 */
-		virtual SGMatrix<float64_t> get_parameter_gradient(
-			Parameters::const_reference param, index_t index=-1);
+		SGMatrix<float64_t> get_parameter_gradient(
+			Parameters::const_reference param, index_t index=-1) override;
 
 	protected:
 		/** compute kernel function for features a and b
@@ -140,7 +140,7 @@ class PeriodicKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 
 		/** compute the euclidean distance between features a and b

@@ -48,7 +48,7 @@ class ExponentialKernel: public DotKernel
 			float64_t width, const std::shared_ptr<Distance>& distance, int32_t size);
 
 		/** destructor */
-		virtual ~ExponentialKernel();
+		~ExponentialKernel() override;
 
 		/** initialize kernel
 		 *
@@ -56,22 +56,22 @@ class ExponentialKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type EXPONENTIAL
 		 */
-		virtual EKernelType get_kernel_type() { return K_EXPONENTIAL; }
+		EKernelType get_kernel_type() override { return K_EXPONENTIAL; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Exponential
 		 */
-		virtual const char* get_name() const { return "ExponentialKernel"; }
+		const char* get_name() const override { return "ExponentialKernel"; }
 
 		/** return the kernel's width
 		 *
@@ -90,7 +90,7 @@ class ExponentialKernel: public DotKernel
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() noexcept(false);
+		void load_serializable_post() override;
 
 	protected:
 		/** compute kernel function for features a and b
@@ -101,7 +101,7 @@ class ExponentialKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

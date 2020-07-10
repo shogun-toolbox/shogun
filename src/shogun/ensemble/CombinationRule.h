@@ -24,7 +24,7 @@ namespace shogun
 			/** default ctor */
 			CombinationRule();
 
-			virtual ~CombinationRule();
+			~CombinationRule() override;
 
 			/**
 			 * Combines a matrix of an ensemble of Machines output, where each
@@ -46,7 +46,7 @@ namespace shogun
 			virtual float64_t combine(const SGVector<float64_t>& ensemble_result) const = 0;
 
 			/** name **/
-			virtual const char* get_name() const { return "CombinationRule"; }
+			const char* get_name() const override { return "CombinationRule"; }
 	};
 }
 

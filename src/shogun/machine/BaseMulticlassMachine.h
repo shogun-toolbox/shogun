@@ -26,10 +26,10 @@ public:
 	BaseMulticlassMachine();
 
     /** destructor */
-	virtual ~BaseMulticlassMachine();
+	~BaseMulticlassMachine() override;
 
     /** get name */
-    virtual const char* get_name() const { return "BaseMulticlassMachine"; }
+    const char* get_name() const override { return "BaseMulticlassMachine"; }
 
 	/** get number of machines
 	 *
@@ -38,13 +38,13 @@ public:
 	int32_t get_num_machines() const;
 
 	/** get problem type */
-	virtual EProblemType get_machine_problem_type() const;
+	EProblemType get_machine_problem_type() const override;
 
 	/** check whether the labels is valid.
 	 *
 	 * @param lab the labels being checked, guaranteed to be non-NULL
 	 */
-	virtual bool is_label_valid(std::shared_ptr<Labels> lab) const;
+	bool is_label_valid(std::shared_ptr<Labels> lab) const override;
 
 protected:
 

@@ -87,19 +87,19 @@ public:
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
 			std::shared_ptr<Features> inducing_features);
 
-	virtual ~SparseInference();
+	~SparseInference() override;
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type Sparse
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_SPARSE; }
+	EInferenceType get_inference_type() const override { return INF_SPARSE; }
 
 	/** returns the name of the inference method
 	 *
 	 * @return name SparseBase
 	 */
-	virtual const char* get_name() const { return "SparseBaseInferenceMethod"; }
+	const char* get_name() const override { return "SparseBaseInferenceMethod"; }
 
 	/** set inducing features
 	 *
@@ -131,7 +131,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** get Cholesky decomposition matrix
 	 *
@@ -144,10 +144,10 @@ public:
 	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
 	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
-	virtual SGMatrix<float64_t> get_cholesky();
+	SGMatrix<float64_t> get_cholesky() override;
 
 	/** update all matrices */
-	virtual void update()=0;
+	void update() override =0;
 
 	/** set the noise for inducing points
 	 *
@@ -188,7 +188,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_mean()=0;
+	SGVector<float64_t> get_posterior_mean() override =0;
 
 	/** returns covariance matrix \f$\Sigma\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -205,7 +205,7 @@ public:
 	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_covariance()=0;
+	SGMatrix<float64_t> get_posterior_covariance() override =0;
 
 protected:
 	/** convert inducing features and features to the same represention
@@ -225,10 +225,10 @@ protected:
 	virtual void check_features();
 
 	/** check if members of object are valid for inference */
-	virtual void check_members() const;
+	void check_members() const override;
 
 	/** update train kernel matrix */
-	virtual void update_train_kernel();
+	void update_train_kernel() override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class
@@ -237,8 +237,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override =0;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -247,8 +247,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override =0;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -257,8 +257,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override =0;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -267,8 +267,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override =0;
 
 	/** returns derivative of negative log marginal likelihood wrt
 	 * inducing noise (noise from inducing features) parameter

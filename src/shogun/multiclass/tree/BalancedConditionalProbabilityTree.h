@@ -37,10 +37,10 @@ public:
 	BalancedConditionalProbabilityTree();
 
 	/** destructor */
-	virtual ~BalancedConditionalProbabilityTree() {}
+	~BalancedConditionalProbabilityTree() override {}
 
 	/** get name */
-	virtual const char* get_name() const { return "BalancedConditionalProbabilityTree"; }
+	const char* get_name() const override { return "BalancedConditionalProbabilityTree"; }
 
 	/** set alpha */
 	void set_alpha(float64_t alpha);
@@ -54,7 +54,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex);
+	bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex) override;
 
 private:
 	/** depth of subtree

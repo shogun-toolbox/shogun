@@ -29,7 +29,7 @@ public:
 	SortUlongString();
 
 	/** destructor */
-	virtual ~SortUlongString();
+	~SortUlongString() override;
 
 	/// initialize preprocessor from file
 	virtual bool load(FILE* f);
@@ -38,16 +38,16 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual uint64_t* apply_to_string(uint64_t* f, int32_t &len);
+	uint64_t* apply_to_string(uint64_t* f, int32_t &len) override;
 
 	/** @return object name */
-	virtual const char* get_name() const { return "SortUlongString"; }
+	const char* get_name() const override { return "SortUlongString"; }
 
 	/// return a type of preprocessor
-	virtual EPreprocessorType get_type() const { return P_SORTULONGSTRING; }
+	EPreprocessorType get_type() const override { return P_SORTULONGSTRING; }
 
 protected:
-	virtual void apply_to_string_list(std::vector<SGVector<uint64_t>>& string_list);
+	void apply_to_string_list(std::vector<SGVector<uint64_t>>& string_list) override;
 };
 }
 #endif

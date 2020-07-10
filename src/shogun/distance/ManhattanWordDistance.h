@@ -29,7 +29,7 @@ class ManhattanWordDistance: public StringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 */
 		ManhattanWordDistance(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r);
-		virtual ~ManhattanWordDistance();
+		~ManhattanWordDistance() override;
 
 		/** init distance
 		 *
@@ -37,28 +37,28 @@ class ManhattanWordDistance: public StringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type MANHATTANWORD
 		 */
-		virtual EDistanceType get_distance_type() { return D_MANHATTANWORD; }
+		EDistanceType get_distance_type() override { return D_MANHATTANWORD; }
 
 		/** get name of the distance
 		 *
 		 * @return name ManhattanWord
 		 */
-		virtual const char* get_name() const { return "ManhattanWordDistance"; }
+		const char* get_name() const override { return "ManhattanWordDistance"; }
 
 	protected:
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 } // namespace shogun
 #endif /* _MANHATTANWORDDISTANCE_H___ */

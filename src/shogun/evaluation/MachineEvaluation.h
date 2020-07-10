@@ -58,7 +58,7 @@ namespace shogun
 		    std::shared_ptr<SplittingStrategy> splitting_strategy,
 		    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
 
-		virtual ~MachineEvaluation();
+		~MachineEvaluation() override;
 
 		/** @return in which direction is the best evaluation value? */
 		EEvaluationDirection get_evaluation_direction() const;

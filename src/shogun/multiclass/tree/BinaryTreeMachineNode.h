@@ -57,14 +57,14 @@ public:
 
 
 	/** destructor */
-	virtual ~BinaryTreeMachineNode()
+	~BinaryTreeMachineNode() override
 	{
 	}
 
 	/** get name
 	 * @return class of the node
 	 */
-	virtual const char* get_name() const { return "BinaryTreeMachineNode"; }
+	const char* get_name() const override { return "BinaryTreeMachineNode"; }
 
 	/** set left subtree
 	 *

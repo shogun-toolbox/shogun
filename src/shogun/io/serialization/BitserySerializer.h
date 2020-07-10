@@ -16,9 +16,9 @@ namespace shogun
 		public:
 			BitserySerializer();
 			~BitserySerializer() override;
-			virtual void write(const std::shared_ptr<SGObject>& object) noexcept(false);
+			void write(const std::shared_ptr<SGObject>& object) override;
 
-			virtual const char* get_name() const
+			const char* get_name() const override
 			{
 				return "BitserySerializer";
 			}

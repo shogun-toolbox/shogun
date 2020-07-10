@@ -49,7 +49,7 @@ class GaussianShortRealKernel: public DotKernel
 		GaussianShortRealKernel(const std::shared_ptr<DenseFeatures<float32_t>>& l, const std::shared_ptr<DenseFeatures<float32_t>>& r,
 			float64_t width, int32_t size=10);
 
-		virtual ~GaussianShortRealKernel();
+		~GaussianShortRealKernel() override;
 
 		/** initialize kernel
 		 *
@@ -57,22 +57,22 @@ class GaussianShortRealKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type GAUSSIAN
 		 */
-		virtual EKernelType get_kernel_type() { return K_GAUSSIAN; }
+		EKernelType get_kernel_type() override { return K_GAUSSIAN; }
 
 		/** return the kernel's name
 		 *
 		 * @return name GaussianShortReal
 		 */
-		virtual const char* get_name() const { return "GaussianShortRealKernel"; }
+		const char* get_name() const override { return "GaussianShortRealKernel"; }
 		/** register the parameters
 		 */
-		virtual void register_params();
+		void register_params() override;
 
 	protected:
 		/** compute kernel function for features a and b
@@ -83,7 +83,7 @@ class GaussianShortRealKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** width */

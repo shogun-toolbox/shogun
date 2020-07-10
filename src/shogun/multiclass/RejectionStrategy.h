@@ -18,10 +18,10 @@ class RejectionStrategy : public SGObject
 		RejectionStrategy() { };
 
 		/** destructor */
-		virtual ~RejectionStrategy() { };
+		~RejectionStrategy() override { };
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 				return "RejectionStrategy";
 		};
@@ -44,16 +44,16 @@ class ThresholdRejectionStrategy : public RejectionStrategy
 		ThresholdRejectionStrategy(float64_t threshold) :
 			RejectionStrategy(), m_threshold(threshold) { };
 
-		virtual ~ThresholdRejectionStrategy() {};
+		~ThresholdRejectionStrategy() override {};
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "ThresholdRejectionStrategy";
 		}
 
 		/** returns true if given output set leads to rejection */
-		virtual bool reject(SGVector<float64_t> outputs) const
+		bool reject(SGVector<float64_t> outputs) const override
 		{
 			for (int32_t i=0; i<outputs.vlen; i++)
 			{
@@ -127,18 +127,18 @@ class DixonQTestRejectionStrategy : public RejectionStrategy
 			else error("Given significance level is not supported");
 		}
 
-		virtual ~DixonQTestRejectionStrategy()
+		~DixonQTestRejectionStrategy() override
 		{
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "DixonQTestRejectionStrategy";
 		}
 
 		/** returns true if given output set leads to rejection */
-		virtual bool reject(SGVector<float64_t> outputs) const
+		bool reject(SGVector<float64_t> outputs) const override
 		{
 			int32_t N = outputs.vlen;
 			if (N<10 || N>100)

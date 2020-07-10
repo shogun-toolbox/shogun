@@ -54,7 +54,7 @@ class WaveletKernel: public DotKernel
 		 */
 		WaveletKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
 
-		virtual ~WaveletKernel();
+		~WaveletKernel() override;
 
 		/** initialize kernel
 		 *
@@ -62,21 +62,21 @@ class WaveletKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type wavelet
 		 */
-		virtual EKernelType get_kernel_type() { return K_WAVELET; }
+		EKernelType get_kernel_type() override { return K_WAVELET; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Wavelet
 		 */
-		virtual const char* get_name() const { return "WaveletKernel"; }
+		const char* get_name() const override { return "WaveletKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -87,7 +87,7 @@ class WaveletKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** h(x) is a mother wavelet function */

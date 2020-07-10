@@ -53,7 +53,7 @@ class SimpleLocalityImprovedStringKernel: public StringKernel<char>
 			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			int32_t length, int32_t inner_degree, int32_t outer_degree);
 
-		virtual ~SimpleLocalityImprovedStringKernel();
+		~SimpleLocalityImprovedStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -61,16 +61,16 @@ class SimpleLocalityImprovedStringKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features >l, std::shared_ptr<Features >r);
+		bool init(std::shared_ptr<Features >l, std::shared_ptr<Features >r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type SIMPLELOCALITYIMPROVED
 		 */
-		virtual EKernelType get_kernel_type()
+		EKernelType get_kernel_type() override
 		{
 			return K_SIMPLELOCALITYIMPROVED;
 		}
@@ -79,7 +79,7 @@ class SimpleLocalityImprovedStringKernel: public StringKernel<char>
 		 *
 		 * @return name SimpleLocalityImprovedStringKernel
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "SimpleLocalityImprovedStringKernel";
 		}
@@ -109,7 +109,7 @@ class SimpleLocalityImprovedStringKernel: public StringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

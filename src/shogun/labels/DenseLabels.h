@@ -57,9 +57,9 @@ namespace shogun
 		DenseLabels(std::shared_ptr<File> loader);
 
 		/** destructor */
-		virtual ~DenseLabels() override;
+		~DenseLabels() override;
 
-		virtual bool is_valid() const override;
+		bool is_valid() const override;
 
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
@@ -264,7 +264,7 @@ namespace shogun
 		 */
 		int32_t get_num_labels() const override;
 
-		virtual const char* get_name() const override = 0;
+		const char* get_name() const override = 0;
 
 	public:
 		/** label designates classify reject */

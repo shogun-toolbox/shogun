@@ -49,7 +49,7 @@ public:
 	SplittingStrategy(const std::shared_ptr<Labels>& labels, index_t num_subsets);
 
 	/** destructor */
-	virtual ~SplittingStrategy();
+	~SplittingStrategy() override;
 
 	/** generates a newly created SGVector<index_t> with indices of the subset
 	 * with the desired index

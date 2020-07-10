@@ -35,7 +35,7 @@ class PolyFeatures : public DotFeatures
 		 */
 		PolyFeatures(const std::shared_ptr<DenseFeatures<float64_t>>& feat, int32_t degree, bool normalize);
 
-		virtual ~PolyFeatures();
+		~PolyFeatures() override;
 
 		/** copy constructor
 		 *
@@ -49,32 +49,32 @@ class PolyFeatures : public DotFeatures
 		 *
 		 * @return dimensions of feature space
 		 */
-		virtual int32_t get_dim_feature_space() const;
+		int32_t get_dim_feature_space() const override;
 
 		/** get number of non-zero features in vector
 		 *
 		 * @param num index of vector
 		 * @return number of non-zero features in vector
 		 */
-		virtual int32_t get_nnz_features_for_vector(int32_t num) const;
+		int32_t get_nnz_features_for_vector(int32_t num) const override;
 
 		/** get feature type
 		 *
 		 * @return feature type
 		 */
-		virtual EFeatureType get_feature_type() const;
+		EFeatureType get_feature_type() const override;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** get number of vectors
 		 *
 		 * @return number of vectors
 		 */
-		virtual int32_t get_num_vectors() const;
+		int32_t get_num_vectors() const override;
 
 		/** compute dot product between vector1 and vector2,
 		 *  appointed by their indices
@@ -83,26 +83,26 @@ class PolyFeatures : public DotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
+		float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const override;
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/**
 		 *
 		 * @return name of class
 		 */
-		virtual const char* get_name() const { return "PolyFeatures"; }
+		const char* get_name() const override { return "PolyFeatures"; }
 
 		/** compute dot product between vector1 and a dense vector
 		 *
 		 * @param vec_idx1 index of first vector
 		 * @param vec2 dense vector
 		 */
-		virtual float64_t
+		float64_t
 		dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 		/** compute alpha*x+vec2
@@ -113,7 +113,7 @@ class PolyFeatures : public DotFeatures
 		 * @param vec2_len length of vec2
 		 * @param abs_val if true add the absolute value
 		 */
-		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const;
+		void add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const override;
 
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS
 		/** iterator for weighted spectrum features */
@@ -143,7 +143,7 @@ class PolyFeatures : public DotFeatures
 		 *			iterate over
 		 * @return feature iterator (to be passed to get_next_feature)
 		 */
-		virtual void* get_feature_iterator(int32_t vector_index);
+		void* get_feature_iterator(int32_t vector_index) override;
 
 		/** iterate over the non-zero features
 		 *
@@ -155,15 +155,15 @@ class PolyFeatures : public DotFeatures
 		 * @param iterator as returned by get_first_feature
 		 * @return true if a new non-zero feature got returned
 		 */
-		virtual bool get_next_feature(int32_t& index, float64_t& value,
-				void* iterator);
+		bool get_next_feature(int32_t& index, float64_t& value,
+				void* iterator) override;
 
 		/** clean up iterator
 		 * call this function with the iterator returned by get_first_feature
 		 *
 		 * @param iterator as returned by get_first_feature
 		 */
-		virtual void free_feature_iterator(void* iterator);
+		void free_feature_iterator(void* iterator) override;
 
 	protected:
 

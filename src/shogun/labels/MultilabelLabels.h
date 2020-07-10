@@ -68,9 +68,9 @@ public:
 	MultilabelLabels(int32_t num_labels, int32_t num_classes);
 
 	/** destructor */
-	~MultilabelLabels();
+	~MultilabelLabels() override;
 
-	virtual bool is_valid() const override;
+	bool is_valid() const override;
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *
@@ -84,13 +84,13 @@ public:
 	 *
 	 * @return label type multiclass
 	 */
-	virtual ELabelType get_label_type() const override
+	ELabelType get_label_type() const override
 	{
 		return LT_SPARSE_MULTILABEL;
 	}
 
 	/** @return object name */
-	virtual const char * get_name() const override
+	const char * get_name() const override
 	{
 		return "MultilabelLabels";
 	}
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @return the number of labels
 	 */
-	virtual int32_t get_num_labels() const override;
+	int32_t get_num_labels() const override;
 
 	/** return number of classes (per label)
 	 *

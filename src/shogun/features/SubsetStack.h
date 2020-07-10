@@ -44,10 +44,10 @@ public:
 	SubsetStack(const SubsetStack& other);
 
 	/** destructor */
-	virtual ~SubsetStack() = default;
+	~SubsetStack() override = default;
 
 	/** @return name of the SGSerializable */
-	inline const char* get_name() const { return "SubsetStack"; }
+	inline const char* get_name() const override { return "SubsetStack"; }
 
 	/** Adds a subset of indices on top of the current subsets (possibly
 	 * subset of subset). Every call causes a new active index vector

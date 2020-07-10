@@ -53,7 +53,7 @@ class MatchWordStringKernel: public StringKernel<uint16_t>
 		 */
 		MatchWordStringKernel(const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r, int32_t degree);
 
-		virtual ~MatchWordStringKernel();
+		~MatchWordStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -61,19 +61,19 @@ class MatchWordStringKernel: public StringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type LINEAR
 		 */
-		virtual EKernelType get_kernel_type() { return K_MATCHWORD; }
+		EKernelType get_kernel_type() override { return K_MATCHWORD; }
 
 		/** return the kernel's name
 		 *
 		 * @return name MatchWordString
 		 */
-		virtual const char* get_name() const { return "MatchWordStringKernel"; }
+		const char* get_name() const override { return "MatchWordStringKernel"; }
 
 	protected:
 		/** compute kernel function for features a and b
@@ -84,7 +84,7 @@ class MatchWordStringKernel: public StringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

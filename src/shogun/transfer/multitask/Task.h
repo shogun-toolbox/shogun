@@ -47,7 +47,7 @@ public:
 	Task(SGVector<index_t> indices, float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
-	virtual ~Task();
+	~Task() override;
 
 	/** is contiguous
 	 *
@@ -114,7 +114,7 @@ public:
 	 *
 	 * @return name of object
 	 */
-	virtual const char* get_name() const { return "Task"; };
+	const char* get_name() const override { return "Task"; };
 
 private:
 

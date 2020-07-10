@@ -338,7 +338,7 @@ class LSHNNTableWrapper : public LSHNearestNeighborTable<PointType, KeyType> {
     num_probes_ = lsh_->get_l();
   }
 
-  void set_num_probes(int_fast64_t num_probes) {
+  void set_num_probes(int_fast64_t num_probes) override {
     if (num_probes <= 0) {
       throw LSHNearestNeighborTableError(
           "Number of probes must be at least 1.");
@@ -346,48 +346,48 @@ class LSHNNTableWrapper : public LSHNearestNeighborTable<PointType, KeyType> {
     num_probes_ = num_probes;
   }
 
-  int_fast64_t get_num_probes() { return num_probes_; }
+  int_fast64_t get_num_probes() override { return num_probes_; }
 
-  void set_max_num_candidates(int_fast64_t max_num_candidates) {
+  void set_max_num_candidates(int_fast64_t max_num_candidates) override {
     max_num_candidates_ = max_num_candidates;
   }
 
-  int_fast64_t get_max_num_candidates() { return max_num_candidates_; }
+  int_fast64_t get_max_num_candidates() override { return max_num_candidates_; }
 
-  KeyType find_nearest_neighbor(const PointType& q) {
+  KeyType find_nearest_neighbor(const PointType& q) override {
     return nn_query_->find_nearest_neighbor(q, q, num_probes_,
                                             max_num_candidates_);
   }
 
   void find_k_nearest_neighbors(const PointType& q, int_fast64_t k,
-                                std::vector<KeyType>* result) {
+                                std::vector<KeyType>* result) override {
     nn_query_->find_k_nearest_neighbors(q, q, k, num_probes_,
                                         max_num_candidates_, result);
   }
 
   void find_near_neighbors(const PointType& q, DistanceType threshold,
-                           std::vector<KeyType>* result) {
+                           std::vector<KeyType>* result) override {
     nn_query_->find_near_neighbors(q, q, threshold, num_probes_,
                                    max_num_candidates_, result);
   }
 
   void get_candidates_with_duplicates(const PointType& q,
-                                      std::vector<KeyType>* result) {
+                                      std::vector<KeyType>* result) override {
     query_->get_candidates_with_duplicates(q, num_probes_, max_num_candidates_,
                                            result);
   }
 
-  void get_unique_candidates(const PointType& q, std::vector<KeyType>* result) {
+  void get_unique_candidates(const PointType& q, std::vector<KeyType>* result) override {
     query_->get_unique_candidates(q, num_probes_, max_num_candidates_, result);
   }
 
-  void reset_query_statistics() { nn_query_->reset_query_statistics(); }
+  void reset_query_statistics() override { nn_query_->reset_query_statistics(); }
 
-  QueryStatistics get_query_statistics() {
+  QueryStatistics get_query_statistics() override {
     return nn_query_->get_query_statistics();
   }
 
-  ~LSHNNTableWrapper() {}
+  ~LSHNNTableWrapper() override {}
 
  protected:
   std::unique_ptr<LSHFunction> lsh_;

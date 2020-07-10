@@ -49,11 +49,11 @@ struct MatrixProjectionImplementation : public ProjectionImplementation
 	{
 	}
 
-	virtual ~MatrixProjectionImplementation()
+	~MatrixProjectionImplementation() override
 	{
 	}
 
-	virtual DenseVector project(const DenseVector& vec)
+	DenseVector project(const DenseVector& vec) override
 	{
 		return proj_mat.transpose()*(vec-mean_vec);
 	}

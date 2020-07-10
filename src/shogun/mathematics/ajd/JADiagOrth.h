@@ -37,7 +37,7 @@ class JADiagOrth : public ApproxJointDiagonalizer
 		}
 
 		/** destructor */
-		virtual ~JADiagOrth()
+		~JADiagOrth() override
 		{
 		}
 
@@ -60,17 +60,17 @@ class JADiagOrth : public ApproxJointDiagonalizer
 		 * @param itermax maximum number of iterations
 		 * @return V the matrix that best diagonalizes C
 		 */
-		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
+		SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 						   double eps=Math::MACHINE_EPSILON,
-						   int itermax=200)
+						   int itermax=200) override
 		{
 			m_V = diagonalize(C,V0,eps,itermax);
 			return m_V;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "JADiagOrth"; }
+		const char* get_name() const override { return "JADiagOrth"; }
 };
 }
 #endif //JADIAGORTH_H_

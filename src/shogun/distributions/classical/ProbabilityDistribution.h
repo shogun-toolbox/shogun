@@ -32,7 +32,7 @@ public:
 	ProbabilityDistribution(int32_t dimension);
 
 	/** Destructor */
-	virtual ~ProbabilityDistribution();
+	~ProbabilityDistribution() override;
 
 	/** Samples from the distribution multiple times
 	 *
@@ -68,7 +68,7 @@ public:
 	virtual float64_t log_pdf(SGVector<float64_t> sample_vec) const;
 
 	/** @return name of the SGSerializable */
-	virtual const char* get_name() const=0;
+	const char* get_name() const override =0;
 
 private:
 

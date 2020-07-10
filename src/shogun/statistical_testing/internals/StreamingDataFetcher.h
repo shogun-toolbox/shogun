@@ -49,22 +49,22 @@ class StreamingDataFetcher : public DataFetcher
 	friend class DataManager;
 public:
 	StreamingDataFetcher(const std::shared_ptr<StreamingFeatures>& samples);
-	virtual ~StreamingDataFetcher();
+	~StreamingDataFetcher() override;
 	void set_num_samples(index_t num_samples);
 
-	virtual void shuffle_features();
-	virtual void unshuffle_features();
+	void shuffle_features() override;
+	void unshuffle_features() override;
 
-	virtual void use_fold(index_t i);
-	virtual void init_active_subset();
+	void use_fold(index_t i) override;
+	void init_active_subset() override;
 
-	virtual void start();
-	virtual std::shared_ptr<Features> next();
-	virtual void reset();
-	virtual void end();
+	void start() override;
+	std::shared_ptr<Features> next() override;
+	void reset() override;
+	void end() override;
 
-	virtual index_t get_num_samples() const;
-	virtual const char* get_name() const
+	index_t get_num_samples() const override;
+	const char* get_name() const override
 	{
 		return "StreamingDataFetcher";
 	}

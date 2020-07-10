@@ -165,7 +165,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 
 		/** copy constructor */
 		CTrie(const CTrie & to_copy);
-		virtual ~CTrie();
+		~CTrie() override;
 
 		/** overload operator = */
 		const CTrie & operator=(const CTrie & to_copy);
@@ -620,7 +620,7 @@ IGNORE_IN_CLASSLIST template <class Trie> class CTrie : public SGObject
 			const int32_t debug);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Trie"; }
+		const char* get_name() const override { return "Trie"; }
 
 	public:
 		/** number of symbols */

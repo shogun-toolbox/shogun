@@ -105,7 +105,7 @@ public:
 		int32_t stride_x=1, int32_t stride_y=1,
 		EInitializationMode initialization_mode=NORMAL);
 	
-	virtual ~NeuralConvolutionalLayer() {}
+	~NeuralConvolutionalLayer() override {}
 
 	/** Sets the batch_size and allocates memory for m_activations and
 	 * m_input_gradients accordingly. Must be called before forward or backward
@@ -114,7 +114,7 @@ public:
 	 * @param batch_size number of training/test cases the network is
 	 * currently working with
 	 */
-	virtual void set_batch_size(int32_t batch_size);
+	void set_batch_size(int32_t batch_size) override;
 
 	/** Initializes the layer, computes the number of parameters needed for
 	 * the layer
@@ -125,9 +125,9 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize_neural_layer(
+	void initialize_neural_layer(
 		const std::vector<std::shared_ptr<NeuralLayer>>& layers,
-		SGVector<int32_t> input_indices);
+		SGVector<int32_t> input_indices) override;
 
 	/** Initializes the layer's parameters. The layer should fill the given
 	 * arrays with the initial value for its parameters
@@ -143,9 +143,9 @@ public:
 	 * @param sigma standard deviation of the gaussian used to random the
 	 * parameters
 	 */
-	virtual void initialize_parameters(SGVector<float64_t> parameters,
+	void initialize_parameters(SGVector<float64_t> parameters,
 			SGVector<bool> parameter_regularizable,
-			float64_t sigma);
+			float64_t sigma) override;
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -156,8 +156,8 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(SGVector<float64_t> parameters,
-		const std::vector<std::shared_ptr<NeuralLayer>>& layers);
+	void compute_activations(SGVector<float64_t> parameters,
+		const std::vector<std::shared_ptr<NeuralLayer>>& layers) override;
 
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
@@ -184,10 +184,10 @@ public:
 	 * filled with gradients of the error with respect to each parameter of the
 	 * layer
 	 */
-	virtual void compute_gradients(SGVector<float64_t> parameters,
+	void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> targets,
 			const std::vector<std::shared_ptr<NeuralLayer>>& layers,
-			SGVector<float64_t> parameter_gradients);
+			SGVector<float64_t> parameter_gradients) override;
 
 	/** Computes the error between the layer's current activations and the given
 	 * target activations. Should only be used with output layers
@@ -195,7 +195,7 @@ public:
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t compute_error(SGMatrix<float64_t> targets);
+	float64_t compute_error(SGMatrix<float64_t> targets) override;
 
 	/** Constrains the weights of each neuron in the layer to have an L2 norm of
 	 * at most max_norm
@@ -205,10 +205,10 @@ public:
 	 *
 	 * @param max_norm maximum allowable norm for a neuron's weights
 	 */
-	virtual void enforce_max_norm(SGVector<float64_t> parameters,
-			float64_t max_norm);
+	void enforce_max_norm(SGVector<float64_t> parameters,
+			float64_t max_norm) override;
 
-	virtual const char* get_name() const { return "NeuralConvolutionalLayer"; }
+	const char* get_name() const override { return "NeuralConvolutionalLayer"; }
 
 private:
 	void init();

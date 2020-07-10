@@ -25,7 +25,7 @@ namespace shogun
 	public:
 		LabelEncoder() = default;
 
-		virtual ~LabelEncoder() = default;
+		~LabelEncoder() override = default;
 
 		/** Fit label encoder
 		 *
@@ -57,7 +57,7 @@ namespace shogun
 		virtual std::shared_ptr<Labels>
 		fit_transform(const std::shared_ptr<Labels>&) = 0;
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LabelEncoder";
 		}

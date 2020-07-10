@@ -33,13 +33,13 @@ IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 		DirectorStructuredModel();
 
 		/** destructor */
-		virtual ~DirectorStructuredModel();
+		~DirectorStructuredModel() override;
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const;
+		int32_t get_dim() const override;
 
 		/**
 		 * get joint feature vector
@@ -53,7 +53,7 @@ IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y);
+		SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y) override;
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -68,7 +68,7 @@ IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) override;
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -77,7 +77,7 @@ IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
+		float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2) override;
 
 		/**
 		 * method to be called from a SO machine before training
@@ -86,7 +86,7 @@ IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 		 * the method is empty and it can be re-implemented for any
 		 * application (e.g. HM-SVM).
 		 */
-		virtual bool check_training_setup() const;
+		bool check_training_setup() const override;
 
 		/** initialize the optimization problem
 		 *
@@ -98,18 +98,18 @@ IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 		 * @param ub
 		 * @param C
 		 */
-		virtual void init_primal_opt(
+		void init_primal_opt(
 				float64_t regularization,
 				SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 				SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 				SGVector< float64_t > & lb, SGVector< float64_t > & ub,
-				SGMatrix < float64_t > & C);
+				SGMatrix < float64_t > & C) override;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "DirectorStructuredModel"; }
+		const char* get_name() const override { return "DirectorStructuredModel"; }
 
 		/** initializes the part of the model that needs to be used during training. */
-		virtual void init_training();
+		void init_training() override;
 
 }; /* class DirectorStructuredModel */
 } /* namespace shogun */

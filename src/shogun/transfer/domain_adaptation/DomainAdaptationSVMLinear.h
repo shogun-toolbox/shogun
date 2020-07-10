@@ -40,7 +40,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 
 
 		/** destructor */
-		virtual ~DomainAdaptationSVMLinear();
+		~DomainAdaptationSVMLinear() override;
 
 
 		/** init SVM
@@ -54,7 +54,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 *
 		 * @return classifier type DASVMLINEAR
 		 */
-		virtual EMachineType get_classifier_type() { return CT_DASVMLINEAR; }
+		EMachineType get_classifier_type() override { return CT_DASVMLINEAR; }
 
 
 		/** classify objects
@@ -62,7 +62,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 
 		/** returns SVM that is used as prior information
@@ -108,7 +108,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 
 
 		/** @return object name */
-		virtual const char* get_name() const { return "DomainAdaptationSVMLinear"; }
+		const char* get_name() const override { return "DomainAdaptationSVMLinear"; }
 
 	protected:
 
@@ -126,7 +126,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	protected:
 

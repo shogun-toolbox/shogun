@@ -42,7 +42,7 @@ public:
 	std::shared_ptr<LikelihoodModel> lik;
 	std::shared_ptr<Labels> lab;
 
-	virtual double operator() (double x)
+	double operator() (double x) override
 	{
 		Map<VectorXd> eigen_f(f->vector, f->vlen);
 		Map<VectorXd> eigen_m(m->vector, m->vlen);
@@ -70,7 +70,7 @@ class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
 public:
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleLaplaceInferenceMethodCostFunction() {  }
+	~SingleLaplaceInferenceMethodCostFunction() override {  }
 	void set_target(const std::shared_ptr<SingleLaplaceInferenceMethod>& obj)
 	{
 		if(m_obj != obj)
@@ -78,24 +78,24 @@ public:
 			m_obj=obj;
 		}
 	}
-	virtual float64_t get_cost()
+	float64_t get_cost() override
 	{
 		require(m_obj,"Object not set");
 		return m_obj->get_psi_wrt_alpha();
 	}
-	virtual SGVector<float64_t> obtain_variable_reference()
+	SGVector<float64_t> obtain_variable_reference() override
 	{
 		require(m_obj,"Object not set");
 		m_derivatives = SGVector<float64_t>((m_obj->m_alpha).vlen);
 		return m_obj->m_alpha;
 	}
-	virtual SGVector<float64_t> get_gradient()
+	SGVector<float64_t> get_gradient() override
 	{
 		require(m_obj,"Object not set");
 		m_obj->get_gradient_wrt_alpha(m_derivatives);
 		return m_derivatives;
 	}
-	virtual const char* get_name() const { return "SingleLaplaceInferenceMethodCostFunction"; }
+	const char* get_name() const override { return "SingleLaplaceInferenceMethodCostFunction"; }
 private:
 	void init()
 	{

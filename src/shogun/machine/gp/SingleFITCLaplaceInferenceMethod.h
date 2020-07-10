@@ -77,20 +77,20 @@ public:
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
 			std::shared_ptr<Features> inducing_features);
 
-	virtual ~SingleFITCLaplaceInferenceMethod();
+	~SingleFITCLaplaceInferenceMethod() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name SingleFITCLaplace
 	 */
-	virtual const char* get_name() const { return "SingleFITCLaplaceInferenceMethod"; }
+	const char* get_name() const override { return "SingleFITCLaplaceInferenceMethod"; }
 
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type FITC
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_FITC_LAPLACE_SINGLE; }
+	EInferenceType get_inference_type() const override { return INF_FITC_LAPLACE_SINGLE; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -103,7 +103,7 @@ public:
 	 * @return whether combination of Laplace approximation inference method and
 	 * given likelihood function supports regression
 	 */
-	virtual bool supports_regression() const
+	bool supports_regression() const override
 	{
 		check_members();
 		return m_model->supports_regression();
@@ -113,7 +113,7 @@ public:
 	 * @return whether combination of Laplace approximation inference method and
 	 * given likelihood function supports binary classification
 	 */
-	virtual bool supports_binary() const
+	bool supports_binary() const override
 	{
 		check_members();
 		return m_model->supports_binary();
@@ -124,7 +124,7 @@ public:
 	 * @return diagonal of matrix used to calculate posterior covariance matrix:
 	 *
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -138,7 +138,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_mean();
+	SGVector<float64_t> get_posterior_mean() override;
 
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+W)^{-1}\f$ of the Gaussian
 	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to
@@ -153,10 +153,10 @@ public:
 	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_covariance();
+	SGMatrix<float64_t> get_posterior_covariance() override;
 
 	/** update matrices except gradients*/
-	virtual void update();
+	void update() override;
 
 	/** get negative log marginal likelihood
 	 *
@@ -169,26 +169,26 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and
 	 * \f$\theta\f$ represent hyperparameters.
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood();
+	float64_t get_negative_log_marginal_likelihood() override;
 
 	/** Set a minimizer
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
+	void register_minimizer(std::shared_ptr<Minimizer> minimizer) override;
 
 protected:
 	/** update gradients */
-	virtual void compute_gradient();
+	void compute_gradient() override;
 
 	/** pre-compution for Newton's method*/
 	virtual void update_init();
 
 	/** update alpha matrix */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** update cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();
@@ -196,7 +196,7 @@ protected:
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class
@@ -205,8 +205,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -215,8 +215,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -225,8 +225,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -235,8 +235,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override;
 
 	/** efficiently compute the Cholesky decomposition of inverse of the input matrix
 	 * chol(inv(mtx))
@@ -276,7 +276,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt inducing noise
 	 *
@@ -284,7 +284,7 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inducing_noise(Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt param
 	 * when W has at least one negative element
@@ -309,8 +309,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual float64_t get_derivative_related_cov(SGVector<float64_t> ddiagKi,
-		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui);
+	float64_t get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+		SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui) override;
 
 	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood derivatives wrt mean \f$\lambda\f$
@@ -318,7 +318,7 @@ protected:
 	 * @param dmu \f$\frac{\partial {\mu_{n}}}{\partial {\lambda}}\f$
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual float64_t get_derivative_related_mean(SGVector<float64_t> dmu);
+	float64_t get_derivative_related_mean(SGVector<float64_t> dmu) override;
 
 	/** helper function to compute variables which are required to compute negative log marginal
 	 * likelihood implicit derivatives
@@ -394,9 +394,9 @@ class SingleFITCLaplaceNewtonOptimizer: public Minimizer
 public:
 	SingleFITCLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
-	virtual const char* get_name() const { return "SingleFITCLaplaceNewtonOptimizer"; }
+	const char* get_name() const override { return "SingleFITCLaplaceNewtonOptimizer"; }
 
-	virtual ~SingleFITCLaplaceNewtonOptimizer() {  }
+	~SingleFITCLaplaceNewtonOptimizer() override {  }
 
 	/** Set the inference method
 	 * @param obj the inference method
@@ -412,7 +412,7 @@ public:
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
 	/** set maximum for Brent's minimization method
 	 *

@@ -24,12 +24,12 @@ class NativeMulticlassMachine : public MulticlassMachine
 		}
 
 		/** destructor */
-		virtual ~NativeMulticlassMachine()
+		~NativeMulticlassMachine() override
 		{
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "NativeMulticlassMachine";
 		}
@@ -42,31 +42,31 @@ class NativeMulticlassMachine : public MulticlassMachine
 		void clear_machines() { }
 
 		/** abstract init machine for training method */
-		virtual bool init_machine_for_train(std::shared_ptr<Features> data) { return true; }
+		bool init_machine_for_train(std::shared_ptr<Features> data) override { return true; }
 
 		/** abstract init machines for applying method */
-		virtual bool init_machines_for_apply(std::shared_ptr<Features> data) { return true; }
+		bool init_machines_for_apply(std::shared_ptr<Features> data) override { return true; }
 
 		/** check whether machine is ready */
-		virtual bool is_ready() { return true; }
+		bool is_ready() override { return true; }
 
 		/** obtain machine from trained one */
-		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const { return NULL; }
+		std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const override { return NULL; }
 
 		/** get num rhs vectors */
-		virtual int32_t get_num_rhs_vectors() const { return 0; }
+		int32_t get_num_rhs_vectors() const override { return 0; }
 
 		/** set subset to the features of the machine, deletes old one
 		 *
 		 * @param subset subset indices to set
 		 */
-		virtual void add_machine_subset(SGVector<index_t> subset) { }
+		void add_machine_subset(SGVector<index_t> subset) override { }
 
 		/** deletes any subset set to the features of the machine */
-		virtual void remove_machine_subset() { }
+		void remove_machine_subset() override { }
 
 		/** whether the machine is acceptable in set_machine */
-		virtual bool is_acceptable_machine(std::shared_ptr<Machine >machine) { return true; }
+		bool is_acceptable_machine(std::shared_ptr<Machine >machine) override { return true; }
 
 };
 }

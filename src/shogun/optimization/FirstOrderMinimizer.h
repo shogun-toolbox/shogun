@@ -71,10 +71,10 @@ public:
 	 *
 	 * @return name FirstOrderMinimizer
 	 */
-	virtual const char* get_name() const { return "FirstOrderMinimizer"; }
+	const char* get_name() const override { return "FirstOrderMinimizer"; }
 
 	/** Destructor */
-	virtual ~FirstOrderMinimizer();
+	~FirstOrderMinimizer() override;
 
 	/** Does minimizer support batch update?
 	 * 

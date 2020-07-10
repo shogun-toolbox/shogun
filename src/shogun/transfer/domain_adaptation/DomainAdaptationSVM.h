@@ -36,7 +36,7 @@ class DomainAdaptationSVM : public SVMLight
 		DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> presvm, float64_t B);
 
 		/** destructor */
-		virtual ~DomainAdaptationSVM();
+		~DomainAdaptationSVM() override;
 
 		/** init SVM
 		 *
@@ -49,14 +49,14 @@ class DomainAdaptationSVM : public SVMLight
 		 *
 		 * @return classifier type
 		 */
-		virtual EMachineType get_classifier_type() { return CT_DASVM; }
+		EMachineType get_classifier_type() override { return CT_DASVM; }
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 		/** returns SVM that is used as prior information
 		 *
@@ -82,7 +82,7 @@ class DomainAdaptationSVM : public SVMLight
 		virtual void set_train_factor(float64_t factor);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "DomainAdaptationSVM"; }
+		const char* get_name() const override { return "DomainAdaptationSVM"; }
 
 	protected:
 
@@ -100,7 +100,7 @@ class DomainAdaptationSVM : public SVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		void init();

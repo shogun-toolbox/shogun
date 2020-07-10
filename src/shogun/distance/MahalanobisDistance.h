@@ -59,7 +59,7 @@ namespace shogun
 		 * @param r features of right-hand side
 		 */
 		MahalanobisDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
-		virtual ~MahalanobisDistance();
+		~MahalanobisDistance() override;
 
 		/** init distance
 		 *
@@ -67,28 +67,28 @@ namespace shogun
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type MAHALANOBIS
 		 */
-		virtual EDistanceType get_distance_type() { return D_MAHALANOBIS; }
+		EDistanceType get_distance_type() override { return D_MAHALANOBIS; }
 
 		/** get feature type the distance can deal with
 		 *
 		 * @return feature type DREAL
 		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
+		EFeatureType get_feature_type() override { return F_DREAL; }
 
 		/** get name of the distance
 		 *
 		 * @return name Mahalanobis
 		 */
-		virtual const char* get_name() const { return "MahalanobisDistance"; }
+		const char* get_name() const override { return "MahalanobisDistance"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
@@ -128,7 +128,7 @@ namespace shogun
 		/// @param idx_a index of the feature vector in lhs
 		/// @param idx_b index of the feature vector in rhs
 		/// @return value of the Mahalanobis distance
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

@@ -82,13 +82,13 @@ class KNN : public DistanceMachine
 		 */
 		KNN(int32_t k, const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab, KNN_SOLVER knn_solver=KNN_BRUTE);
 
-		virtual ~KNN();
+		~KNN() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type KNN
 		 */
-		virtual EMachineType get_classifier_type() { return CT_KNN; }
+		EMachineType get_classifier_type() override { return CT_KNN; }
 
 		/**
 		 * for each example in the rhs features of the distance member, find the m_k
@@ -106,10 +106,10 @@ class KNN : public DistanceMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 		/// get output for example "vec_idx"
-		virtual float64_t apply_one(int32_t vec_idx)
+		float64_t apply_one(int32_t vec_idx) override
 		{
 			error("for performance reasons use apply() instead of apply(int32_t vec_idx)");
 			return 0;
@@ -181,7 +181,7 @@ class KNN : public DistanceMachine
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KNN"; }
+		const char* get_name() const override { return "KNN"; }
 
 		/**
 		 * @return the currently used KNN algorithm
@@ -229,7 +229,7 @@ class KNN : public DistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		void init();

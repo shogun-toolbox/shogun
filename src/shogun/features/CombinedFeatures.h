@@ -40,16 +40,16 @@ class CombinedFeatures : public Features
 		 *
 		 * @return feature object
 		 */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** destructor */
-		virtual ~CombinedFeatures();
+		~CombinedFeatures() override;
 
 		/** get feature type
 		 *
 		 * @return feature type UNKNOWN
 		 */
-		virtual EFeatureType get_feature_type() const
+		EFeatureType get_feature_type() const override
 		{
 			return F_UNKNOWN;
 		}
@@ -58,7 +58,7 @@ class CombinedFeatures : public Features
 		 *
 		 * @return feature class SIMPLE
 		 */
-		virtual EFeatureClass get_feature_class() const
+		EFeatureClass get_feature_class() const override
 		{
 			return C_COMBINED;
 		}
@@ -67,7 +67,7 @@ class CombinedFeatures : public Features
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual int32_t get_num_vectors() const
+		int32_t get_num_vectors() const override
 		{
 			return m_subset_stack->has_subsets()
 					? m_subset_stack->get_size() : num_vec;
@@ -138,7 +138,7 @@ class CombinedFeatures : public Features
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const;
+		std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const override;
 
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards.
@@ -146,21 +146,21 @@ class CombinedFeatures : public Features
 		 *
 		 * @param subset subset of indices to add
 		 * */
-		virtual void add_subset(SGVector<index_t> subset);
+		void add_subset(SGVector<index_t> subset) override;
 
 		/** removes that last added subset from subset stack, if existing
 		 * Calls subset_changed_post() afterwards
 		 *
 		 * Removes the subset from all sub-features
 		 * */
-		virtual void remove_subset();
+		void remove_subset() override;
 
 		/** removes all subsets
 		 * Calls subset_changed_post() afterwards
 		 *
 		 * Removes all subsets of all sub-features
 		 * */
-		virtual void remove_all_subsets();
+		void remove_all_subsets() override;
 
 		/** Creates a new Features instance containing copies of the elements
 		 * which are specified by the provided indices.
@@ -170,10 +170,10 @@ class CombinedFeatures : public Features
 		 * @param indices indices of feature elements to copy
 		 * @return new Features instance with copies of feature data
 		 */
-		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
+		std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "CombinedFeatures"; }
+		const char* get_name() const override { return "CombinedFeatures"; }
 
 	private:
 		void init();

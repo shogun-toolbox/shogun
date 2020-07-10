@@ -62,7 +62,7 @@ public:
 	MultidimensionalScaling();
 
 	/* destructor */
-	virtual ~MultidimensionalScaling();
+	~MultidimensionalScaling() override;
 
 	/** apply preprocessor to Distance
 	 * @param distance (should be approximate euclidean for consistent result)
@@ -75,10 +75,10 @@ public:
 	 * @param features features which feature matrix should be processed
 	 * @return new feature matrix
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** get name */
-	const char* get_name() const;
+	const char* get_name() const override;
 
 	/** get last embedding eigenvectors
 	 * @return vector with last eigenvalues

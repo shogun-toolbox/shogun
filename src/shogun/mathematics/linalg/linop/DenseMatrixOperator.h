@@ -46,7 +46,7 @@ public:
 	DenseMatrixOperator(const DenseMatrixOperator<T>& orig);
 
 	/** destructor */
-	~DenseMatrixOperator();
+	~DenseMatrixOperator() override;
 
 	/**
 	 * method that applies the dense-matrix linear operator to a vector
@@ -54,21 +54,21 @@ public:
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
-	virtual SGVector<T> apply(SGVector<T> b) const;
+	SGVector<T> apply(SGVector<T> b) const override;
 
 	/**
 	 * method that sets the main diagonal of the matrix
 	 *
 	 * @param diag the diagonal to be set
 	 */
-	virtual void set_diagonal(SGVector<T> diag);
+	void set_diagonal(SGVector<T> diag) override;
 
 	/**
 	 * method that returns the main diagonal of the matrix
 	 *
 	 * @return the diagonal
 	 */
-	virtual SGVector<T> get_diagonal() const;
+	SGVector<T> get_diagonal() const override;
 
 	/** @return the dense matrix operator */
 	SGMatrix<T> get_matrix_operator() const;
@@ -92,7 +92,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DenseMatrixOperator";
 	}

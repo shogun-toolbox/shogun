@@ -40,7 +40,7 @@ class WeightedDegreeRBFKernel: public DotKernel
 		WeightedDegreeRBFKernel(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			float64_t width, int32_t degree, int32_t nof_properties, int32_t size=10);
 
-		virtual ~WeightedDegreeRBFKernel();
+		~WeightedDegreeRBFKernel() override;
 
 		/** initialize kernel
 		 *
@@ -48,33 +48,33 @@ class WeightedDegreeRBFKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type UNKNOWN
 		 */
 		//virtual EKernelType get_kernel_type() { return K_UNKNOWN; }
-		virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREERBF; }
+		EKernelType get_kernel_type() override { return K_WEIGHTEDDEGREERBF; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Gaussian
 		 */
-		virtual const char* get_name() const { return "WeightedDegreeRBFKernel"; }
+		const char* get_name() const override { return "WeightedDegreeRBFKernel"; }
 
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class SIMPLE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		EFeatureClass get_feature_class() override { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return float64_t feature type
 		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
+		EFeatureType get_feature_type() override { return F_DREAL; }
 
 
 		/** Set width
@@ -111,7 +111,7 @@ class WeightedDegreeRBFKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 		/** init degree weights
 		 *
@@ -135,7 +135,7 @@ class WeightedDegreeRBFKernel: public DotKernel
 
 	private:
 		/** register parameters */
-		void register_params();
+		void register_params() override;
 
 };
 }

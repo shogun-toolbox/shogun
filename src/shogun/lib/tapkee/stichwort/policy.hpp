@@ -78,32 +78,32 @@ struct repr_impl_if_streaming_supported
 template <typename T>
 struct PointerTypePolicyImpl : public TypePolicyBase
 {
-	inline virtual void copyFromValue(void const* src, void** dest) const
+	inline void copyFromValue(void const* src, void** dest) const override
 	{
 		*dest = new T(*reinterpret_cast<T const*>(src));
 	}
-	inline virtual void* getValue(void** src) const
+	inline void* getValue(void** src) const override
 	{
 		return *src;
 	}
-	inline virtual void free(void** src) const
+	inline void free(void** src) const override
 	{
 		if (*src)
 			delete (*reinterpret_cast<T**>(src));
 		*src = NULL;
 	}
-	virtual void clone(void* const* src, void** dest) const
+	void clone(void* const* src, void** dest) const override
 	{
 		if (*dest)
 			(*reinterpret_cast<T**>(dest))->~T();
 		*dest = new T(**reinterpret_cast<T* const*>(src));
 	}
-	inline virtual void move(void* const* src, void** dest) const
+	inline void move(void* const* src, void** dest) const override
 	{
 		(*reinterpret_cast<T**>(dest))->~T();
 		**reinterpret_cast<T**>(dest) = **reinterpret_cast<T* const*>(src);
 	}
-	inline virtual std::string repr(void** src) const
+	inline std::string repr(void** src) const override
 	{
 		return repr_impl_if_streaming_supported<T,streams_sfinae::supports_saving<std::stringstream,T>::value>()(this,src);
 	}

@@ -38,7 +38,7 @@ class PNorm : public DensePreprocessor<float64_t>
 		PNorm (double p);
 
 		/** destructor */
-		virtual ~PNorm ();
+		~PNorm () override;
 
 		/// initialize preprocessor from file
 		virtual bool load (FILE* f);
@@ -47,13 +47,13 @@ class PNorm : public DensePreprocessor<float64_t>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<float64_t> apply_to_feature_vector (SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector (SGVector<float64_t> vector) override;
 
 		/** @return object name */
-		virtual const char* get_name () const { return "PNorm"; }
+		const char* get_name () const override { return "PNorm"; }
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type () const { return P_PNORM; }
+		EPreprocessorType get_type () const override { return P_PNORM; }
 
 		/**
 		 * Set norm
@@ -68,7 +68,7 @@ class PNorm : public DensePreprocessor<float64_t>
 		double get_pnorm () const;
 
 	protected:
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
 	private:
 		void register_param ();

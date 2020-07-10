@@ -235,7 +235,7 @@ class SVMLight : public SVM
    * @param lab labels
    */
   SVMLight(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
-  virtual ~SVMLight();
+  ~SVMLight() override;
 
   /** init SVM */
   void init();
@@ -244,7 +244,7 @@ class SVMLight : public SVM
    *
    * @return classifier type LIGHT
    */
-  virtual EMachineType get_classifier_type() { return CT_LIGHT; }
+  EMachineType get_classifier_type() override { return CT_LIGHT; }
 
   /** get runtime
    *
@@ -596,7 +596,7 @@ class SVMLight : public SVM
 	int32_t *docs,float64_t *aicache, float64_t* maxdiff);
 
 	/** @return object name */
-	virtual const char* get_name() const { return "SVMLight"; }
+	const char* get_name() const override { return "SVMLight"; }
 
 protected:
 	/** compute kernel
@@ -646,7 +646,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
  protected:
   /** model */

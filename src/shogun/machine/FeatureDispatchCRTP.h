@@ -28,12 +28,12 @@ namespace shogun
 		{
 		}
 
-		virtual ~DenseRealDispatch()
+		~DenseRealDispatch() override
 		{
 		}
 
 	protected:
-		virtual bool train_dense(std::shared_ptr<Features> data)
+		bool train_dense(std::shared_ptr<Features> data) override
 		{
 			auto* this_casted = static_cast<P*>(this);
 			switch (data->get_feature_type())
@@ -58,12 +58,12 @@ namespace shogun
 			return false;
 		}
 
-		virtual bool support_feature_dispatching()
+		bool support_feature_dispatching() override
 		{
 			return true;
 		}
 
-		virtual bool support_dense_dispatching()
+		bool support_dense_dispatching() override
 		{
 			return true;
 		}

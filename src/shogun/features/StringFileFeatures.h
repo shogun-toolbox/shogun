@@ -49,13 +49,13 @@ template <class ST> class StringFileFeatures : public StringFeatures<ST>
 	/** default destructor
 	 *
 	 */
-	virtual ~StringFileFeatures();
+	~StringFileFeatures() override;
 
 	/** Returns the name of the SGSerializable instance.
 	 *
 	 * @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const { return "StringFileFeatures"; }
+	const char* get_name() const override { return "StringFileFeatures"; }
 
 	protected:
 	/** get next line from file
@@ -75,10 +75,10 @@ template <class ST> class StringFileFeatures : public StringFeatures<ST>
 	ST* get_line(uint64_t& len, uint64_t& offs, int32_t& line_nr, uint64_t file_length);
 
 	/** cleanup string features */
-	virtual void cleanup();
+	void cleanup() override;
 
     /** cleanup a single feature vector */
-    virtual void cleanup_feature_vector(int32_t num);
+    void cleanup_feature_vector(int32_t num) override;
 
 	/** obtain meta information from file
 	 *

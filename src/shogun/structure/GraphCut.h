@@ -121,10 +121,10 @@ public:
 	GraphCut(int32_t num_nodes, int32_t num_edges);
 
 	/** Destructor */
-	virtual ~GraphCut();
+	~GraphCut() override;
 
 	/** @return class name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "GraphCut";
 	}
@@ -134,7 +134,7 @@ public:
 	 * @param assignment the assignment
 	 * @return the total energy after doing inference
 	 */
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	float64_t inference(SGVector<int32_t> assignment) override;
 
 	/** @return the total flow in the s-t graph */
 	float64_t get_flow()

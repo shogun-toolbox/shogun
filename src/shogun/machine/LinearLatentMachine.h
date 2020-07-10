@@ -40,7 +40,7 @@ namespace shogun
 			 */
 			LinearLatentMachine(std::shared_ptr<LatentModel> model, float64_t C);
 
-			virtual ~LinearLatentMachine();
+			~LinearLatentMachine() override;
 
 			/** apply linear machine to data set before
 			 *
@@ -53,13 +53,13 @@ namespace shogun
 			 * @param data (test)data to be classified
 			 * @return classified labels
 			 */
-			virtual std::shared_ptr<LatentLabels> apply_latent(std::shared_ptr<Features> data);
+			std::shared_ptr<LatentLabels> apply_latent(std::shared_ptr<Features> data) override;
 
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LinearLatentMachine"; }
+			const char* get_name() const override { return "LinearLatentMachine"; }
 
 			/** set epsilon
 			 *
@@ -106,13 +106,13 @@ namespace shogun
 			 */
 			void set_model(const std::shared_ptr<LatentModel>& latent_model);
 
-			virtual bool train_require_labels() const
+			bool train_require_labels() const override
 			{
 				return false;
 			}
 
 		protected:
-			virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+			bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 			/** inner loop of the latent machine
 			 *

@@ -65,7 +65,7 @@ public:
 	EuclideanDistance(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r);
 
 	/** destructor */
-	virtual ~EuclideanDistance();
+	~EuclideanDistance() override;
 
 	/** init distance
 	 *
@@ -73,34 +73,34 @@ public:
 	 * @param r features of right-hand side
 	 * @return if init was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/** cleanup distance */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** get distance type we are
 	 *
 	 * @return distance type EUCLIDEAN
 	 */
-	virtual EDistanceType get_distance_type() { return D_EUCLIDEAN; }
+	EDistanceType get_distance_type() override { return D_EUCLIDEAN; }
 
 	/** get feature class the distance can deal with
 	 *
 	 * @return feature class DENSE
 	 */
-	virtual EFeatureClass get_feature_class() { return C_ANY; }
+	EFeatureClass get_feature_class() override { return C_ANY; }
 
 	/** get feature type the distance can deal with
 	 *
 	 * @return feature type DREAL
 	 */
-	virtual EFeatureType get_feature_type() { return F_DREAL; }
+	EFeatureType get_feature_type() override { return F_DREAL; }
 
 	/** get name of the distance
 	 *
 	 * @return name Euclidean
 	 */
-	virtual const char* get_name() const { return "EuclideanDistance"; }
+	const char* get_name() const override { return "EuclideanDistance"; }
 
 	/** disable application of sqrt on matrix computation
 	 * the matrix can then also be named norm squared
@@ -128,27 +128,27 @@ public:
 	 *  halts
 	 *  @return distance value or upper_bound
 	 */
-	virtual float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound);
+	float64_t distance_upper_bounded(int32_t idx_a, int32_t idx_b, float64_t upper_bound) override;
 
 	/**
 	 * Precomputation of squared norms for features of right hand side
 	 * WARNING : Make sure to reset computations using reset_precompute()
 	 * when features or feature matrix are changed.
 	 */
-	virtual void precompute_rhs();
+	void precompute_rhs() override;
 
 	/**
 	 * Precomputation of squared norms for features of left hand side
 	 * WARNING : Make sure to reset computations using reset_precompute()
 	 * when features or feature matrix are changed.
 	 */
-	virtual void precompute_lhs();
+	void precompute_lhs() override;
 
 	/**
 	 * Reset squared norm precomputations for features of both sides
 	 * Should be used to reset whenever features or feature matrix are changed.
 	 */
-	virtual void reset_precompute();
+	void reset_precompute() override;
 
 	/** replace right-hand side features used in distance matrix
 	 *
@@ -158,7 +158,7 @@ public:
 	 * @param rhs features of right-hand side
 	 * @return replaced right-hand side features
 	 */
-	virtual std::shared_ptr<Features> replace_rhs(std::shared_ptr<Features> rhs);
+	std::shared_ptr<Features> replace_rhs(std::shared_ptr<Features> rhs) override;
 
 	/** replace left-hand side features used in distance matrix
 	 *
@@ -168,13 +168,13 @@ public:
 	 * @param lhs features of right-hand side
 	 * @return replaced left-hand side features
 	 */
-	virtual std::shared_ptr<Features> replace_lhs(std::shared_ptr<Features> lhs);
+	std::shared_ptr<Features> replace_lhs(std::shared_ptr<Features> lhs) override;
 
 protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	/** if application of sqrt on matrix computation is disabled */
 	bool disable_sqrt;

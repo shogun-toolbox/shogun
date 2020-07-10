@@ -52,7 +52,7 @@ struct RealNumber : public StructuredData
 	}
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "RealNumber"; }
+	const char* get_name() const override { return "RealNumber"; }
 
 	/** value of the real number */
 	float64_t value;
@@ -82,7 +82,7 @@ class MulticlassSOLabels : public StructuredLabels
 		MulticlassSOLabels(SGVector< float64_t > const src);
 
 		/** destructor */
-		virtual ~MulticlassSOLabels();
+		~MulticlassSOLabels() override;
 
 		/** get number of classes
 		 *
@@ -98,7 +98,7 @@ class MulticlassSOLabels : public StructuredLabels
 		 *
 		 * @param label label to add
 		 */
-		virtual void add_label(std::shared_ptr<StructuredData> label);
+		void add_label(std::shared_ptr<StructuredData> label) override;
 
 		/** get label object for specified index
 		 *
@@ -106,7 +106,7 @@ class MulticlassSOLabels : public StructuredLabels
 		 *
 		 * @return label object
 		 */
-		virtual std::shared_ptr<StructuredData> get_label(int32_t idx);
+		std::shared_ptr<StructuredData> get_label(int32_t idx) override;
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -118,16 +118,16 @@ class MulticlassSOLabels : public StructuredLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, std::shared_ptr<StructuredData> label);
+		bool set_label(int32_t idx, std::shared_ptr<StructuredData> label) override;
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
 		 * @return number of labels
 		 */
-		virtual int32_t get_num_labels() const;
+		int32_t get_num_labels() const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MulticlassSOLabels"; }
+		const char* get_name() const override { return "MulticlassSOLabels"; }
 
 	private:
 		void init();

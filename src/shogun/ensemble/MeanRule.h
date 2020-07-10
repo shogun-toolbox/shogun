@@ -21,7 +21,7 @@ namespace shogun
 		public:
 			MeanRule();
 
-			virtual ~MeanRule();
+			~MeanRule() override;
 
 			/**
 			 * Combines a matrix of an ensemble of Machines output, where each
@@ -31,7 +31,7 @@ namespace shogun
 			 * @param ensemble_result SGMatrix
 			 * @return a vector where the nth element is the combined value of the Machines for the nth feature vector
 			 */
-			virtual SGVector<float64_t> combine(const SGMatrix<float64_t>& ensemble_result) const;
+			SGVector<float64_t> combine(const SGMatrix<float64_t>& ensemble_result) const override;
 
 			/**
 			 * Combines a vector of Machine ouputs for a given feature vector.
@@ -40,10 +40,10 @@ namespace shogun
 			 * @param ensemble_result SGVector<float64_t> with the Machine's output
 			 * @return the combined value
 			 */
-			virtual float64_t combine(const SGVector<float64_t>& ensemble_result) const;
+			float64_t combine(const SGVector<float64_t>& ensemble_result) const override;
 
 			/** name **/
-			virtual const char* get_name() const { return "MeanRule"; }
+			const char* get_name() const override { return "MeanRule"; }
 	};
 }
 

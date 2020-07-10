@@ -31,7 +31,7 @@ class KDTREEKNNSolver : public KNNSolver
 		}
 
 		/** deconstructor */
-		virtual ~KDTREEKNNSolver() { /* nothing to do */ }
+		~KDTREEKNNSolver() override { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -44,12 +44,12 @@ class KDTREEKNNSolver : public KNNSolver
 		 */
 		KDTREEKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels, const int32_t leaf_size);
 
-		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const override;
 
-		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const override;
 
 		/** @return object name */
-		const char* get_name() const { return "KDTREEKNNSolver"; }
+		const char* get_name() const override { return "KDTREEKNNSolver"; }
 
 	private:
 		void init()

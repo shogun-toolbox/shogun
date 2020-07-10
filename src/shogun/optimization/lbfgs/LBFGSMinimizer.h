@@ -49,26 +49,26 @@ public:
 	LBFGSMinimizer(std::shared_ptr<FirstOrderCostFunction >fun);
 
 	/*  Destructor */
-	virtual ~LBFGSMinimizer();
+	~LBFGSMinimizer() override;
 
 	/** returns the name of the class
 	 *
 	 * @return name LBFGSMinimizer
 	 */
-	virtual const char* get_name() const { return "LBFGSMinimizer"; }
+	const char* get_name() const override { return "LBFGSMinimizer"; }
 
 
 	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
 	/** Does minimizer support batch update?
 	 * 
 	 * @return whether minimizer supports batch update
 	 */
-	virtual bool supports_batch_update() const {return true;}
+	bool supports_batch_update() const override {return true;}
 
 	/** set L-BFGS parameters
 	 * For details please see shogun/optimization/lbfgs/lbfgs.h

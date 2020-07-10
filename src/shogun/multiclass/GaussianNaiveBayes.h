@@ -51,7 +51,7 @@ public:
 	/** destructor
 	 *
 	 */
-	virtual ~GaussianNaiveBayes();
+	~GaussianNaiveBayes() override;
 
 	/** set features for classify
 	 * @param features features to be set
@@ -67,23 +67,23 @@ public:
 	 * @param data examples to be classified
 	 * @return labels corresponding to data
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** classifiy specified example
 	 * @param idx example index
 	 * @return label
 	 */
-	virtual float64_t apply_one(int32_t idx);
+	float64_t apply_one(int32_t idx) override;
 
 	/** get name
 	 * @return classifier name
 	 */
-	virtual const char* get_name() const { return "GaussianNaiveBayes"; };
+	const char* get_name() const override { return "GaussianNaiveBayes"; };
 
 	/** get classifier type
 	 * @return classifier type
 	 */
-	virtual EMachineType get_classifier_type() { return CT_GAUSSIANNAIVEBAYES; };
+	EMachineType get_classifier_type() override { return CT_GAUSSIANNAIVEBAYES; };
 
 protected:
 
@@ -91,7 +91,7 @@ protected:
 	 * @param data train examples
 	 * @return true if successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 private:
 	void init();

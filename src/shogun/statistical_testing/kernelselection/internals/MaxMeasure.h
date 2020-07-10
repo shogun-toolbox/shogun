@@ -50,14 +50,14 @@ class MaxMeasure : public KernelSelection
 public:
 	MaxMeasure(KernelManager&, std::shared_ptr<MMD>);
 	MaxMeasure(const MaxMeasure& other)=delete;
-	~MaxMeasure();
+	~MaxMeasure() override;
 	MaxMeasure& operator=(const MaxMeasure& other)=delete;
-	virtual std::shared_ptr<shogun::Kernel> select_kernel();
-	virtual SGVector<float64_t> get_measure_vector();
-	virtual SGMatrix<float64_t> get_measure_matrix();
+	std::shared_ptr<shogun::Kernel> select_kernel() override;
+	SGVector<float64_t> get_measure_vector() override;
+	SGMatrix<float64_t> get_measure_matrix() override;
 protected:
-	virtual void init_measures();
-	virtual void compute_measures();
+	void init_measures() override;
+	void compute_measures() override;
 	SGVector<float64_t> measures;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

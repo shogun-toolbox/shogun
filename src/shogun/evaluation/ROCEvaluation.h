@@ -33,19 +33,19 @@ public:
 	ROCEvaluation();
 
 	/** destructor */
-	virtual ~ROCEvaluation();
+	~ROCEvaluation() override;
 
 	/** get name */
-	virtual const char* get_name() const { return "ROCEvaluation"; };
+	const char* get_name() const override { return "ROCEvaluation"; };
 
 	/** evaluate ROC and auROC
 	 * @param predicted labels
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
-	virtual EEvaluationDirection get_evaluation_direction() const
+	EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MAXIMIZE;
 	}

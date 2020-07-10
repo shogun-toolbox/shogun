@@ -28,10 +28,10 @@ public:
     ECOCDecoder() {}
 
     /** destructor */
-    ~ECOCDecoder() {}
+    ~ECOCDecoder() override {}
 
     /** get name */
-    const char* get_name() const
+    const char* get_name() const override
     {
         return "ECOCDecoder";
     }

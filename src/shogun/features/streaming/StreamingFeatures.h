@@ -80,7 +80,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingFeatures();
+	~StreamingFeatures() override;
 
 	/**
 	 * Set the vector reading functions.
@@ -197,7 +197,7 @@ public:
 	 *
 	 * @return a duplicate object as Features*
 	 */
-	virtual std::shared_ptr<Features> duplicate() const
+	std::shared_ptr<Features> duplicate() const override
 	{
 		not_implemented(SOURCE_LOCATION);
 		return NULL;

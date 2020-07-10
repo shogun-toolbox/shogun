@@ -35,13 +35,13 @@ public:
 	CrossValidationSplitting(std::shared_ptr<Labels> labels, index_t num_subsets);
 
 	/** @return name of the SGSerializable */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "CrossValidationSplitting";
 	}
 
 	/** implementation of the standard cross-validation splitting strategy */
-	virtual void build_subsets();
+	void build_subsets() override;
 };
 }
 

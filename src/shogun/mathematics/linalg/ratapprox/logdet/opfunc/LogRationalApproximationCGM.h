@@ -48,15 +48,15 @@ public:
 		float64_t desired_accuracy);
 
 	/** destructor */
-	virtual ~LogRationalApproximationCGM();
+	~LogRationalApproximationCGM() override;
 
 	/**
 	 * method that solves the result for a sample
 	 */
-	virtual float64_t compute(SGVector<float64_t> sample) const;
+	float64_t compute(SGVector<float64_t> sample) const override;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "LogRationalApproximationCGM";
 	}

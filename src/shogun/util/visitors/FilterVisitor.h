@@ -54,137 +54,137 @@ namespace shogun
 			return;
 		}
 
-		virtual void on(bool* v) override
+		void on(bool* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(std::vector<bool>::reference* v) override
+		void on(std::vector<bool>::reference* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(int8_t* v) override
+		void on(int8_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(int16_t* v) override
+		void on(int16_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(int32_t* v) override
+		void on(int32_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(int64_t* v) override
+		void on(int64_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(float32_t* v) override
+		void on(float32_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(float64_t* v) override
+		void on(float64_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(floatmax_t* v) override
+		void on(floatmax_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(std::shared_ptr<SGObject>* v) override
+		void on(std::shared_ptr<SGObject>* v) override
 		{
 			if(*v)
 				on_impl(v);
 		}
 
-		virtual void on(std::string* v) override
+		void on(std::string* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(char* v) override
+		void on(char* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(uint8_t* v) override
+		void on(uint8_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(uint16_t* v) override
+		void on(uint16_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(uint32_t* v) override
+		void on(uint32_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(uint64_t* v) override
+		void on(uint64_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(complex128_t* v) override
+		void on(complex128_t* v) override
 		{
 			on_impl(v);
 		}
 
-		virtual void on(AutoValueEmpty* v) override
+		void on(AutoValueEmpty* v) override
 		{
 		}
 
-		virtual void enter_matrix(index_t* rows, index_t* cols) override
+		void enter_matrix(index_t* rows, index_t* cols) override
 		{
 		}
 
-		virtual void enter_vector(index_t* size) override
+		void enter_vector(index_t* size) override
 		{
 		}
 
-		virtual void enter_std_vector(size_t* size) override
+		void enter_std_vector(size_t* size) override
 		{
 		}
 
-		virtual void enter_map(size_t* size) override
+		void enter_map(size_t* size) override
 		{
 		}
 
-		virtual void exit_matrix(index_t* rows, index_t* cols) override
+		void exit_matrix(index_t* rows, index_t* cols) override
 		{
 		}
 
-		virtual void exit_vector(index_t* size) override
+		void exit_vector(index_t* size) override
 		{
 		}
 
-		virtual void exit_std_vector(size_t* size) override
+		void exit_std_vector(size_t* size) override
 		{
 		}
 
-		virtual void enter_auto_value(bool* is_empty) override
+		void enter_auto_value(bool* is_empty) override
 		{
 		}
 
-		virtual void exit_map(size_t* size) override
+		void exit_map(size_t* size) override
 		{
 		}
 
-		virtual void enter_matrix_row(index_t* rows, index_t* cols) override
+		void enter_matrix_row(index_t* rows, index_t* cols) override
 		{
 		}
 
-		virtual void exit_matrix_row(index_t* rows, index_t* cols) override
+		void exit_matrix_row(index_t* rows, index_t* cols) override
 		{
 		}
 

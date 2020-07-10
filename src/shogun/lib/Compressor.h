@@ -55,7 +55,7 @@ namespace shogun
 		}
 
 		/** default destructor */
-		virtual ~Compressor()
+		~Compressor() override
 		{
 		}
 
@@ -89,7 +89,7 @@ namespace shogun
 				uint8_t* uncompressed, uint64_t& uncompressed_size);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Compressor"; }
+		const char* get_name() const override { return "Compressor"; }
 
 	protected:
 		/** compressor type */

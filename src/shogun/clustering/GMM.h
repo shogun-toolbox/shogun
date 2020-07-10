@@ -50,7 +50,7 @@ class GMM : public RandomMixin<Distribution>
 		 */
 		GMM(std::vector<std::shared_ptr<Gaussian>> components, SGVector<float64_t> coefficients,
 				bool copy=false);
-		virtual ~GMM();
+		~GMM() override;
 
 		/** cleanup */
 		void cleanup();
@@ -61,7 +61,7 @@ class GMM : public RandomMixin<Distribution>
 		 *
 		 * @return true
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** learn model using EM
 		 *
@@ -99,14 +99,14 @@ class GMM : public RandomMixin<Distribution>
 		 *
 		 * @return number of parameters in model
 		 */
-		virtual int32_t get_num_model_parameters();
+		int32_t get_num_model_parameters() override;
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic) if num_param < m_dim returns
 		 * an element from the mean, else return an element from the covariance
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param);
+		float64_t get_log_model_parameter(int32_t num_param) override;
 
 		/** @return number of mixture components */
 		index_t get_num_components() const;
@@ -123,8 +123,8 @@ class GMM : public RandomMixin<Distribution>
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+		float64_t get_log_derivative(
+			int32_t num_param, int32_t num_example) override;
 
 		/** compute log likelihood for example
 		 *
@@ -133,7 +133,7 @@ class GMM : public RandomMixin<Distribution>
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		float64_t get_log_likelihood_example(int32_t num_example) override;
 
 		/** compute likelihood for example
 		 *
@@ -142,7 +142,7 @@ class GMM : public RandomMixin<Distribution>
 		 * @param num_example which example
 		 * @return likelihood for example
 		 */
-		virtual float64_t get_likelihood_example(int32_t num_example);
+		float64_t get_likelihood_example(int32_t num_example) override;
 
 		/** get nth mean
 		 *
@@ -212,7 +212,7 @@ class GMM : public RandomMixin<Distribution>
 		SGVector<float64_t> cluster(SGVector<float64_t> point);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GMM"; }
+		const char* get_name() const override { return "GMM"; }
 
 	private:
 		/** 1NN assignment initialization

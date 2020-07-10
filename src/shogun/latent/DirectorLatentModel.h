@@ -30,19 +30,19 @@ IGNORE_IN_CLASSLIST class DirectorLatentModel : public LatentModel
 		DirectorLatentModel();
 
 		/** destructor */
-		virtual ~DirectorLatentModel();
+		~DirectorLatentModel() override;
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
 		 * the dimension of the weight vector \f$w\f$
 		 */
-		virtual int32_t get_dim() const;
+		int32_t get_dim() const override;
 
 		/** Calculate the PSI vectors for all features
 		 *
 		 * @return PSI vectors
 		 */
-		virtual std::shared_ptr<DotFeatures> get_psi_feature_vectors();
+		std::shared_ptr<DotFeatures> get_psi_feature_vectors() override;
 
 		/** User defined \f$h^{*} = argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 		 * This function has to be defined the user as it is applications specific, since
@@ -52,17 +52,17 @@ IGNORE_IN_CLASSLIST class DirectorLatentModel : public LatentModel
 		 * @param idx index of the example
 		 * @return returns \f$h^{*}\f$ for the given example
 		 */
-		virtual std::shared_ptr<Data> infer_latent_variable(const SGVector<float64_t>& w, index_t idx);
+		std::shared_ptr<Data> infer_latent_variable(const SGVector<float64_t>& w, index_t idx) override;
 
 		/** Calculates \f$argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 		 * The default implementaiton calculates the argmax_h only on the positive examples.
 		 *
 		 * @param w weight vector (cutting plane) supplied by the underlying optimizer.
 		 */
-		virtual void argmax_h(const SGVector<float64_t>& w);
+		void argmax_h(const SGVector<float64_t>& w) override;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "DirectorLatentModel"; }
+		const char* get_name() const override { return "DirectorLatentModel"; }
 
 }; /* class CDirectorLatentModel */
 } /* namespace shogun */

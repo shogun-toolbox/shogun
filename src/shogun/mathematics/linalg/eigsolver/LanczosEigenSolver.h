@@ -34,12 +34,12 @@ public:
 	LanczosEigenSolver(std::shared_ptr<LinearOperator<float64_t>> linear_operator);
 
 	/** destructor */
-	virtual ~LanczosEigenSolver();
+	~LanczosEigenSolver() override;
 
 	/**
 	 * compute method for computing eigenvalues of a real valued linear operator
 	 */
-	virtual void compute();
+	void compute() override;
 
 	/** @param max_iteration_limit to be set */
 	void set_max_iteration_limit(int64_t max_iteration_limit)
@@ -78,7 +78,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "LanczosEigenSolver";
 	}

@@ -38,7 +38,7 @@ public:
 	FactorGraphObservation(SGVector<int32_t> observed_state,
 		SGVector<float64_t> loss_weights);
 
-	~FactorGraphObservation() { }
+	~FactorGraphObservation() override { }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -55,7 +55,7 @@ public:
 	}
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "FactorGraphObservation"; }
+	const char* get_name() const override { return "FactorGraphObservation"; }
 
 	/** @return data */
 	SGVector<int32_t> get_data() const;
@@ -95,10 +95,10 @@ class FactorGraphLabels : public StructuredLabels
 		FactorGraphLabels(int32_t num_labels);
 
 		/** destructor */
-		virtual ~FactorGraphLabels();
+		~FactorGraphLabels() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FactorGraphLabels"; }
+		const char* get_name() const override { return "FactorGraphLabels"; }
 
 	private:
 		/** internal initialization */

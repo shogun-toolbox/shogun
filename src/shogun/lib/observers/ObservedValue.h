@@ -31,7 +31,7 @@ namespace shogun
 		/**
 		 * Destructor
 		 */
-		~ObservedValue(){};
+		~ObservedValue() override{};
 
 #ifndef SWIG
 
@@ -47,7 +47,7 @@ namespace shogun
 #endif
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "ObservedValue";
 		}

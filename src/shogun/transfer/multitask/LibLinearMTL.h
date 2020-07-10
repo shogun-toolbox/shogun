@@ -101,14 +101,14 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 			std::shared_ptr<Labels> trainlab);
 
 		/** destructor */
-		virtual ~LibLinearMTL();
+		~LibLinearMTL() override;
 
 
 		/** get classifier type
 		 *
 		 * @return the classifier type
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LIBLINEAR; }
+		EMachineType get_classifier_type() override { return CT_LIBLINEAR; }
 
 		/** set C
 		 *
@@ -154,7 +154,7 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		inline bool get_bias_enabled() { return use_bias; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LibLinearMTL"; }
+		const char* get_name() const override { return "LibLinearMTL"; }
 
 		/** get the maximum number of iterations liblinear is allowed to do */
 		inline int32_t get_max_iterations()
@@ -293,7 +293,7 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		/** set up parameters */

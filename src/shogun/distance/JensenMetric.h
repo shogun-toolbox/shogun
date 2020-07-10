@@ -41,7 +41,7 @@ class JensenMetric: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 */
 		JensenMetric(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
-		virtual ~JensenMetric();
+		~JensenMetric() override;
 
 		/** init distance
 		 *
@@ -49,28 +49,28 @@ class JensenMetric: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type JENSEN
 		 */
-		virtual EDistanceType get_distance_type() { return D_JENSEN; }
+		EDistanceType get_distance_type() override { return D_JENSEN; }
 
 		/** get name of the distance
 		 *
 		 * @return name Jensen-Metric
 		 */
-		virtual const char* get_name() const { return "JensenMetric"; }
+		const char* get_name() const override { return "JensenMetric"; }
 
 	protected:
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 } // namespace shogun
 

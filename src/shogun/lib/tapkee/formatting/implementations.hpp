@@ -51,7 +51,7 @@ namespace formatting
 		public:
 			ValueWrapperImplementation(const T& value) :
 				value_(value) { }
-			virtual std::string representation() const
+			std::string representation() const override
 			{
 				std::stringstream string_stream;
 				string_stream << std::setprecision(default_precision) << value_;
@@ -68,7 +68,7 @@ namespace formatting
 		public:
 			ValueWrapperImplementation(const char* value) :
 				value_(value) { }
-			virtual std::string representation() const
+			std::string representation() const override
 			{
 				return std::string(value_);
 			}
@@ -83,7 +83,7 @@ namespace formatting
 		public:
 			ValueWrapperImplementation(bool value) :
 				value_(value) { }
-			virtual std::string representation() const
+			std::string representation() const override
 			{
 				return value_ ? "true" : "false";
 			}
@@ -98,7 +98,7 @@ namespace formatting
 		public:
 			ValueWrapperImplementation(const std::string& value) :
 				value_(value) { }
-			virtual std::string representation() const
+			std::string representation() const override
 			{
 				return value_;
 			}
@@ -113,7 +113,7 @@ namespace formatting
 		public:
 			ValueWrapperImplementation(const T* value) :
 				value_(value) { }
-			virtual std::string representation() const
+			std::string representation() const override
 			{
 				std::stringstream string_stream;
 				string_stream << *value_;

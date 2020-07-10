@@ -78,7 +78,7 @@ public:
 	MultiKernelQuadraticTimeMMD();
 
 	/** Destructor */
-	virtual ~MultiKernelQuadraticTimeMMD();
+	~MultiKernelQuadraticTimeMMD() override;
 
 	/**
 	 * Method that adds instances of shift-invariant kernels (e.g. GaussianKernel).
@@ -161,7 +161,7 @@ public:
 	SGVector<bool> perform_test(float64_t alpha);
 
 	/** @return The name of the class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 private:
 	struct Self;
 	std::unique_ptr<Self> self;

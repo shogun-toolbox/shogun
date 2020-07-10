@@ -36,22 +36,22 @@ public:
 	MeanSquaredLogError() : Evaluation() {};
 
 	/** destructor */
-	virtual ~MeanSquaredLogError() {};
+	~MeanSquaredLogError() override {};
 
 	/** evaluate mean squared log error
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return mean squared error
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
-	inline EEvaluationDirection get_evaluation_direction() const
+	inline EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MINIMIZE;
 	}
 
 	/** get name */
-	virtual const char* get_name() const { return "MeanSquaredLogError"; }
+	const char* get_name() const override { return "MeanSquaredLogError"; }
 };
 
 }

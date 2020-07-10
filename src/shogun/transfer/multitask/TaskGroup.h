@@ -29,13 +29,13 @@ public:
 	TaskGroup();
 
 	/** destructor */
-	virtual ~TaskGroup();
+	~TaskGroup() override;
 
 	/** get tasks indices
 	 *
 	 * @return array of vectors containing indices of each task
 	 */
-	virtual SGVector<index_t>* get_tasks_indices() const;
+	SGVector<index_t>* get_tasks_indices() const override;
 
 	/** append task to the group
 	 *
@@ -47,19 +47,19 @@ public:
 	 *
 	 * @return number of tasks in the group
 	 */
-	virtual int32_t get_num_tasks() const;
+	int32_t get_num_tasks() const override;
 
 	/** get name
 	 *
 	 * @return name of the object
 	 */
-	const char* get_name() const { return "TaskGroup"; };
+	const char* get_name() const override { return "TaskGroup"; };
 
 	/** get relation type
 	 *
 	 * @return TASK_GROUP
 	 */
-	ETaskRelationType get_relation_type() const { return TASK_GROUP; }
+	ETaskRelationType get_relation_type() const override { return TASK_GROUP; }
 
 private:
 

@@ -61,22 +61,22 @@ template< class ST > class MatrixFeatures : public Features
 		 *
 		 * @return feature object
 		 */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** destructor */
-		virtual ~MatrixFeatures();
+		~MatrixFeatures() override;
 
 		/** get feature type
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type() const;
+		EFeatureType get_feature_type() const override;
 
 		/** get feature class
 		 *
 		 * @return feature class like STRING, SIMPLE, SPARSE... (C_MATRIX in this case)
 		 */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** get number of examples/vectors, possibly corresponding to
 		 * the current subset
@@ -84,7 +84,7 @@ template< class ST > class MatrixFeatures : public Features
 		 * @return number of examples/vectors (possibly of subset, if
 		 * implemented)
 		 */
-		virtual int32_t get_num_vectors() const { return m_num_vectors; }
+		int32_t get_num_vectors() const override { return m_num_vectors; }
 
 		/** get feature vector num
 		 *
@@ -123,7 +123,7 @@ template< class ST > class MatrixFeatures : public Features
 		void set_features(SGMatrixList< ST > features, int32_t num_feats);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MatrixFeatures"; }
+		const char* get_name() const override { return "MatrixFeatures"; }
 
 		/** @return the number of features */
 		inline int32_t get_num_features() const { return m_num_features; }

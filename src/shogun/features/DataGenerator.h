@@ -26,7 +26,7 @@ class DataGenerator: public SGObject
 public:
 	DataGenerator();
 
-	virtual ~DataGenerator();
+	~DataGenerator() override;
 
 	/** Generate points for classification tasks. Every dimension is in the range [0,1]. You can
 	 * scale or translate the features afterwards. It works be creating a grid in the n-dimensional space
@@ -100,7 +100,7 @@ public:
 	template <typename PRNG>
 	static SGMatrix<float64_t> generate_gaussians(index_t m, index_t n, index_t dim, PRNG& prng);
 
-	virtual const char* get_name() const { return "DataGenerator"; }
+	const char* get_name() const override { return "DataGenerator"; }
 
 private:
 	/** registers all parameters and initializes variables with defaults */

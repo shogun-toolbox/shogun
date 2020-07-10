@@ -41,7 +41,7 @@ template <class ST> class DecompressString : public StringPreprocessor<ST>
 		DecompressString(E_COMPRESSION_TYPE ct);
 
 		/** destructor */
-		virtual ~DecompressString();
+		~DecompressString() override;
 
 		/// initialize preprocessor from file
 		bool load(FILE* f);
@@ -50,16 +50,16 @@ template <class ST> class DecompressString : public StringPreprocessor<ST>
 		bool save(FILE* f);
 
 		/// apply preproc on single feature vector
-		virtual ST* apply_to_string(ST* f, int32_t &len);
+		ST* apply_to_string(ST* f, int32_t &len) override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "DecompressString"; }
+		const char* get_name() const override { return "DecompressString"; }
 
 		/// return a type of preprocessor TODO: template specification of get_type
-		virtual EPreprocessorType get_type() const;
+		EPreprocessorType get_type() const override;
 
 	protected:
-		virtual void apply_to_string_list(std::vector<SGVector<ST>>& string_list);
+		void apply_to_string_list(std::vector<SGVector<ST>>& string_list) override;
 
 		/** compressor used to decompress strings */
 		std::shared_ptr<Compressor> compressor;

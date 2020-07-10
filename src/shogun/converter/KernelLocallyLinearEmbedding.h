@@ -49,10 +49,10 @@ public:
 	KernelLocallyLinearEmbedding(std::shared_ptr<Kernel> kernel);
 
 	/** destructor */
-	virtual ~KernelLocallyLinearEmbedding();
+	~KernelLocallyLinearEmbedding() override;
 
 	/** transform */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 	/** embed kernel (kernel should be inited)
 	 * @param kernel kernel to construct embed
@@ -60,7 +60,7 @@ public:
 	std::shared_ptr<DenseFeatures<float64_t>> embed_kernel(const std::shared_ptr<Kernel>& kernel);
 
 	/** get name */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 };
 }

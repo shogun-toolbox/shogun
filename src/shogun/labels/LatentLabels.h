@@ -38,7 +38,7 @@ namespace shogun
 			LatentLabels(std::shared_ptr<Labels> labels);
 
 			/** destructor */
-			virtual ~LatentLabels() override;
+			~LatentLabels() override;
 
 			/** get all the stored latent labels
 			 *
@@ -67,7 +67,7 @@ namespace shogun
 			 */
 			bool set_latent_label(int32_t idx, std::shared_ptr<Data> label);
 
-		    virtual bool is_valid() const override;
+		    bool is_valid() const override;
 
 		    /** Make sure the label is valid, otherwise raise SG_ERROR.
 			 *
@@ -75,25 +75,25 @@ namespace shogun
 			 *
 			 * @param context optional message to convey the context
 			 */
-			virtual void ensure_valid(const char* context=NULL) override;
+			void ensure_valid(const char* context=NULL) override;
 
 			/** get label type
 			 *
 			 * @return label type (binary, multiclass, ...)
 			 */
-			virtual ELabelType get_label_type() const override { return LT_LATENT; }
+			ELabelType get_label_type() const override { return LT_LATENT; }
 
 			/** Returns the name of the SGSerializable instance.
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const override { return "LatentLabels"; }
+			const char* get_name() const override { return "LatentLabels"; }
 
 			/** get the number of stored labels
 			 *
 			 * @return the number of labels
 			 */
-			virtual int32_t get_num_labels() const override;
+			int32_t get_num_labels() const override;
 
 			/** set labels
 			 *

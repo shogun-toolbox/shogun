@@ -40,7 +40,7 @@ namespace shogun
 class Features;
 class IndependenceTest;
 
-/** @brief Class CDependenceMaximization, base class for all feature selection
+/** @brief Class DependenceMaximization, base class for all feature selection
  * preprocessors which select a subset of features that shows maximum dependence
  * between the features and the labels. This is done via an implementation of
  * IndependenceTest, #m_estimator inside compute_measures() (see class
@@ -67,14 +67,14 @@ class IndependenceTest;
  * the labels and sets this as features \f$\mathbf{Y}\sim q\f$ to the estimator
  * which is required to compute the measure.
  */
-class CDependenceMaximization : public FeatureSelection<float64_t>
+class DependenceMaximization : public FeatureSelection<float64_t>
 {
 public:
 	/** Default constructor */
-	CDependenceMaximization();
+	DependenceMaximization();
 
 	/** Destructor */
-	virtual ~CDependenceMaximization();
+	~DependenceMaximization() override;
 
 	/**
 	 * Method that computes the measures using test statistic computed by
@@ -86,7 +86,7 @@ public:
 	 * the measure on
 	 * @return the measure based on which features are selected
 	 */
-	virtual float64_t compute_measures(std::shared_ptr<Features> features, index_t idx);
+	float64_t compute_measures(std::shared_ptr<Features> features, index_t idx) override;
 
 	/**
 	 * Method which handles the removal of features based on removal policy.
@@ -101,10 +101,10 @@ public:
 	 * the lowest rank which corresponds to smallest measure.
 	 * @return the feature object after removal of features based on the policy
 	 */
-	virtual std::shared_ptr<Features> remove_feats(std::shared_ptr<Features> features, SGVector<index_t> ranks);
+	std::shared_ptr<Features> remove_feats(std::shared_ptr<Features> features, SGVector<index_t> ranks) override;
 
 	/** @param policy feature removal policy */
-	virtual void set_policy(EFeatureRemovalPolicy policy);
+	void set_policy(EFeatureRemovalPolicy policy) override;
 
 	/**
 	 * Abstract method which is overridden in the subclasses to set accepted
@@ -112,7 +112,7 @@ public:
 	 *
 	 * @param algorithm the feature selection algorithm to use
 	 */
-	virtual void set_algorithm(EFeatureSelectionAlgorithm algorithm)=0;
+	void set_algorithm(EFeatureSelectionAlgorithm algorithm) override =0;
 
 	/**
 	 * Setter for labels. This method is overridden to internally convert the
@@ -122,10 +122,10 @@ public:
 	 *
 	 * @param labels the labels
 	 */
-	virtual void set_labels(std::shared_ptr<Labels> labels);
+	void set_labels(std::shared_ptr<Labels> labels) override;
 
 	/** @return the class name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DependenceMaximization";
 	}

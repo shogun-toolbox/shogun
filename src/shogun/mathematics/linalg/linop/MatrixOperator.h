@@ -40,7 +40,7 @@ public:
 	}
 
 	/** destructor */
-	~MatrixOperator()
+	~MatrixOperator() override
 	{
 	}
 
@@ -50,7 +50,7 @@ public:
 	 * @param b the vector to which the linear operator applies
 	 * @return the result vector
 	 */
-	virtual SGVector<T> apply(SGVector<T> b) const = 0;
+	SGVector<T> apply(SGVector<T> b) const override = 0;
 
 	/**
 	 * abstract method that sets the main diagonal
@@ -67,7 +67,7 @@ public:
 	virtual SGVector<T> get_diagonal() const = 0;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MatrixOperator";
 	}

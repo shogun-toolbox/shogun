@@ -42,14 +42,14 @@ public:
 		Evaluation(), m_ignore_rejects(ignore_rejects), m_rejects_num(0) {};
 
 	/** destructor */
-	virtual ~MulticlassAccuracy() {};
+	~MulticlassAccuracy() override {};
 
 	/** evaluate accuracy
 	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override;
 
 	/** constructs confusion matrix for multiclass classification
 	 * @param predicted labels to be evaluated
@@ -58,7 +58,7 @@ public:
 	 */
 	static SGMatrix<int32_t> get_confusion_matrix(const std::shared_ptr<Labels>& predicted, const std::shared_ptr<Labels>& ground_truth);
 
-	inline EEvaluationDirection get_evaluation_direction() const
+	inline EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MAXIMIZE;
 	}
@@ -70,7 +70,7 @@ public:
 	}
 
 	/** get name */
-	virtual const char* get_name() const { return "MulticlassAccuracy"; }
+	const char* get_name() const override { return "MulticlassAccuracy"; }
 
 protected:
 

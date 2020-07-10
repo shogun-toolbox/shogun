@@ -30,7 +30,7 @@ public:
 	/** Class default Destructor
 	 *
 	 */
-   virtual ~MKLMulticlassOptimizationBase();
+   ~MKLMulticlassOptimizationBase() override;
 
 	/** initializes solver
 	 *
@@ -59,7 +59,7 @@ public:
 	virtual void computeweights(std::vector<float64_t> & weights2);
 
 	/** @return object name */
-	virtual const char* get_name() const { return "MKLMulticlassOptimizationBase"; }
+	const char* get_name() const override { return "MKLMulticlassOptimizationBase"; }
 
 	/** sets p-norm parameter for MKL
 	*	 @param norm the MKL norm

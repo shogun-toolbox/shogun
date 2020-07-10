@@ -47,7 +47,7 @@ public:
 	AbsoluteDeviationLoss(): LossFunction() {};
 
 	/** Destructor */
-	~AbsoluteDeviationLoss() {};
+	~AbsoluteDeviationLoss() override {};
 
 	/** Get loss for an example
 	 *
@@ -55,14 +55,14 @@ public:
 	 * @param label actual label \f$y_i\f$
 	 * @return loss
 	 */
-	float64_t loss(float64_t prediction, float64_t label);
+	float64_t loss(float64_t prediction, float64_t label) override;
 
 	/** Get loss for an example
 	 *
 	 * @param z where to evaluate the loss
 	 * @return loss
 	 */
-	float64_t loss(float64_t z);
+	float64_t loss(float64_t z) override;
 
 	/** Get first derivative of the loss function
 	 *
@@ -70,14 +70,14 @@ public:
 	 * @param label actual label \f$y_i\f$
 	 * @return gradient
 	 */
-	float64_t first_derivative(float64_t prediction, float64_t label);
+	float64_t first_derivative(float64_t prediction, float64_t label) override;
 
 	/** Get first derivative of the loss function
 	 *
 	 * @param z where to evaluate the derivative of the loss
 	 * @return first derivative
 	 */
-	float64_t first_derivative(float64_t z);
+	float64_t first_derivative(float64_t z) override;
 
 	/** Get second derivative of the loss function
 	 *
@@ -85,14 +85,14 @@ public:
 	 * @param label actual label \f$y_i\f$
 	 * @return second derivative
 	 */
-	float64_t second_derivative(float64_t prediction, float64_t label);
+	float64_t second_derivative(float64_t prediction, float64_t label) override;
 
 	/** Get second derivative of the loss function
 	 *
 	 * @param z where to evaluate the second derivative of the loss
 	 * @return second derivative
 	 */
-	float64_t second_derivative(float64_t z);
+	float64_t second_derivative(float64_t z) override;
 
 	/** Get importance aware weight update for this loss function
 	 * NOT IMPLEMENTED
@@ -103,7 +103,7 @@ public:
 	 * @param norm scale value
 	 * @return update
 	 */
-	virtual float64_t get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm);
+	float64_t get_update(float64_t prediction, float64_t label, float64_t eta_t, float64_t norm) override;
 
 	/** Get square of gradient, used for adaptive learning
 	 * NOT IMPLEMENTED
@@ -112,19 +112,19 @@ public:
 	 * @param label actual label \f$y_i\f$
 	 * @return square of gradient
 	 */
-	virtual float64_t get_square_grad(float64_t prediction, float64_t label);
+	float64_t get_square_grad(float64_t prediction, float64_t label) override;
 
 	/** Return loss type
 	 *
 	 * @return L_ABSOLUTEDEVIATIONLOSS
 	 */
-	virtual ELossType get_loss_type() { return L_ABSOLUTEDEVIATIONLOSS; }
+	ELossType get_loss_type() override { return L_ABSOLUTEDEVIATIONLOSS; }
 
 	/** Return name
 	 *
 	 * @return AbsoluteDeviationLoss
 	 */
-	virtual const char* get_name() const { return "AbsoluteDeviationLoss"; }
+	const char* get_name() const override { return "AbsoluteDeviationLoss"; }
 };
 
 } /* shogun */

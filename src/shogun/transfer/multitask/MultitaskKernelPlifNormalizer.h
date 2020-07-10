@@ -66,8 +66,8 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs) const
+	float64_t normalize(float64_t value, int32_t idx_lhs,
+			int32_t idx_rhs) const override
 	{
 
 		//lookup tasks
@@ -104,7 +104,7 @@ public:
 	}
 
 	/** default destructor */
-	virtual ~MultitaskKernelPlifNormalizer() = default;
+	~MultitaskKernelPlifNormalizer() override = default;
 
 	/** update cache */
 	void update_cache()
@@ -247,7 +247,7 @@ public:
 	/**
 	 *  @param idx index of MKL weight to get
 	 */
-	float64_t get_beta(int32_t idx) const
+	float64_t get_beta(int32_t idx) const override
 	{
 		return betas[idx];
 	}
@@ -256,7 +256,7 @@ public:
 	 *  @param idx index of MKL weight to set
 	 *  @param weight MKL weight to set
 	 */
-	void set_beta(int32_t idx, float64_t weight)
+	void set_beta(int32_t idx, float64_t weight) override
 	{
 		betas[idx] = weight;
 
@@ -266,14 +266,14 @@ public:
 	/**
 	 *  @return number of kernel weights (support points)
 	 */
-	int32_t get_num_betas() const noexcept
+	int32_t get_num_betas() const noexcept override
 	{
 		return num_betas;
 	}
 
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MultitaskKernelPlifNormalizer";
 	}

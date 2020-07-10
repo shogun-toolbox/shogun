@@ -75,7 +75,7 @@ public:
 			int32_t bits=20, float64_t* lab=NULL);
 
 	/** Destructor */
-	virtual ~StreamingHashedDocDotFeatures();
+	~StreamingHashedDocDotFeatures() override;
 
 	/** compute dot product between vectors of two
 	 * StreamingDotFeatures objects.
@@ -83,14 +83,14 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures> df);
+	float32_t dot(std::shared_ptr<StreamingDotFeatures> df) override;
 
 	/** compute dot product between current vector and a dense vector
 	 *
 	 * @param vec2 real valued vector
 	 * @param vec2_len length of vector
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len);
+	float32_t dense_dot(const float32_t* vec2, int32_t vec2_len) override;
 
 	/** add current vector multiplied with alpha to dense vector, 'vec'
 	 *
@@ -99,8 +99,8 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2,
-			int32_t vec2_len, bool abs_val=false);
+	void add_to_dense_vec(float32_t alpha, float32_t* vec2,
+			int32_t vec2_len, bool abs_val=false) override;
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -109,21 +109,21 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	int32_t get_dim_feature_space() const override;
 
 	/**
 	 * Return the name.
 	 *
 	 * @return the name of the class
 	 */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 	/**
 	 * Return the number of vectors stored in this object.
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	int32_t get_num_vectors() const override;
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -134,7 +134,7 @@ public:
 	 * The parser uses the function set by this while reading
 	 * unlabelled examples.
 	 */
-	virtual void set_vector_reader();
+	void set_vector_reader() override;
 
 	/**
 	 * Sets the read function (in case the examples are labelled)
@@ -145,32 +145,32 @@ public:
 	 * The parser uses the function set by this while reading
 	 * labelled examples.
 	 */
-	virtual void set_vector_and_label_reader();
+	void set_vector_and_label_reader() override;
 
 	/**
 	 * Return the feature type, depending on T.
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual EFeatureType get_feature_type() const;
+	EFeatureType get_feature_type() const override;
 
 	/**
 	 * Return the feature class
 	 *
 	 * @return C_STREAMING_DENSE
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	EFeatureClass get_feature_class() const override;
 
 	/**
 	 * Start the parser.
 	 * It stores parsed examples from the input in a separate thread.
 	 */
-	virtual void start_parser();
+	void start_parser() override;
 
 	/**
 	 * End the parser. Wait for the parsing thread to complete.
 	 */
-	virtual void end_parser();
+	void end_parser() override;
 
 	/**
 	 * Return the label of the current example.
@@ -179,28 +179,28 @@ public:
 	 *
 	 * @return Label (if labelled example)
 	 */
-	virtual float64_t get_label();
+	float64_t get_label() override;
 
 	/**
 	 * Indicate to the parser that it must fetch the next example.
 	 *
 	 * @return true on success, false on failure (i.e., no more examples).
 	 */
-	virtual bool get_next_example();
+	bool get_next_example() override;
 
 	/**
 	 * Indicate that processing of the current example is done.
 	 * The parser then considers it safe to dispose of that example
 	 * and replace it with another one.
 	 */
-	virtual void release_example();
+	void release_example() override;
 
 	/**
 	 * Get the number of features in the current example.
 	 *
 	 * @return number of features in current example
 	 */
-	virtual int32_t get_num_features();
+	int32_t get_num_features() override;
 
 	/** Get the current example
 	 *

@@ -42,20 +42,20 @@ class DiagKernel: public Kernel
 		 */
 		DiagKernel(std::shared_ptr<Features> l, std::shared_ptr<Features> r, float64_t diag=1.0);
 
-		virtual ~DiagKernel();
+		~DiagKernel() override;
 
-		virtual EFeatureType get_feature_type(){ return F_ANY; }
+		EFeatureType get_feature_type() override{ return F_ANY; }
 
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
-		virtual EFeatureClass get_feature_class(){ return C_ANY; }
+		EFeatureClass get_feature_class() override{ return C_ANY; }
 
-		virtual EKernelType get_kernel_type() { return K_DIAG; }
+		EKernelType get_kernel_type() override { return K_DIAG; }
 
-		virtual const char* get_name() const { return "DiagKernel"; }
+		const char* get_name() const override { return "DiagKernel"; }
 
 	protected:
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		float64_t compute(int32_t idx_a, int32_t idx_b) override
 		{
 			return idx_a == idx_b ? m_diag : 0;
 		}

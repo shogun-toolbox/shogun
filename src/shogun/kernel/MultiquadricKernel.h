@@ -49,27 +49,27 @@ public:
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/**
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type() { return K_MULTIQUADRIC; }
+	EKernelType get_kernel_type() override { return K_MULTIQUADRIC; }
 
 	/**
 	 * @return type of features
 	 */
-	virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
+	EFeatureType get_feature_type() override { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
+	EFeatureClass get_feature_class() override { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const { return "MultiquadricKernel"; }
+	const char* get_name() const override { return "MultiquadricKernel"; }
 
 	/** getter for coef parameter
 	 *  @return kernel parameter coefficient
@@ -81,7 +81,7 @@ public:
 	 */
 	inline void set_coef(float64_t value) { m_coef = value; }
 
-	virtual ~MultiquadricKernel();
+	~MultiquadricKernel() override;
 
 protected:
 	/**
@@ -91,7 +91,7 @@ protected:
 	 * @param idx_b right-side index
 	 * @return kernel value
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 private:
 	void init();

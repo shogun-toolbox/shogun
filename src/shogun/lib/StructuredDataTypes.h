@@ -27,7 +27,7 @@ enum EStructuredDataType
 	 *
 	 * @return structured data type
 	 */ \
-	virtual EStructuredDataType get_structured_data_type() const { return SDT; }
+	EStructuredDataType get_structured_data_type() const override { return SDT; }
 }
 
 #endif /* _STRUCTURED_DATA_TYPES__H__ */

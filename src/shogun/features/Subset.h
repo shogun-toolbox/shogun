@@ -33,13 +33,13 @@ public:
 	Subset(const SGVector<index_t>& subset_idx);
 
 	/** destructor */
-	virtual ~Subset();
+	~Subset() override;
 
 	/** @return size of subset index array */
 	index_t get_size() const { return m_subset_idx.vlen; }
 
 	/** @return name of the SGSerializable */
-	inline const char* get_name() const { return "Subset"; }
+	inline const char* get_name() const override { return "Subset"; }
 
 	/** get subset indices */
 	SGVector<index_t> get_subset_idx() const { return m_subset_idx; }

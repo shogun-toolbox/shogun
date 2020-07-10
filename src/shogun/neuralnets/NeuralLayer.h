@@ -96,7 +96,7 @@ public:
 	 */
 	NeuralLayer(int32_t num_neurons);
 
-	virtual ~NeuralLayer();
+	~NeuralLayer() override;
 
 	/** Initializes the layer
 	 *
@@ -314,7 +314,7 @@ public:
 	 */
 	virtual SGVector<int32_t> get_input_indices() { return m_input_indices; }
 
-	virtual const char* get_name() const { return "NeuralLayer"; }
+	const char* get_name() const override { return "NeuralLayer"; }
 
 private:
 	void init();

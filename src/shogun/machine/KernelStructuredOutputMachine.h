@@ -33,7 +33,7 @@ class KernelStructuredOutputMachine : public StructuredOutputMachine
 		KernelStructuredOutputMachine(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs, std::shared_ptr<Kernel> kernel);
 
 		/** destructor */
-		virtual ~KernelStructuredOutputMachine();
+		~KernelStructuredOutputMachine() override;
 
 		/** set kernel
 		 *
@@ -48,7 +48,7 @@ class KernelStructuredOutputMachine : public StructuredOutputMachine
 		std::shared_ptr<Kernel> get_kernel() const;
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "KernelStructuredOutputMachine";
 		}

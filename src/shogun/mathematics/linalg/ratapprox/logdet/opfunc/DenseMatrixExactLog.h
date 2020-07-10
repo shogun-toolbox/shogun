@@ -34,22 +34,22 @@ public:
 	DenseMatrixExactLog(const std::shared_ptr<DenseMatrixOperator<float64_t>>& op);
 
 	/** destructor */
-	virtual ~DenseMatrixExactLog();
+	~DenseMatrixExactLog() override;
 
 	/**
 	 * precompute method that computes the log of the linear operator using
 	 * Eigen3, creates a new linear operator and sets that as the operator to
 	 * apply to vectors for this operator function
 	 */
-	virtual void precompute();
+	void precompute() override;
 
 	/**
 	 * method that solves the result for a sample
 	 */
-	virtual float64_t compute(SGVector<float64_t> sample) const;
+	float64_t compute(SGVector<float64_t> sample) const override;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DenseMatrixExactLog";
 	}

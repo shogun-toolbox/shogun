@@ -50,7 +50,7 @@ public:
 	LibSVMFile(const char* fname, char rw='r', const char* name=NULL);
 
 	/** destructor */
-	virtual ~LibSVMFile();
+	~LibSVMFile() override;
 
 #ifndef SWIG // SWIG should skip this part
 	/** @name Sparse Matrix Access Functions
@@ -61,32 +61,32 @@ public:
 	 * by reference
 	 */
 	//@{
-	virtual void get_sparse_matrix(
-			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
-	virtual void get_sparse_matrix(
-			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec);
+	void get_sparse_matrix(
+			SGSparseVector<bool>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint8_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int8_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<char>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<int16_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<uint16_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<float32_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<float64_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
+	void get_sparse_matrix(
+			SGSparseVector<floatmax_t>*& matrix, int32_t& num_feat, int32_t& num_vec) override;
 	//@}
 
 	/** @name Sparse Matrix Access Functions With Labels
@@ -194,32 +194,32 @@ public:
 	 * num_vec columns to e.g. a file
 	 */
 	//@{
-	virtual void set_sparse_matrix(
-			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec);
-	virtual void set_sparse_matrix(
-			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec);
+	void set_sparse_matrix(
+			const SGSparseVector<bool>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint8_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int8_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<char>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int32_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint32_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int64_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint64_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<int16_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<uint16_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<float32_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<float64_t>* matrix, int32_t num_feat, int32_t num_vec) override;
+	void set_sparse_matrix(
+			const SGSparseVector<floatmax_t>* matrix, int32_t num_feat, int32_t num_vec) override;
 	//@}
 
 	/** @name Sparse Matrix Access Functions With Labels
@@ -320,7 +320,7 @@ public:
 
 #endif // #ifndef SWIG // SWIG should skip this part
 
-	virtual const char* get_name() const { return "LibSVMFile"; }
+	const char* get_name() const override { return "LibSVMFile"; }
 
 private:
 	/** class initialization */

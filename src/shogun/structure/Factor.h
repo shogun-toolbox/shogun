@@ -40,10 +40,10 @@ public:
 	FactorDataSource(SGSparseVector<float64_t> sparse);
 
 	/** destructor */
-	virtual ~FactorDataSource();
+	~FactorDataSource() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "FactorDataSource"; }
+	const char* get_name() const override { return "FactorDataSource"; }
 
 	/** @return using sparse data or not */
 	virtual bool is_sparse() const;
@@ -116,10 +116,10 @@ public:
 		std::shared_ptr<FactorDataSource> data_source);
 
 	/** deconstructor */
-	virtual ~Factor();
+	~Factor() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "Factor"; }
+	const char* get_name() const override { return "Factor"; }
 
 	/** @return factor type pointer */
 	std::shared_ptr<FactorType> get_factor_type() const;

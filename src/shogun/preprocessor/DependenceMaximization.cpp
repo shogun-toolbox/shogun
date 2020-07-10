@@ -37,13 +37,13 @@
 
 using namespace shogun;
 
-CDependenceMaximization::CDependenceMaximization()
+DependenceMaximization::DependenceMaximization()
 	: FeatureSelection<float64_t>()
 {
 	init();
 }
 
-void CDependenceMaximization::init()
+void DependenceMaximization::init()
 {
 	SG_ADD((std::shared_ptr<SGObject>*)&m_estimator, "estimator",
 			"the estimator for computing measures");
@@ -54,13 +54,13 @@ void CDependenceMaximization::init()
 	m_labels_feats=NULL;
 }
 
-CDependenceMaximization::~CDependenceMaximization()
+DependenceMaximization::~DependenceMaximization()
 {
 
 
 }
 
-std::shared_ptr<Features> CDependenceMaximization::create_transformed_copy(std::shared_ptr<Features> features,
+std::shared_ptr<Features> DependenceMaximization::create_transformed_copy(std::shared_ptr<Features> features,
 		index_t idx)
 {
 	SG_TRACE("Entering!");
@@ -88,7 +88,7 @@ std::shared_ptr<Features> CDependenceMaximization::create_transformed_copy(std::
 	return features->copy_dimension_subset(dims);
 }
 
-float64_t CDependenceMaximization::compute_measures(std::shared_ptr<Features> features,
+float64_t DependenceMaximization::compute_measures(std::shared_ptr<Features> features,
 		index_t idx)
 {
 	SG_TRACE("Entering!");
@@ -112,7 +112,7 @@ float64_t CDependenceMaximization::compute_measures(std::shared_ptr<Features> fe
 	return statistic;
 }
 
-std::shared_ptr<Features> CDependenceMaximization::remove_feats(std::shared_ptr<Features> features,
+std::shared_ptr<Features> DependenceMaximization::remove_feats(std::shared_ptr<Features> features,
 		SGVector<index_t> argsorted)
 {
 	SG_TRACE("Entering!");
@@ -161,7 +161,7 @@ std::shared_ptr<Features> CDependenceMaximization::remove_feats(std::shared_ptr<
 	return reduced_feats;
 }
 
-void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
+void DependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 {
 	require(policy==N_LARGEST || policy==PERCENTILE_LARGEST,
 			"Only N_LARGEST and PERCENTILE_LARGEST removal policy can work "
@@ -169,7 +169,7 @@ void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 	m_policy=policy;
 }
 
-void CDependenceMaximization::set_labels(std::shared_ptr<Labels> labels)
+void DependenceMaximization::set_labels(std::shared_ptr<Labels> labels)
 {
 	// NULL check is handled in base class FeatureSelection
 	FeatureSelection<float64_t>::set_labels(labels);

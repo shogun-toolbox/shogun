@@ -57,7 +57,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingFileFromFeatures();
+	~StreamingFileFromFeatures() override;
 
 	/**
 	 * Set the features object
@@ -82,7 +82,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 
 		return "StreamingFileFromFeatures";

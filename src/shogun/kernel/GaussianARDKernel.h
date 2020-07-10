@@ -58,19 +58,19 @@ public:
 	GaussianARDKernel();
 
 	/** destructor */
-	virtual ~GaussianARDKernel();
+	~GaussianARDKernel() override;
 
 	/** return what type of kernel we are
 	 *
 	 * @return kernel type GAUSSIANARD
 	 */
-	virtual EKernelType get_kernel_type() { return K_GAUSSIANARD; }
+	EKernelType get_kernel_type() override { return K_GAUSSIANARD; }
 
 	/** return the kernel's name
 	 *
 	 * @return name GaussianARDKernel
 	 */
-	virtual const char* get_name() const { return "GaussianARDKernel"; }
+	const char* get_name() const override { return "GaussianARDKernel"; }
 private:
 	void init();
 
@@ -86,7 +86,7 @@ protected:
 	 * Note that in GaussianARDKernel,
 	 * kernel(idx_a, idx_b)=exp(-distance(idx_a, idx_b))
 	 */
-	virtual float64_t distance(int32_t idx_a, int32_t idx_b);
+	float64_t distance(int32_t idx_a, int32_t idx_b) override;
 
 public:
 	/** constructor
@@ -118,7 +118,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/** return derivative with respect to specified parameter
 	 *
@@ -129,8 +129,8 @@ public:
 	 *
 	 * @return gradient with respect to parameter
 	 */
-	virtual SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
-			index_t index=-1);
+	SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
+			index_t index=-1) override;
 
 	/** return diagonal part of derivative with respect to specified parameter
 	 *
@@ -139,8 +139,8 @@ public:
 	 *
 	 * @return diagonal part of gradient with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_gradient_diagonal(
-		Parameters::const_reference param, index_t index=-1);
+	SGVector<float64_t> get_parameter_gradient_diagonal(
+		Parameters::const_reference param, index_t index=-1) override;
 
 protected:
 	/** helper function to compute quadratic terms in

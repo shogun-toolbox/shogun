@@ -71,10 +71,10 @@ public:
 	GEMPLP(std::shared_ptr<FactorGraph> fg, Parameter param = Parameter());
 
 	/** Destructor */
-	virtual ~GEMPLP();
+	~GEMPLP() override;
 
 	/** @return class name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "GEMPLP";
 	}
@@ -84,7 +84,7 @@ public:
 	 * @param assignment the assignment
 	 * @return the total energy after doing inference
 	 */
-	virtual float64_t inference(SGVector<int32_t> assignment);
+	float64_t inference(SGVector<int32_t> assignment) override;
 
 private:
 	/** Initialize GEMPLP with factor graph */

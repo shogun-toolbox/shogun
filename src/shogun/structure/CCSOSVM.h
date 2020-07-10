@@ -48,10 +48,10 @@ namespace shogun
 			CCSOSVM(const std::shared_ptr<StructuredModel>& model, SGVector<float64_t> w = SGVector<float64_t>());
 
 			/** destructor */
-			virtual ~CCSOSVM();
+			~CCSOSVM() override;
 
 			/** @return object name */
-			inline virtual const char* get_name() const { return "CCSOSVM"; }
+			inline const char* get_name() const override { return "CCSOSVM"; }
 
 			/** set initial value of weight vector w
 			 *
@@ -167,10 +167,10 @@ namespace shogun
 			 *
 			 * @return classifier type CT_CCSOSVM
 			 */
-			virtual EMachineType get_classifier_type();
+			EMachineType get_classifier_type() override;
 
 		protected:
-			bool train_machine(std::shared_ptr<Features> data=NULL);
+			bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		private:
 			/** find new cutting plane

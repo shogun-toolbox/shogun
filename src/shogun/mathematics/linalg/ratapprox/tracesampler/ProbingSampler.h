@@ -69,7 +69,7 @@ public:
 		EColoringVariant coloring=DISTANCE_TWO);
 
 	/** destructor */
-	virtual ~ProbingSampler();
+	~ProbingSampler() override;
 
 	/**
 	 * set the coloring vector
@@ -86,13 +86,13 @@ public:
 	 * @param idx the index
 	 * @return the sample vector
 	 */
-	virtual SGVector<float64_t> sample(index_t idx) const;
+	SGVector<float64_t> sample(index_t idx) const override;
 
 	/** precompute method that sets the num_samples of the base */
-	virtual void precompute();
+	void precompute() override;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "ProbingSampler";
 	}

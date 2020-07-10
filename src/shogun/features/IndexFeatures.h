@@ -66,7 +66,7 @@ class IndexFeatures : public DummyFeatures
 		IndexFeatures(SGVector<index_t> feature_index);
 
 		/** destructor */
-		virtual ~IndexFeatures();
+		~IndexFeatures() override;
 
 		/** get number of feature vectors
 		 *
@@ -75,7 +75,7 @@ class IndexFeatures : public DummyFeatures
 		 *
 		 * @return number of feature vectors
 		 */
-		virtual int32_t get_num_vectors() const;
+		int32_t get_num_vectors() const override;
 
 		/** duplicate features
 		 *
@@ -83,7 +83,7 @@ class IndexFeatures : public DummyFeatures
 		 *
 		 * @return the copy of this IndexFeatures
 		 */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** get feature type (ANY)
 		 *
@@ -91,7 +91,7 @@ class IndexFeatures : public DummyFeatures
 		 *
 		 * @return F_ANY
 		 */
-		virtual EFeatureType get_feature_type() const;
+		EFeatureType get_feature_type() const override;
 
 		/** get feature class (INDEX)
 		 *
@@ -99,7 +99,7 @@ class IndexFeatures : public DummyFeatures
 		 *
 		 * @return C_INDEX
 		 */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** get the name of the class
 		 *
@@ -107,7 +107,7 @@ class IndexFeatures : public DummyFeatures
 		 *
 		 * @return object name
 		 */
-		virtual const char* get_name() const { return "IndexFeatures"; }
+		const char* get_name() const override { return "IndexFeatures"; }
 
 		/** Getter the feature index
 		 *

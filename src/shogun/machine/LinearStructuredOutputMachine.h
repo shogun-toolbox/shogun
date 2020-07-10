@@ -33,7 +33,7 @@ class LinearStructuredOutputMachine : public StructuredOutputMachine
 		LinearStructuredOutputMachine(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs);
 
 		/** destructor */
-		virtual ~LinearStructuredOutputMachine();
+		~LinearStructuredOutputMachine() override;
 
 		/** set w (useful for modular interfaces)
 		 *
@@ -55,10 +55,10 @@ class LinearStructuredOutputMachine : public StructuredOutputMachine
 		 *
 		 * @return classified 'labels'
 		 */
-		virtual std::shared_ptr<StructuredLabels> apply_structured(std::shared_ptr<Features> data = NULL);
+		std::shared_ptr<StructuredLabels> apply_structured(std::shared_ptr<Features> data = NULL) override;
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LinearStructuredOutputMachine";
 		}

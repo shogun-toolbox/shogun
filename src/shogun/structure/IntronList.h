@@ -23,7 +23,7 @@ class IntronList : public SGObject
 		 */
 		IntronList();
 
-		virtual ~IntronList();
+		~IntronList() override;
 
 		/** initialize all arrays with the number of candidate positions
 		 *
@@ -52,7 +52,7 @@ class IntronList : public SGObject
 		/**
 		 * @return object name
 		 */
-		virtual const char* get_name() const { return "IntronList"; }
+		const char* get_name() const override { return "IntronList"; }
 	protected:
 		/** number of positions */
 		int32_t m_length;

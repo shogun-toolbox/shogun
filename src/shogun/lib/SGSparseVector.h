@@ -64,7 +64,7 @@ public:
 	/** copy constructor */
 	SGSparseVector(const SGSparseVector& orig);
 
-	virtual ~SGSparseVector();
+	~SGSparseVector() override;
 
 	/** compute the dot product between dense weights and a sparse feature vector
 	 * alpha * sparse^T * w + b
@@ -208,11 +208,11 @@ public:
 	bool equals(const SGSparseVector<T>& other) const;
 
 protected:
-	virtual void copy_data(const SGReferencedData& orig);
+	void copy_data(const SGReferencedData& orig) override;
 
-	virtual void init_data();
+	void init_data() override;
 
-	virtual void free_data();
+	void free_data() override;
 
 	/** helper function to compute dot product for unsorted sparse vectors
 	 *

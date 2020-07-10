@@ -25,11 +25,11 @@ namespace shogun
 		{
 		}
 		/** Destructor. */
-		virtual ~Calibration()
+		~Calibration() override
 		{
 		}
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "Calibration";
 		}

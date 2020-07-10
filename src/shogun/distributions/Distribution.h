@@ -44,7 +44,7 @@ class Distribution : public SGObject
 		Distribution();
 
 		/** destructor */
-		virtual ~Distribution();
+		~Distribution() override;
 
 		/** learn distribution
 		 *

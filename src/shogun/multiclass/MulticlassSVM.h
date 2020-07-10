@@ -45,7 +45,7 @@ class MulticlassSVM : public KernelMulticlassMachine
 		 */
 		MulticlassSVM(
 			std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
-		virtual ~MulticlassSVM();
+		~MulticlassSVM() override;
 
 		/** create multiclass SVM. Appends the appropriate number of svm pointer
 		 * (depending on multiclass strategy) to m_machines. All pointers are
@@ -193,7 +193,7 @@ class MulticlassSVM : public KernelMulticlassMachine
 		void set_batch_computation_enabled(bool enable) { svm_proto()->set_batch_computation_enabled(enable); }
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MulticlassSVM";
 		}
@@ -212,10 +212,10 @@ class MulticlassSVM : public KernelMulticlassMachine
 		}
 
 		/** initializes machines (OvO, OvR) for apply */
-		virtual bool init_machines_for_apply(std::shared_ptr<Features> data);
+		bool init_machines_for_apply(std::shared_ptr<Features> data) override;
 
 		/** is machine an SVM instance */
-		virtual bool is_acceptable_machine(std::shared_ptr<Machine >machine)
+		bool is_acceptable_machine(std::shared_ptr<Machine >machine) override
 		{
 			auto svm = std::dynamic_pointer_cast<SVM>(machine);
 			if (svm == NULL)

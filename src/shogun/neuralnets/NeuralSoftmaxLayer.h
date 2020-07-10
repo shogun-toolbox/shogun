@@ -57,7 +57,7 @@ public:
 	 */
 	NeuralSoftmaxLayer(int32_t num_neurons);
 
-	virtual ~NeuralSoftmaxLayer() {}
+	~NeuralSoftmaxLayer() override {}
 
 	/** Computes the activations of the neurons in this layer, results should
 	 * be stored in m_activations. To be used only with non-input layers
@@ -68,8 +68,8 @@ public:
 	 * @param layers Array of layers that form the network that this layer is
 	 * being used with
 	 */
-	virtual void compute_activations(SGVector<float64_t> parameters,
-			const std::vector<std::shared_ptr<NeuralLayer>>& layers);
+	void compute_activations(SGVector<float64_t> parameters,
+			const std::vector<std::shared_ptr<NeuralLayer>>& layers) override;
 
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients.
@@ -81,7 +81,7 @@ public:
 	 * true, targets is the desired values for the layer's activations,
 	 * otherwise it's an empty matrix
 	 */
-	virtual void compute_local_gradients(SGMatrix<float64_t> targets);
+	void compute_local_gradients(SGMatrix<float64_t> targets) override;
 
 	/** Computes the error between the layer's current activations and the given
 	 * target activations. Should only be used with output layers
@@ -89,9 +89,9 @@ public:
 	 * @param targets desired values for the layer's activations, matrix of size
 	 * num_neurons*batch_size
 	 */
-	virtual float64_t compute_error(SGMatrix<float64_t> targets);
+	float64_t compute_error(SGMatrix<float64_t> targets) override;
 
-	virtual const char* get_name() const { return "NeuralSoftmaxLayer"; }
+	const char* get_name() const override { return "NeuralSoftmaxLayer"; }
 };
 
 }

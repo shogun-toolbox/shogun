@@ -35,13 +35,13 @@ class Perceptron : public IterativeMachine<LinearMachine>
 		/** default constructor */
 		Perceptron();
 
-		virtual ~Perceptron();
+		~Perceptron() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type PERCEPTRON
 		 */
-		virtual EMachineType get_classifier_type() { return CT_PERCEPTRON; }
+		EMachineType get_classifier_type() override { return CT_PERCEPTRON; }
 
 		/// set learn rate of gradient descent training algorithm
 		inline void set_learn_rate(float64_t r)
@@ -56,11 +56,11 @@ class Perceptron : public IterativeMachine<LinearMachine>
 		bool get_initialize_hyperplane();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Perceptron"; }
+		const char* get_name() const override { return "Perceptron"; }
 
 	protected:
-		virtual void init_model(std::shared_ptr<Features> data);
-		virtual void iteration();
+		void init_model(std::shared_ptr<Features> data) override;
+		void iteration() override;
 
 	protected:
 		/** learning rate */

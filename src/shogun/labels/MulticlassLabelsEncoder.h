@@ -24,7 +24,7 @@ namespace shogun
 	public:
 		MulticlassLabelsEncoder() = default;
 
-		~MulticlassLabelsEncoder() = default;
+		~MulticlassLabelsEncoder() override = default;
 
 		SGVector<float64_t> fit(const std::shared_ptr<Labels>& labs) override
 		{
@@ -64,7 +64,7 @@ namespace shogun
 			    transform_impl(fit_impl(result_vector)));
 		}
 
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MulticlassLabelsEncoder";
 		}

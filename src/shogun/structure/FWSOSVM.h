@@ -36,16 +36,16 @@ public:
 			bool do_line_search = true, bool verbose = false);
 
 	/** destructor */
-	~FWSOSVM();
+	~FWSOSVM() override;
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "FWSOSVM"; }
+	const char* get_name() const override { return "FWSOSVM"; }
 
 	/** get classifier type
 	 *
 	 * @return classifier type CT_FWSOSVM
 	 */
-	virtual EMachineType get_classifier_type();
+	EMachineType get_classifier_type() override;
 
 	/** @return lambda */
 	float64_t get_lambda() const;
@@ -89,7 +89,7 @@ protected:
 	 * @param data training data
 	 * @return whether the training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 private:
 	/** register and initialize parameters */

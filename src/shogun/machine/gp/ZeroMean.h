@@ -49,13 +49,13 @@ public:
 	/** constructor */
 	ZeroMean();
 
-	virtual ~ZeroMean();
+	~ZeroMean() override;
 
 	/** returns name of the mean function
 	 *
 	 * @return name ZeroMean
 	 */
-	virtual const char* get_name() const { return "ZeroMean"; }
+	const char* get_name() const override { return "ZeroMean"; }
 
 	/** returns the mean of the specified data
 	 *
@@ -64,7 +64,7 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const;
+	SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const override;
 };
 }
 #endif /* CZEROMEAN_H_ */

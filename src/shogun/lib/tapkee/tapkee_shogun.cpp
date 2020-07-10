@@ -24,23 +24,23 @@ using namespace shogun;
 
 class ShogunLoggerImplementation : public tapkee::LoggerImplementation
 {
-	virtual void message_info(const std::string& msg)
+	void message_info(const std::string& msg) override
 	{
 		io::info((msg+"").c_str());
 	}
-	virtual void message_warning(const std::string& msg)
+	void message_warning(const std::string& msg) override
 	{
 		io::warn((msg+"").c_str());
 	}
-	virtual void message_error(const std::string& msg)
+	void message_error(const std::string& msg) override
 	{
 		error((msg+"").c_str());
 	}
-	virtual void message_debug(const std::string& msg)
+	void message_debug(const std::string& msg) override
 	{
 		SG_DEBUG((msg+"").c_str())
 	}
-	virtual void message_benchmark(const std::string& msg)
+	void message_benchmark(const std::string& msg) override
 	{
 		io::info((msg+"").c_str());
 	}

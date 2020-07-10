@@ -26,16 +26,16 @@ public:
     ECOCSimpleDecoder() {}
 
     /** destructor */
-    virtual ~ECOCSimpleDecoder() {}
+    ~ECOCSimpleDecoder() override {}
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCSimpleDecoder"; }
+    const char* get_name() const override { return "ECOCSimpleDecoder"; }
 
     /** decide label.
      * @param outputs outputs by classifiers
      * @param codebook ECOC codebook
      */
-    virtual int32_t decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook);
+    int32_t decide_label(const SGVector<float64_t> outputs, const SGMatrix<int32_t> codebook) override;
 
 protected:
     /** whether to turn the output into binary before decoding */

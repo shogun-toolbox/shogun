@@ -43,7 +43,7 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~TanimotoKernelNormalizer() = default;
+		~TanimotoKernelNormalizer() override = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
@@ -77,8 +77,8 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			float64_t diag_sum=diag_lhs[idx_lhs]*diag_rhs[idx_rhs];
 			return value/(diag_sum-value);
@@ -88,7 +88,7 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+		float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 		{
 			error("linadd not supported with Tanimoto normalization.");
 			return 0;
@@ -98,7 +98,7 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+		float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 		{
 			error("linadd not supported with Tanimoto normalization.");
 			return 0;
@@ -109,7 +109,7 @@ class TanimotoKernelNormalizer : public KernelNormalizer
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const {
+		const char* get_name() const override {
 			return "TanimotoKernelNormalizer"; }
 
     protected:
