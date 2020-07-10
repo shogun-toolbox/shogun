@@ -136,8 +136,7 @@ class LinearMachine : public Machine
 
 		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) final
 		{
-			const auto dot_feat = std::dynamic_pointer_cast<DotFeatures>(data);
-			require(dot_feat, "Expected DotFeatures type");
+			const auto dot_feat = data->as<DotFeatures>();
 			return train_machine(dot_feat, labs);
 		}
 

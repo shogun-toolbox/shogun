@@ -146,7 +146,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** construct linear machine from given linear machine */
 		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const
 		{
-			return std::make_shared<LinearMachine>(machine->as<LinearMachine>());
+			return machine->clone(ParameterProperties::MODEL)->as<LinearMachine>();
 		}
 
 		/** get number of rhs feature vectors */
