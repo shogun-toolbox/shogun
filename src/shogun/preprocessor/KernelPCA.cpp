@@ -52,14 +52,6 @@ void KernelPCA::init()
 	SG_ADD(&m_kernel, "kernel", "kernel to be used", ParameterProperties::HYPER);
 }
 
-void KernelPCA::cleanup()
-{
-	m_transformation_matrix = SGMatrix<float64_t>();
-	m_bias_vector = SGVector<float64_t>();
-
-	m_fitted = false;
-}
-
 KernelPCA::~KernelPCA()
 {
 
@@ -68,10 +60,6 @@ KernelPCA::~KernelPCA()
 void KernelPCA::fit(std::shared_ptr<Features> features)
 {
 	require(m_kernel, "Kernel not set");
-
-	if (m_fitted)
-		cleanup();
-
 
 	m_init_features = features;
 

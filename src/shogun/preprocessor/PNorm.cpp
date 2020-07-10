@@ -36,11 +36,6 @@ PNorm::~PNorm ()
 {
 }
 
-/// clean up allocated memory
-void PNorm::cleanup ()
-{
-}
-
 /// initialize preprocessor from file
 bool PNorm::load (FILE* f)
 {

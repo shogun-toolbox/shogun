@@ -20,11 +20,6 @@ SortWordString::~SortWordString()
 {
 }
 
-/// clean up allocated memory
-void SortWordString::cleanup()
-{
-}
-
 /// initialize preprocessor from file
 bool SortWordString::load(FILE* f)
 {

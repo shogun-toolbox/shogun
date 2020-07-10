@@ -52,8 +52,6 @@ public:
 
 	virtual void fit(std::shared_ptr<Features> f) override;
 
-	void cleanup();
-
 	virtual const char* get_name() const override
 	{
 		return "RFFPreprocessor";

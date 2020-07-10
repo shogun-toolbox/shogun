@@ -22,11 +22,6 @@ LogPlusOne::~LogPlusOne()
 {
 }
 
-/// clean up allocated memory
-void LogPlusOne::cleanup()
-{
-}
-
 /// initialize preprocessor from file
 bool LogPlusOne::load(FILE* f)
 {

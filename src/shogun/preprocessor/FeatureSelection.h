@@ -260,9 +260,6 @@ public:
 	/** @return the labels */
 	std::shared_ptr<Labels> get_labels() const;
 
-	/** performs cleanup */
-	virtual void cleanup();
-
 	/** @return the class name */
 	virtual const char* get_name() const
 	{

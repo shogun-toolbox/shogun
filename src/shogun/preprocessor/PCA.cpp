@@ -92,8 +92,6 @@ PCA::~PCA()
 
 void PCA::fit(std::shared_ptr<Features> features)
 {
-	if (m_fitted)
-		cleanup();
 
 	auto feature_matrix =
 	    features->as<DenseFeatures<float64_t>>()->get_feature_matrix();
@@ -287,14 +285,6 @@ void PCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_d
 			    std::sqrt(eigenValues[i] * (num_vectors - 1));
 		}
 	}
-}
-
-void PCA::cleanup()
-{
-	m_transformation_matrix=SGMatrix<float64_t>();
-        m_mean_vector = SGVector<float64_t>();
-        m_eigenvalues_vector = SGVector<float64_t>();
-	    m_fitted = false;
 }
 
 SGMatrix<float64_t> PCA::apply_to_matrix(SGMatrix<float64_t> matrix)

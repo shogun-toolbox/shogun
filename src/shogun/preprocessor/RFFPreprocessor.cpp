@@ -100,8 +100,3 @@ SGMatrix<float64_t> RFFPreprocessor::sample_spectral_density(int32_t dim_input_s
 	
 	return sampled_kernel;
 }
-
-void RFFPreprocessor::cleanup()
-{
-
-}
