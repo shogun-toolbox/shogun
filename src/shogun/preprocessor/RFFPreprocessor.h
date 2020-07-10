@@ -50,8 +50,6 @@ public:
 		return C_DENSE;
 	};
 
-	void fit(std::shared_ptr<Features> f) override;
-
 	virtual const char* get_name() const override
 	{
 		return "RFFPreprocessor";
@@ -83,6 +81,8 @@ public:
 	sample_spectral_density(int32_t dim_input_space) const;
 
 	SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
+
+	virtual void fit_impl(SGMatrix<float64_t> feature_matrix) override;
 
 	/** Helper method which generates random coefficients and stores in the
 	 *  internal members. This method assumes the kernel has been set.

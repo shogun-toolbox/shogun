@@ -11,6 +11,7 @@
 
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
+#include <atomic>
 
 
 namespace shogun

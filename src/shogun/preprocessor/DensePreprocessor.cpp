@@ -117,6 +117,27 @@ DensePreprocessor<ST>::inverse_transform(std::shared_ptr<Features> features, boo
 }
 
 template <class ST>
+void DensePreprocessor<ST>::fit(std::shared_ptr<Features> f)
+{
+	require(f, "Features are not provided");
+
+	auto dense_features = f->as<DenseFeatures<ST>>();
+	auto num_features = dense_features->get_num_features();
+	require(num_features > 0, "Dimension of provided features {} must be positive", num_features);
+	
+	auto feature_matrix = dense_features->get_feature_matrix();
+	fit_impl(feature_matrix);
+	
+	m_fitted = true;
+}
+
+template <class ST>
+void DensePreprocessor<ST>::fit_impl(SGMatrix<ST> feature_matrix)
+{
+	not_implemented(SOURCE_LOCATION);
+}
+
+template <class ST>
 SGMatrix<ST>
 DensePreprocessor<ST>::inverse_apply_to_matrix(SGMatrix<ST> matrix)
 {

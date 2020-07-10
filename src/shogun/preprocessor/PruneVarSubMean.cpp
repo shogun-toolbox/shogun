@@ -27,19 +27,16 @@ PruneVarSubMean::~PruneVarSubMean()
 
 }
 
-void PruneVarSubMean::fit(std::shared_ptr<Features> features)
+void PruneVarSubMean::fit_impl(SGMatrix<float64_t> feature_matrix)
 {
 
-	auto simple_features = features->as<DenseFeatures<float64_t>>();
-	auto num_examples = simple_features->get_num_vectors();
-	auto num_features = simple_features->get_num_features();
+	auto num_examples = feature_matrix.num_cols;
+	auto num_features = feature_matrix.num_rows;
 
 	m_idx = SGVector<int32_t>();
 	m_std = SGVector<float64_t>();
 
 	SGVector<float64_t> var(num_features);
-
-	auto feature_matrix = simple_features->get_feature_matrix();
 
 	// compute mean
 	m_mean = linalg::rowwise_sum(feature_matrix);
@@ -85,7 +82,6 @@ void PruneVarSubMean::fit(std::shared_ptr<Features> features)
 	m_num_idx = num_ok;
 	m_mean = new_mean;
 
-	m_fitted = true;
 }
 
 SGMatrix<float64_t>

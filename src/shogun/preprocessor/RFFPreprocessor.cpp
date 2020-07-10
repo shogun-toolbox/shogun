@@ -43,14 +43,12 @@ void RFFPreprocessor::init_basis(int32_t dim_input_space)
 	random::fill_array(m_offset, uniform, m_prng);
 }
 
-void RFFPreprocessor::fit(std::shared_ptr<Features> f)
+void RFFPreprocessor::fit_impl(SGMatrix<float64_t> feature_matrix)
 {
-	auto num_features = f->as<DenseFeatures<float64_t>>()->get_num_features();
-	require(num_features > 0, "Dimension of provided features {} must be positive", num_features);
+	auto num_features = feature_matrix.num_cols;
 	require(m_kernel, "Kernel not set");
 	
 	init_basis(num_features);
-	m_fitted = true;
 }
 
 SGVector<float64_t> RFFPreprocessor::apply_to_feature_vector(SGVector<float64_t> vector)

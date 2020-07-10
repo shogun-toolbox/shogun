@@ -136,6 +136,8 @@ void FisherLDA::fit(std::shared_ptr<Features> features, std::shared_ptr<Labels> 
 		solver_canvar(dense_features, mc);
 	else
 		solver_classic(dense_features, mc);
+	
+	m_fitted = true;
 }
 
 void FisherLDA::solver_canvar(
