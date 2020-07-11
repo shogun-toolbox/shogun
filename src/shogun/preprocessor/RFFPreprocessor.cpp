@@ -45,7 +45,7 @@ void RFFPreprocessor::init_basis(int32_t dim_input_space)
 
 void RFFPreprocessor::fit_impl(const SGMatrix<float64_t>& feature_matrix)
 {
-	auto num_features = feature_matrix.num_cols;
+	auto num_features = feature_matrix.num_rows;
 	require(m_kernel, "Kernel not set");
 	
 	init_basis(num_features);
