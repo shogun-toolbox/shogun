@@ -1316,11 +1316,11 @@ namespace shogun
 		if constexpr (std::is_base_of_v<SGObject, Derived>)
 		{
 			Any::register_caster<T, SGObject*>(
-			    [](T value) { return dynamic_cast<SGObject*>(value); });
+			    [](T value) { return static_cast<SGObject*>(value); });
 			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>
 					&& !std::is_same_v<Derived, base_type<Derived>>)
 				Any::register_caster<T, base_type<Derived>*>([](T value) {
-					return dynamic_cast<base_type<Derived>*>(value);
+					return static_cast<base_type<Derived>*>(value);
 				});
 		}
 		if constexpr (traits::is_shared_ptr<T>::value)
@@ -1329,11 +1329,11 @@ namespace shogun
 			if constexpr (std::is_base_of_v<SGObject, SharedType>)
 			{
 				Any::register_caster<T, std::shared_ptr<SGObject>>(
-						[](T value) { return std::dynamic_pointer_cast<SGObject>(value); });
+						[](T value) { return std::static_pointer_cast<SGObject>(value); });
 				if constexpr (!std::is_same_v<std::nullptr_t, base_type<SharedType>>
 						&& !std::is_same_v<SharedType, base_type<SharedType>>)
 					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](T value) {
-						return std::dynamic_pointer_cast<base_type<SharedType>>(value);
+						return std::static_pointer_cast<base_type<SharedType>>(value);
 					});
 			}
 		}
