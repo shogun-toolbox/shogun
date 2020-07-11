@@ -43,7 +43,7 @@ void RFFPreprocessor::init_basis(int32_t dim_input_space)
 	random::fill_array(m_offset, uniform, m_prng);
 }
 
-void RFFPreprocessor::fit_impl(SGMatrix<float64_t> feature_matrix)
+void RFFPreprocessor::fit_impl(const SGMatrix<float64_t>& feature_matrix)
 {
 	auto num_features = feature_matrix.num_cols;
 	require(m_kernel, "Kernel not set");

@@ -132,12 +132,6 @@ void DensePreprocessor<ST>::fit(std::shared_ptr<Features> f)
 }
 
 template <class ST>
-void DensePreprocessor<ST>::fit_impl(SGMatrix<ST> feature_matrix)
-{
-	not_implemented(SOURCE_LOCATION);
-}
-
-template <class ST>
 SGMatrix<ST>
 DensePreprocessor<ST>::inverse_apply_to_matrix(SGMatrix<ST> matrix)
 {

@@ -21,7 +21,7 @@ RescaleFeatures::~RescaleFeatures()
 
 }
 
-void RescaleFeatures::fit_impl(SGMatrix<float64_t> feature_matrix)
+void RescaleFeatures::fit_impl(const SGMatrix<float64_t>& feature_matrix)
 {
 	int32_t num_examples = feature_matrix.num_cols;
 	int32_t num_features = feature_matrix.num_rows;

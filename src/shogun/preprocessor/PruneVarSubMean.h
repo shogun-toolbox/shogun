@@ -49,7 +49,7 @@ class PruneVarSubMean : public DensePreprocessor<float64_t>
 	protected:
 		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 
-		virtual void fit_impl(SGMatrix<float64_t> feature_matrix) override;
+		void fit_impl(const SGMatrix<float64_t>& feature_matrix) override;
 
 	private:
 		void init();

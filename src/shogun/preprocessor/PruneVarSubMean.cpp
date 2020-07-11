@@ -27,7 +27,7 @@ PruneVarSubMean::~PruneVarSubMean()
 
 }
 
-void PruneVarSubMean::fit_impl(SGMatrix<float64_t> feature_matrix)
+void PruneVarSubMean::fit_impl(const SGMatrix<float64_t>& feature_matrix)
 {
 
 	auto num_examples = feature_matrix.num_cols;

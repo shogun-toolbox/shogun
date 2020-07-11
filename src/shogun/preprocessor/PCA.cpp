@@ -90,7 +90,7 @@ PCA::~PCA()
 {
 }
 
-void PCA::fit_impl(SGMatrix<float64_t> feature_matrix)
+void PCA::fit_impl(const SGMatrix<float64_t>& feature_matrix)
 {
 
 	auto num_vectors = feature_matrix.num_cols;

@@ -79,7 +79,9 @@ template <class ST> class DensePreprocessor : public Preprocessor
 		 */
 		virtual SGMatrix<ST> inverse_apply_to_matrix(SGMatrix<ST> matrix);
 
-		virtual void fit_impl(SGMatrix<ST> feature_matrix);
+		virtual void fit_impl(const SGMatrix<ST>& feature_matrix)
+		{
+		}
 };
 
 }
