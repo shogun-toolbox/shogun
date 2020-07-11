@@ -2,6 +2,7 @@
 #define __UTIL_TRAITS_H__
 
 #include <type_traits>
+#include <atomic>
 
 namespace shogun
 {
@@ -184,6 +185,29 @@ namespace shogun
 
 		template<uint32_t idx, typename ...Ts>
 		using get_variant_type_t = typename get_variant_type<idx, Ts...>::type;
+
+		template<typename>
+		struct is_atomic: std::false_type {};
+
+		template <typename T>
+		struct is_atomic<std::atomic<T>> : std::true_type
+		{
+		};
+
+		template <typename T>
+		struct atomic_type {};
+
+		template <typename T>
+		struct atomic_type<std::atomic<T>>
+		{
+			using type = T;
+		};
+
+		template <typename T>
+		using atomic_type_t = typename atomic_type<T>::type;
+
+		template <typename T>
+		inline constexpr bool is_atomic_v = is_atomic<T>::value;
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 	} // namespace traits
 } // namespace shogun

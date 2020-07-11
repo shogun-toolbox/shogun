@@ -6,10 +6,9 @@ namespace shogun
 
 	Transformer::Transformer() : SGObject()
 	{
-		m_fitted = false;
-
 		SG_ADD(
-		    &m_fitted, "is_fitted", "Whether the transformer has been fitted.");
+		    &m_fitted, "is_fitted", "Whether the transformer has been fitted.",
+			ParameterProperties::READONLY);
 	}
 
 	void Transformer::assert_fitted() const
