@@ -35,7 +35,7 @@ class LogPlusOne : public DensePreprocessor<float64_t>
 		LogPlusOne();
 
 		/** destructor */
-		virtual ~LogPlusOne();
+		~LogPlusOne() override;
 
 		/// initialize preprocessor from file
 		virtual bool load(FILE* f);
@@ -44,16 +44,16 @@ class LogPlusOne : public DensePreprocessor<float64_t>
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
-		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LogPlusOne"; }
+		const char* get_name() const override { return "LogPlusOne"; }
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type() const { return P_LOGPLUSONE; }
+		EPreprocessorType get_type() const override { return P_LOGPLUSONE; }
 
 	protected:
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
 };
 }
 #endif

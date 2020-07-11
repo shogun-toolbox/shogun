@@ -55,7 +55,7 @@ template <class T> class SimpleFile : public SGObject
 			status = (file!=NULL && filename!=NULL);
 		}
 
-		virtual ~SimpleFile()
+		~SimpleFile() override
 		{
 			SG_FREE(filename);
 			free_line_buffer();
@@ -211,7 +211,7 @@ template <class T> class SimpleFile : public SGObject
 		inline bool is_ok() { return status; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SimpleFile"; }
+		const char* get_name() const override { return "SimpleFile"; }
 
 	protected:
 		/** file descriptor */

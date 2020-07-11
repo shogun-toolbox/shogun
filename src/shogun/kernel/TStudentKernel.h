@@ -49,34 +49,34 @@ public:
 	 */
 	TStudentKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t d, std::shared_ptr<Distance> dist);
 
-	virtual ~TStudentKernel();
+	~TStudentKernel() override;
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/**
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type() { return K_TSTUDENT; }
+	EKernelType get_kernel_type() override { return K_TSTUDENT; }
 
 	/**
 	 * @return type of features
 	 */
-	virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	EFeatureType get_feature_type() override { return distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	EFeatureClass get_feature_class() override { return distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const { return "TStudentKernel"; }
+	const char* get_name() const override { return "TStudentKernel"; }
 
 	/** getter for degree parameter
 	 *  @return kernel parameter degree
@@ -106,7 +106,7 @@ protected:
 	 * @param idx_b right-side index
 	 * @return kernel value
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 }
 

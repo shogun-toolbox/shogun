@@ -58,7 +58,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~TreeMachineNode()
+	~TreeMachineNode() override
 	{
 
 	}
@@ -66,7 +66,7 @@ public:
 	/** get name
 	 * @return class of the node
 	 */
-	virtual const char* get_name() const { return "TreeMachineNode"; }
+	const char* get_name() const override { return "TreeMachineNode"; }
 
 	/** set machine index
 	 * @param idx the machine index

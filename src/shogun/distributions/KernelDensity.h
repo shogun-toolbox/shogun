@@ -76,20 +76,20 @@ public :
 	KernelDensity(float64_t bandwidth=1.0, EKernelType kernel_type=K_GAUSSIAN, EDistanceType dist=D_EUCLIDEAN, EEvaluationMode eval=EM_BALLTREE_SINGLE, int32_t leaf_size=1, float64_t atol=0, float64_t rtol=0);
 
 	/** destructor */
-	~KernelDensity();
+	~KernelDensity() override;
 
 	/** return class name
 	 *
 	 * @return KernelDensity
 	 */
-	virtual const char* get_name() const { return "KernelDensity"; }
+	const char* get_name() const override { return "KernelDensity"; }
 
 	/** form tree using input points
 	 *
 	 * @param data data points to be used for density estimation
 	 * @return true
 	 */
-	virtual bool train(std::shared_ptr<Features> data=NULL);
+	bool train(std::shared_ptr<Features> data=NULL) override;
 
 	/** compute kde for given test points
 	 *
@@ -104,7 +104,7 @@ public :
 	 *
 	 * @return number of model parameters
 	 */
-	virtual int32_t get_num_model_parameters();
+	int32_t get_num_model_parameters() override;
 
 	/** return log model parameter
 	 * NOT IMPLEMENTED
@@ -112,7 +112,7 @@ public :
 	 * @param num_param index number of the parameter
 	 * @return log of model parameter
 	 */
-	virtual float64_t get_log_model_parameter(int32_t num_param);
+	float64_t get_log_model_parameter(int32_t num_param) override;
 
 	/** return log derivative
 	 * NOT IMPLEMENTED
@@ -121,7 +121,7 @@ public :
 	 * @param num_example index number of example
 	 * @return log of derivative of example
 	 */
-	virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
+	float64_t get_log_derivative(int32_t num_param, int32_t num_example) override;
 
 	/** return log likelihood of example
 	 * NOT IMPLEMENTED
@@ -129,7 +129,7 @@ public :
 	 * @param num_example index number of example
 	 * @return log likelihood of example
 	 */
-	virtual float64_t get_log_likelihood_example(int32_t num_example);
+	float64_t get_log_likelihood_example(int32_t num_example) override;
 
 	/** returns norm of a given kernel
 	 *

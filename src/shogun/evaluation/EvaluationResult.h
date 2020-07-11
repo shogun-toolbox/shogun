@@ -23,7 +23,7 @@ public:
 	/** default constructor */
 	EvaluationResult() : SGObject() { }
 
-	virtual ~EvaluationResult() { }
+	~EvaluationResult() override { }
 
 	/** print result */
 	virtual void print_result()=0;

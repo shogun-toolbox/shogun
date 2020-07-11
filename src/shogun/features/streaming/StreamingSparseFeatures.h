@@ -71,7 +71,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	virtual ~StreamingSparseFeatures();
+	~StreamingSparseFeatures() override;
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -82,7 +82,7 @@ public:
 	 * The parser uses the function set by this while reading
 	 * unlabelled examples.
 	 */
-	virtual void set_vector_reader();
+	void set_vector_reader() override;
 
 	/**
 	 * Sets the read function (in case the examples are labelled)
@@ -93,21 +93,21 @@ public:
 	 * The parser uses the function set by this while reading
 	 * labelled examples.
 	 */
-	virtual void set_vector_and_label_reader();
+	void set_vector_and_label_reader() override;
 
 	/**
 	 * Starts the parsing thread.
 	 *
 	 * To be called before trying to use any feature vectors from this object.
 	 */
-	virtual void start_parser();
+	void start_parser() override;
 
 	/**
 	 * Ends the parsing thread.
 	 *
 	 * Waits for the thread to join.
 	 */
-	virtual void end_parser();
+	void end_parser() override;
 
 	/**
 	 * Instructs the parser to return the next example.
@@ -117,7 +117,7 @@ public:
 	 * @return True on success, false if there are no more
 	 * examples, or an error occurred.
 	 */
-	virtual bool get_next_example();
+	bool get_next_example() override;
 
 	/** get a single feature
 	 *
@@ -141,7 +141,7 @@ public:
 	 *
 	 * @return The label as a float64_t.
 	 */
-	virtual float64_t get_label();
+	float64_t get_label() override;
 
 	/**
 	 * Release the current example, indicating to the parser that
@@ -149,13 +149,13 @@ public:
 	 *
 	 * The parser is then free to throw away that example.
 	 */
-	virtual void release_example();
+	void release_example() override;
 
 	/**
 	 * Reset the file back to the first example
 	 * if possible.
 	 */
-	virtual void reset_stream();
+	void reset_stream() override;
 
 	/** set number of features
 	 *
@@ -177,7 +177,7 @@ public:
 	 *
 	 * @return dimensionality
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	int32_t get_dim_feature_space() const override;
 
 	/**
 	 * Dot product taken with another StreamingDotFeatures object.
@@ -189,7 +189,7 @@ public:
 	 *
 	 * @return Dot product.
 	 */
-	virtual float32_t dot(std::shared_ptr<StreamingDotFeatures >df);
+	float32_t dot(std::shared_ptr<StreamingDotFeatures >df) override;
 
 	/** compute the dot product between two sparse feature vectors
 	 * alpha * vec^T * vec
@@ -232,7 +232,7 @@ public:
 	 *
 	 * @return Dot product as a float32_t.
 	 */
-	virtual float32_t dense_dot(const float32_t* vec2, int32_t vec2_len);
+	float32_t dense_dot(const float32_t* vec2, int32_t vec2_len) override;
 
 	/**
 	 * Add alpha*current_vector to another float64_t type dense vector.
@@ -254,7 +254,7 @@ public:
 	 * @param vec2_len length of vector
 	 * @param abs_val true if abs of current_vector should be taken
 	 */
-	virtual void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false);
+	void add_to_dense_vec(float32_t alpha, float32_t* vec2, int32_t vec2_len, bool abs_val=false) override;
 
 	/**
 	 * Get number of non-zero entries in current sparse vector
@@ -282,42 +282,42 @@ public:
 	 *
 	 * @return number of features as int
 	 */
-	virtual int32_t get_num_features();
+	int32_t get_num_features() override;
 
 	/**
 	 * Return the number of non-zero features in vector
 	 *
 	 * @return number of sparse features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector();
+	int32_t get_nnz_features_for_vector() override;
 
 	/**
 	 * Return the feature type, depending on T.
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual EFeatureType get_feature_type() const;
+	EFeatureType get_feature_type() const override;
 
 	/**
 	 * Return the feature class
 	 *
 	 * @return C_STREAMING_SPARSE
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	EFeatureClass get_feature_class() const override;
 
 	/**
 	 * Return the name.
 	 *
 	 * @return StreamingSparseFeatures
 	 */
-	virtual const char* get_name() const { return "StreamingSparseFeatures"; }
+	const char* get_name() const override { return "StreamingSparseFeatures"; }
 
 	/**
 	 * Return the number of vectors stored in this object.
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	int32_t get_num_vectors() const override;
 
 private:
 	/**

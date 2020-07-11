@@ -51,7 +51,7 @@ namespace shogun
 class FirstOrderCostFunction: public SGObject
 {
 public:
-	virtual ~FirstOrderCostFunction() {};
+	~FirstOrderCostFunction() override {};
 
 	/** Get the cost given current target variables 
 	 *

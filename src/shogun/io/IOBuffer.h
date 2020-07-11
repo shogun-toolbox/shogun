@@ -50,7 +50,7 @@ namespace shogun
 	/**
 	 * Destructor.
 	 */
-	~IOBuffer();
+	~IOBuffer() override;
 
 	/**
 	 * Initialize the buffer, reserve 64K memory by default.
@@ -165,7 +165,7 @@ namespace shogun
 	 */
 	unsigned int buf_read(char* &pointer, int n);
 
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "IOBuffer";
 	}

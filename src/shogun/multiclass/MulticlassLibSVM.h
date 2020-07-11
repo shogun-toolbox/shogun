@@ -33,16 +33,16 @@ class MulticlassLibSVM : public MulticlassSVM
 		MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** destructor */
-		virtual ~MulticlassLibSVM();
+		~MulticlassLibSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type LIBSVMMULTICLASS
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
+		EMachineType get_classifier_type() override { return CT_LIBSVMMULTICLASS; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MulticlassLibSVM"; }
+		const char* get_name() const override { return "MulticlassLibSVM"; }
 
 	protected:
 		/** train multiclass SVM classifier
@@ -53,7 +53,7 @@ class MulticlassLibSVM : public MulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		void register_params();

@@ -58,7 +58,7 @@ public:
 	 */
 	ConstMean(float64_t mean);
 
-	virtual ~ConstMean();
+	~ConstMean() override;
 
 	/** set the const_value of mean function
 	 *
@@ -70,7 +70,7 @@ public:
 	 *
 	 * @return name ConstMean
 	 */
-	virtual const char* get_name() const { return "ConstMean"; }
+	const char* get_name() const override { return "ConstMean"; }
 
 	/** returns the mean of the specified data
 	 *
@@ -79,7 +79,7 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const;
+	SGVector<float64_t> get_mean_vector(std::shared_ptr<const Features> features) const override;
 
 #ifndef SWIG
 	/** returns the derivative of the mean function
@@ -90,8 +90,8 @@ public:
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
-			Parameters::const_reference param, index_t index=-1);
+	SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const Features> features,
+			Parameters::const_reference param, index_t index=-1) override;
 #endif
 private:
 

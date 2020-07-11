@@ -40,16 +40,16 @@ public:
 		 */
 		KernelPCA(std::shared_ptr<Kernel> k);
 
-		virtual ~KernelPCA();
+		~KernelPCA() override;
 
-		virtual void fit(std::shared_ptr<Features> features);
+		void fit(std::shared_ptr<Features> features) override;
 
 		/** Apply transformation to features. In-place mode is not supported.
 		 *	@param features features to transform
 		 *	@param inplace whether transform in place
 		 *	@return the result feature object after applying the transformer
 		 */
-		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		virtual SGMatrix<float64_t> apply_to_feature_matrix(std::shared_ptr<Features> features);
 
@@ -78,15 +78,15 @@ public:
 			return m_bias_vector;
 		}
 
-		virtual EFeatureClass get_feature_class();
+		EFeatureClass get_feature_class() override;
 
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KernelPCA"; }
+		const char* get_name() const override { return "KernelPCA"; }
 
 		/** @return the type of preprocessor */
-		virtual EPreprocessorType get_type() const { return P_KERNELPCA; }
+		EPreprocessorType get_type() const override { return P_KERNELPCA; }
 
 		/** setter for target dimension
 		 * @param dim target dimension

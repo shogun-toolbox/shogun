@@ -46,7 +46,7 @@ public:
 	AttributeFeatures();
 
 	/** destructor */
-	virtual ~AttributeFeatures();
+	~AttributeFeatures() override;
 
 	/** return the feature object matching attribute name
 	 *
@@ -85,7 +85,7 @@ public:
 	int32_t get_num_attributes();
 
 	/** @return object name */
-	virtual const char* get_name() const { return "AttributeFeatures"; }
+	const char* get_name() const override { return "AttributeFeatures"; }
 
 	/** duplicate feature object
 	 *
@@ -93,7 +93,7 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual std::shared_ptr<Features> duplicate() const=0;
+	std::shared_ptr<Features> duplicate() const override =0;
 
 	/** get feature type
 	 *
@@ -101,7 +101,7 @@ public:
 	 *
 	 * @return templated feature type
 	 */
-	virtual EFeatureType get_feature_type() const=0;
+	EFeatureType get_feature_type() const override =0;
 
 	/** get feature class
 	 *
@@ -109,7 +109,7 @@ public:
 	 *
 	 * @return feature class like STRING, SIMPLE, SPARSE...
 	 */
-	virtual EFeatureClass get_feature_class() const=0;
+	EFeatureClass get_feature_class() const override =0;
 
 	/** get number of examples/vectors
 	 *
@@ -117,7 +117,7 @@ public:
 	 *
 	 * @return number of examples/vectors
 	 */
-	virtual int32_t get_num_vectors() const=0;
+	int32_t get_num_vectors() const override =0;
 
 protected:
 	/** find the index of the attribute matching attribute name

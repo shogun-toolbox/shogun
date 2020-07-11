@@ -57,7 +57,7 @@ class StructuredOutputMachine : public Machine
 		StructuredOutputMachine(std::shared_ptr<StructuredModel> model, const std::shared_ptr<StructuredLabels>& labs);
 
 		/** destructor */
-		virtual ~StructuredOutputMachine();
+		~StructuredOutputMachine() override;
 
 		/** set structured model
 		 *
@@ -72,7 +72,7 @@ class StructuredOutputMachine : public Machine
 		std::shared_ptr<StructuredModel> get_model() const;
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "StructuredOutputMachine";
 		}
@@ -81,7 +81,7 @@ class StructuredOutputMachine : public Machine
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab);
+		void set_labels(std::shared_ptr<Labels> lab) override;
 
 		/** set features
 		 *

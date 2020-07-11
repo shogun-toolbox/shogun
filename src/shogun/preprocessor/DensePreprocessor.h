@@ -38,7 +38,7 @@ template <class ST> class DensePreprocessor : public Preprocessor
 		 * @param inplace whether transform in place
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		/** Apply inverse transformation to dense features.
 		 *
@@ -47,20 +47,20 @@ template <class ST> class DensePreprocessor : public Preprocessor
 		 * @return the result feature object after inverse applying the
 		 * preprocessor
 		 */
-		virtual std::shared_ptr<Features>
-		inverse_transform(std::shared_ptr<Features> features, bool inplace = true);
+		std::shared_ptr<Features>
+		inverse_transform(std::shared_ptr<Features> features, bool inplace = true) override;
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
 		virtual SGVector<ST> apply_to_feature_vector(SGVector<ST> vector) = 0;
 
 		/// return that we are dense features (just fixed size matrices)
-		virtual EFeatureClass get_feature_class();
+		EFeatureClass get_feature_class() override;
 		/// return feature type
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/// return a type of preprocessor
-		virtual EPreprocessorType get_type() const;
+		EPreprocessorType get_type() const override;
 
 	protected:
 		/** Apply preprocessor on matrix. Subclasses should try to apply in

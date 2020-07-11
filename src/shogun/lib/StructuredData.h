@@ -24,10 +24,10 @@ class StructuredData : public SGObject
 		StructuredData();
 
 		/** destructor */
-		virtual ~StructuredData();
+		~StructuredData() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "StructuredData"; }
+		const char* get_name() const override { return "StructuredData"; }
 
 		/** get structured data type
 		 *

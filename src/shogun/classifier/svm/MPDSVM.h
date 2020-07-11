@@ -30,16 +30,16 @@ class MPDSVM : public SVM
 		 * @param lab labels
 		 */
 		MPDSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
-		virtual ~MPDSVM();
+		~MPDSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type MPD
 		 */
-		virtual EMachineType get_classifier_type() { return CT_MPD; }
+		EMachineType get_classifier_type() override { return CT_MPD; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MPDSVM"; }
+		const char* get_name() const override { return "MPDSVM"; }
 
 	protected:
 		/** train SVM classifier
@@ -50,7 +50,7 @@ class MPDSVM : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** compute H
 		 *

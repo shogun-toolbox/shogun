@@ -30,18 +30,18 @@ class LibSVMOneClass : public SVM
 		 * @param k kernel
 		 */
 		LibSVMOneClass(float64_t C, std::shared_ptr<Kernel> k);
-		virtual ~LibSVMOneClass();
+		~LibSVMOneClass() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type LIBSVMONECLASS
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LIBSVMONECLASS; }
+		EMachineType get_classifier_type() override { return CT_LIBSVMONECLASS; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LibSVMOneClass"; }
+		const char* get_name() const override { return "LibSVMOneClass"; }
 
-		virtual bool train_require_labels() const { return false; }
+		bool train_require_labels() const override { return false; }
 
 	protected:
 		/** train SVM
@@ -52,7 +52,7 @@ class LibSVMOneClass : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 };
 }
 #endif

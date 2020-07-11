@@ -36,15 +36,15 @@ namespace shogun
 		    const std::string& filename, std::vector<std::string>& parameters,
 		    std::vector<ParameterProperties>& properties);
 
-		virtual ~ParameterObserverCV();
-		virtual void on_error(std::exception_ptr ptr);
-		virtual void on_complete();
+		~ParameterObserverCV() override;
+		void on_error(std::exception_ptr ptr) override;
+		void on_complete() override;
 
 		/**
 		* Get class name.
 		* @return class name
 		*/
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "ParameterObserverCV";
 		}
@@ -63,7 +63,7 @@ namespace shogun
 		void print_machine_information(const std::shared_ptr<Machine>& machine) const;
 
 	protected:
-		virtual void on_next_impl(const TimedObservedValue& value);
+		void on_next_impl(const TimedObservedValue& value) override;
 	};
 }
 

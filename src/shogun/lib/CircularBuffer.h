@@ -40,7 +40,7 @@ public:
 	CircularBuffer(int32_t buffer_size);
 
 	/** destructor */
-	~CircularBuffer();
+	~CircularBuffer() override;
 
 	/** set tokenizer
 	 *
@@ -107,7 +107,7 @@ public:
 	void clear();
 
 	/** @return object name */
-	virtual const char* get_name() const { return "CircularBuffer"; }
+	const char* get_name() const override { return "CircularBuffer"; }
 
 private:
 	/** class initialization */

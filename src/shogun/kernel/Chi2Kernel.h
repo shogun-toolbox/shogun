@@ -52,7 +52,7 @@ class Chi2Kernel: public DotKernel
 		Chi2Kernel(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 				float64_t width, int32_t size=10);
 
-		virtual ~Chi2Kernel();
+		~Chi2Kernel() override;
 
 		/** initialize kernel
 		 *
@@ -60,7 +60,7 @@ class Chi2Kernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** @return width of the kernel */
 		virtual float64_t get_width();
@@ -75,25 +75,25 @@ class Chi2Kernel: public DotKernel
 		 *
 		 * @return kernel type CHI2
 		 */
-		virtual EKernelType get_kernel_type() { return K_CHI2; }
+		EKernelType get_kernel_type() override { return K_CHI2; }
 
 		/** return feature class the kernel can deal with
 		 *
 		 * @return feature class SIMPLE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		EFeatureClass get_feature_class() override { return C_DENSE; }
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return float64_t feature type
 		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
+		EFeatureType get_feature_type() override { return F_DREAL; }
 
 		/** return the kernel's name
 		 *
 		 * @return name Chi2
 		 */
-		virtual const char* get_name() const { return "Chi2Kernel"; }
+		const char* get_name() const override { return "Chi2Kernel"; }
 
 		/** set width
 		 *
@@ -110,7 +110,7 @@ class Chi2Kernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		/** width */

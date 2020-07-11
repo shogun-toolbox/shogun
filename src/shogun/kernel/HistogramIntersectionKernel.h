@@ -49,7 +49,7 @@ class HistogramIntersectionKernel: public DotKernel
 			const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 			float64_t beta=1.0, int32_t size=10);
 
-		virtual ~HistogramIntersectionKernel();
+		~HistogramIntersectionKernel() override;
 
 		/** initialize kernel
 		 *
@@ -57,22 +57,22 @@ class HistogramIntersectionKernel: public DotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 		/* register the parameters
 		 */
-		virtual void register_params();
+		void register_params() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type HISTOGRAMINTERSECTION
 		 */
-		virtual EKernelType get_kernel_type() { return K_HISTOGRAMINTERSECTION; }
+		EKernelType get_kernel_type() override { return K_HISTOGRAMINTERSECTION; }
 
 		/** return the kernel's name
 		 *
 		 * @return name HistogramIntersectionKernel
 		 */
-		virtual const char* get_name() const { return "HistogramIntersectionKernel"; }
+		const char* get_name() const override { return "HistogramIntersectionKernel"; }
 
 		/** getter for beta parameter
 		 * @return beta value
@@ -97,7 +97,7 @@ class HistogramIntersectionKernel: public DotKernel
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 };
 }

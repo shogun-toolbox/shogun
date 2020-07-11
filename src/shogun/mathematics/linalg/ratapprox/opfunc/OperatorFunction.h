@@ -57,7 +57,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~OperatorFunction()
+	~OperatorFunction() override
 	{
 	}
 
@@ -79,7 +79,7 @@ public:
 	virtual float64_t compute(SGVector<T> sample) const = 0;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "OperatorFunction";
 	}

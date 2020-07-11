@@ -39,20 +39,20 @@ public:
 	DelimiterTokenizer(const DelimiterTokenizer& orig);
 
 	/** destructor */
-	virtual ~DelimiterTokenizer() {}
+	~DelimiterTokenizer() override {}
 
 	/** Set the char array that requires tokenization
 	 *
 	 * @param txt the text to tokenize
 	 */
-	virtual void set_text(SGVector<char> txt);
+	void set_text(SGVector<char> txt) override;
 
 	/** Returns true or false based on whether
 	 * there exists another token in the text
 	 *
 	 * @return if another token exists
 	 */
-	virtual bool has_next();
+	bool has_next() override;
 
 	/** Method that returns the indices, start and end, of
 	 *  the next token in line.
@@ -62,21 +62,21 @@ public:
 	 * @param start token's starting index
 	 * @return token's ending index (exclusive)
 	 */
-	virtual index_t next_token_idx(index_t& start);
+	index_t next_token_idx(index_t& start) override;
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 * the CLASS NAME without the prefixed 'C'.
 	 *
 	 * @return name of the SGSerializable
 	 */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 	/** Makes the tokenizer to use ' ' or '\\t'
 	 *  as the delimiters for the tokenization process;
 	 */
 	void init_for_whitespace();
 
-	DelimiterTokenizer* get_copy();
+	DelimiterTokenizer* get_copy() override;
 
 	/** Resets the delimiters */
 	void clear_delimiters();

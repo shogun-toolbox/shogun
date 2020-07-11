@@ -106,23 +106,23 @@ public:
 	CHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints=0);
 
 	/** destructor */
-	virtual ~CHAIDTree();
+	~CHAIDTree() override;
 
 	/** get name
 	 * @return class name CHAIDTree
 	 */
-	virtual const char* get_name() const { return "CHAIDTree"; }
+	const char* get_name() const override { return "CHAIDTree"; }
 
 	/** get problem type - multiclass classification or regression
 	 * @return PT_MULTICLASS or PT_REGRESSION
 	 */
-	virtual EProblemType get_machine_problem_type() const;
+	EProblemType get_machine_problem_type() const override;
 
 	/** whether labels supplied are valid for current problem type
 	 * @param lab labels supplied
 	 * @return true for valid labels, false for invalid labels
 	 */
-	virtual bool is_label_valid(std::shared_ptr<Labels> lab) const;
+	bool is_label_valid(std::shared_ptr<Labels> lab) const override;
 
 	/** classify data using Classification Tree
 	 * NOTE : This method replaces all values of continuous attributes in supplied
@@ -130,7 +130,7 @@ public:
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** Get regression labels using Regression Tree
 	 * NOTE : This method replaces all values of continuous attributes in supplied
@@ -138,7 +138,7 @@ public:
 	 * @param data data whose regression output is needed
 	 * @return Regression output for various test vectors
 	 */
-	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 	/** set weights of data points
 	 * @param w vector of weights
@@ -231,7 +231,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 private:
 	/** CHAIDtrain - recursive CHAID training method

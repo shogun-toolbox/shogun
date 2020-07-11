@@ -37,10 +37,10 @@ public:
     ECOCEncoder() {}
 
     /** destructor */
-    virtual ~ECOCEncoder() {}
+    ~ECOCEncoder() override {}
 
     /** get name */
-    virtual const char* get_name() const
+    const char* get_name() const override
     {
         return "ECOCEncoder";
     }

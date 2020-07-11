@@ -67,13 +67,13 @@ public:
 						float64_t learning_rate=1.0, float64_t subset_fraction=0.6);
 
 	/** Destructor */
-	virtual ~StochasticGBMachine();
+	~StochasticGBMachine() override;
 
 	/** get name
 	 *
 	 * @return StochasticGBMachine
 	 */
-	virtual const char* get_name() const { return "StochasticGBMachine"; }
+	const char* get_name() const override { return "StochasticGBMachine"; }
 
 	/** set machine
 	 *
@@ -140,7 +140,7 @@ public:
 	 * @param data test data
 	 * @return Regression labels
 	 */
-	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 protected:
 	/** train machine
@@ -148,7 +148,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	/** compute gamma values
 	 *

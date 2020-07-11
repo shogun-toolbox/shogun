@@ -30,37 +30,37 @@ class FactorGraphFeatures : public Features
 		 */
 		FactorGraphFeatures(int32_t num_samples);
 
-		virtual ~FactorGraphFeatures();
+		~FactorGraphFeatures() override;
 
 		/** Copy-constructor
 		 *
 		 * @return the copy of the given object
 		 */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** get feature type
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type() const;
+		EFeatureType get_feature_type() const override;
 
 		/** get feature class
 		 *
 		 * @return feature class
 		 */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** get number of examples
 		 *
 		 * @return number of examples/vectors (possibly of subset, if implemented)
 		 */
-		virtual int32_t get_num_vectors() const;
+		int32_t get_num_vectors() const override;
 
 		/** Returns the name of the SGSerializable instance.
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "FactorGraphFeatures"; }
+		const char* get_name() const override { return "FactorGraphFeatures"; }
 
 		/** add a graph instance
 		 *

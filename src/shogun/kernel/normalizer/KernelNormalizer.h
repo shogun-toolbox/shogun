@@ -58,7 +58,7 @@ class KernelNormalizer : public SGObject
 		}
 
 		/** default destructor */
-		virtual ~KernelNormalizer() = default;
+		~KernelNormalizer() override = default;
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
@@ -92,7 +92,7 @@ class KernelNormalizer : public SGObject
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const 
+		const char* get_name() const override 
 		{ 
 			return "KernelNormalizer"; 
 		}

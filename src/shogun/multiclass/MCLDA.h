@@ -50,14 +50,14 @@ class MCLDA : public NativeMulticlassMachine
 		 */
 		MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance = 1e-4, bool store_cov = false);
 
-		virtual ~MCLDA();
+		~MCLDA() override;
 
 		/** apply MCLDA to data
 		 *
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 		/** set tolerance
 		 *
@@ -75,7 +75,7 @@ class MCLDA : public NativeMulticlassMachine
 		 *
 		 * @return classifier type MCLDA
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LDA; } // for now add to machine typers properly later
+		EMachineType get_classifier_type() override { return CT_LDA; } // for now add to machine typers properly later
 
 		/** set features
 		 *
@@ -102,7 +102,7 @@ class MCLDA : public NativeMulticlassMachine
 		 *
 		 * @return object name
 		 */
-		virtual const char* get_name() const { return "MCLDA"; }
+		const char* get_name() const override { return "MCLDA"; }
 
 		/** get a class' mean vector
 		 *
@@ -131,7 +131,7 @@ class MCLDA : public NativeMulticlassMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 	private:
 		void init();

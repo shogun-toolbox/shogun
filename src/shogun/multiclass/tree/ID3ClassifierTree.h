@@ -80,17 +80,17 @@ public:
 	ID3ClassifierTree();
 
 	/** destructor */
-	virtual ~ID3ClassifierTree();
+	~ID3ClassifierTree() override;
 
 	/** get name
 	 * @return class name ID3ClassifierTree
 	 */
-	virtual const char* get_name() const { return "ID3ClassifierTree"; }
+	const char* get_name() const override { return "ID3ClassifierTree"; }
 
 	/** classify data using ID3 Tree
 	 * @param data data to be classified
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** prune id3 decision tree - uses reduced error pruning algorithm
 	 *
@@ -120,7 +120,7 @@ protected:
 	/** train machine - build ID3 Tree from training data
 	 * @param data training data
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 private:
 

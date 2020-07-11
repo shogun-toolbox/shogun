@@ -65,13 +65,13 @@ public:
          */
 	StudentsTVGLikelihood(float64_t sigma, float64_t df);
 
-	virtual ~StudentsTVGLikelihood();
+	~StudentsTVGLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name StudentsTVGLikelihood
 	 */
-	virtual const char* get_name() const { return "StudentsTVGLikelihood"; }
+	const char* get_name() const override { return "StudentsTVGLikelihood"; }
 
 	/** return whether likelihood function supports
 	 * computing the derivative wrt hyperparameter
@@ -79,11 +79,11 @@ public:
 	 *
 	 * @return boolean
 	 */
-	virtual bool supports_derivative_wrt_hyperparameter() const { return true; }
+	bool supports_derivative_wrt_hyperparameter() const override { return true; }
 
 protected:
 	/** The function used to initialize m_likelihood*/
-	virtual void init_likelihood();
+	void init_likelihood() override;
 
 private:
 

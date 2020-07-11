@@ -55,10 +55,10 @@ public:
 	DenseSubSamplesFeatures(std::shared_ptr<DenseFeatures<ST>> fea, SGVector<int32_t> idx);
 
     /** destructor */
-	virtual ~DenseSubSamplesFeatures();
+	~DenseSubSamplesFeatures() override;
 
     /** get name */
-    virtual const char* get_name() const { return "DenseSubSamplesFeatures"; }
+    const char* get_name() const override { return "DenseSubSamplesFeatures"; }
 
 	/** set the underlying features */
 	void set_features(std::shared_ptr<DenseFeatures<ST>> fea);
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual std::shared_ptr<Features> duplicate() const;
+	std::shared_ptr<Features> duplicate() const override;
 
 	/** get feature type
 	 *
@@ -80,7 +80,7 @@ public:
 	 *
 	 * @return templated feature type
 	 */
-	virtual EFeatureType get_feature_type() const;
+	EFeatureType get_feature_type() const override;
 
 	/** get feature class
 	 *
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return feature class
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	EFeatureClass get_feature_class() const override;
 
 	/** get number of examples/vectors, possibly corresponding to the current subset
 	 *
@@ -96,7 +96,7 @@ public:
 	 *
 	 * @return number of examples/vectors/samples
 	 */
-	virtual int32_t get_num_vectors() const;
+	int32_t get_num_vectors() const override;
 
 	/** obtain the dimensionality of the feature space
 	 *
@@ -105,7 +105,7 @@ public:
 	 *
 	 * @return dimensionality/features
 	 */
-	virtual int32_t get_dim_feature_space() const;
+	int32_t get_dim_feature_space() const override;
 
 	/** compute dot product between vector1 and vector2,
 	 * appointed by their indices
@@ -114,14 +114,14 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const;
+	float64_t dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const override;
 
 	/** compute dot product between vector1 and a dense vector
 	 *
 	 * @param vec_idx1 index of first vector
 	 * @param vec2 dense vector
 	 */
-	virtual float64_t
+	float64_t
 	dot(int32_t vec_idx1, const SGVector<float64_t>& vec2) const override;
 
 	/** add vector 1 multiplied with alpha to dense vector2
@@ -132,8 +132,8 @@ public:
 	 * @param vec2_len length of real valued vector
 	 * @param abs_val if true add the absolute value
 	 */
-	virtual void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
-		float64_t* vec2, int32_t vec2_len, bool abs_val=false) const;
+	void add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
+		float64_t* vec2, int32_t vec2_len, bool abs_val=false) const override;
 
 	/** get number of non-zero features in vector
 	 *
@@ -142,7 +142,7 @@ public:
 	 * @param num which vector
 	 * @return number of sparse features in vector
 	 */
-	virtual int32_t get_nnz_features_for_vector(int32_t num) const;
+	int32_t get_nnz_features_for_vector(int32_t num) const override;
 
 	/** iterate over the non-zero features
 	 *
@@ -153,7 +153,7 @@ public:
 	 *			iterate over
 	 * @return feature iterator (to be passed to get_next_feature)
 	 */
-	virtual void* get_feature_iterator(int32_t vector_index);
+	void* get_feature_iterator(int32_t vector_index) override;
 
 	/** iterate over the non-zero features
 	 *
@@ -165,14 +165,14 @@ public:
 	 * @param iterator as returned by get_feature_iterator
 	 * @return true if a new non-zero feature got returned
 	 */
-	virtual bool get_next_feature(int32_t& index, float64_t& value, void* iterator);
+	bool get_next_feature(int32_t& index, float64_t& value, void* iterator) override;
 
 	/** clean up iterator
 	 * call this function with the iterator returned by get_feature_iterator
 	 *
 	 * @param iterator as returned by get_feature_iterator
 	 */
-	virtual void free_feature_iterator(void* iterator);
+	void free_feature_iterator(void* iterator) override;
 
 
 	/** does this class support compatible computation bewteen difference classes?
@@ -181,7 +181,7 @@ public:
 	 *
 	 * @return whether this class supports compatible computation
 	 */
-	virtual bool support_compatible_class() const {return true;}
+	bool support_compatible_class() const override {return true;}
 
 	/** Given a class in right hand side, does this class support compatible computation?
 	 *
@@ -191,7 +191,7 @@ public:
 	 * @param rhs the class in right hand side
 	 * @return whether this class supports compatible computation
 	 */
-	virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
+	bool get_feature_class_compatibility (EFeatureClass rhs) const override;
 private:
 	/* init */
 	void init();

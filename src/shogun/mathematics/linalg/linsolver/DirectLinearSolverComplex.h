@@ -41,7 +41,7 @@ public:
 	DirectLinearSolverComplex(EDirectSolverType type);
 
 	/** destructor */
-	virtual ~DirectLinearSolverComplex();
+	~DirectLinearSolverComplex() override;
 
 	/**
 	 * solve method for solving complex linear systems
@@ -50,11 +50,11 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex128_t> solve(std::shared_ptr<LinearOperator<complex128_t>> A,
-			SGVector<float64_t> b);
+	SGVector<complex128_t> solve(std::shared_ptr<LinearOperator<complex128_t>> A,
+			SGVector<float64_t> b) override;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DirectLinearSolverComplex";
 	}

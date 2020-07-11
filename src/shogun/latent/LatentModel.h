@@ -41,7 +41,7 @@ namespace shogun
 			LatentModel(std::shared_ptr<LatentFeatures> feats, std::shared_ptr<LatentLabels> labels, bool do_caching = true);
 
 			/** destructor */
-			virtual ~LatentModel();
+			~LatentModel() override;
 
 			/** get the number of examples
 			 *
@@ -135,7 +135,7 @@ namespace shogun
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LatentModel"; }
+			const char* get_name() const override { return "LatentModel"; }
 
 		protected:
 			/** latent features for training */

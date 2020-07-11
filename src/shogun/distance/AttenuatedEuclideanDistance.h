@@ -45,7 +45,7 @@ class AttenuatedEuclideanDistance: public RealDistance
 		 * @param r features of right-hand side
 		 */
 		AttenuatedEuclideanDistance(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
-		virtual ~AttenuatedEuclideanDistance();
+		~AttenuatedEuclideanDistance() override;
 
 		/** init distance
 		 *
@@ -53,28 +53,28 @@ class AttenuatedEuclideanDistance: public RealDistance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type Euclidean
 		 */
-		virtual EDistanceType get_distance_type() { return D_ATTENUATEDEUCLIDEAN; }
+		EDistanceType get_distance_type() override { return D_ATTENUATEDEUCLIDEAN; }
 
 		/** get feature type the distance can deal with
 		 *
 		 * @return feature type DREAL
 		 */
-		virtual EFeatureType get_feature_type() { return F_DREAL; }
+		EFeatureType get_feature_type() override { return F_DREAL; }
 
 		/** get name of the distance
 		 *
 		 * @return name Euclidean
 		 */
-		virtual const char* get_name() const { return "AttenuatedEuclideanDistance"; }
+		const char* get_name() const override { return "AttenuatedEuclideanDistance"; }
 
 		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
@@ -94,7 +94,7 @@ class AttenuatedEuclideanDistance: public RealDistance
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		void init();

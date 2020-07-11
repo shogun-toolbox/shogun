@@ -25,7 +25,7 @@ class KNNSolver : public DistanceMachine
 		KNNSolver(): DistanceMachine() { init(); }
 
 		/** deconstructor */
-		virtual ~KNNSolver() { /* nothing to do */ }
+		~KNNSolver() override { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -84,7 +84,7 @@ class KNNSolver : public DistanceMachine
 		 virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const = 0;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KNNSolver"; }
+		const char* get_name() const override { return "KNNSolver"; }
 
 	private:
 		void init();

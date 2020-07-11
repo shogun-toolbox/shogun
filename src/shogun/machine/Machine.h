@@ -120,7 +120,7 @@ enum EProblemType
 	/** returns default problem type machine solves \
 	 * @return problem type\
 	 */ \
-	virtual EProblemType get_machine_problem_type() const { return PT; }
+	EProblemType get_machine_problem_type() const override { return PT; }
 
 /** @brief A generic learning machine interface.
  *
@@ -141,7 +141,7 @@ class Machine : public StoppableSGObject
 		Machine();
 
 		/** destructor */
-		virtual ~Machine();
+		~Machine() override;
 
 		/** train machine
 		 *
@@ -229,7 +229,7 @@ class Machine : public StoppableSGObject
 			return PT_BINARY;
 		}
 
-		virtual const char* get_name() const { return "Machine"; }
+		const char* get_name() const override { return "Machine"; }
 
 		/** returns whether machine require labels for training */
 		virtual bool train_require_labels() const

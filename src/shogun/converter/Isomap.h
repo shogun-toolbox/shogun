@@ -59,10 +59,10 @@ public:
 	Isomap();
 
 	/* destructor */
-	virtual ~Isomap();
+	~Isomap() override;
 
 	/** get name */
-	const char* get_name() const;
+	const char* get_name() const override;
 
 	/** setter for k parameter
 	 * @param k value
@@ -75,13 +75,13 @@ public:
 	int32_t get_k() const;
 
 	/** embed distance */
-	virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
+	std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance) override;
 
 /// HELPERS
 protected:
 
 	/** default init */
-	virtual void init();
+	void init() override;
 
 /// FIELDS
 protected:

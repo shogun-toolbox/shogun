@@ -31,7 +31,7 @@ public:
 	Tokenizer(const Tokenizer& orig);
 
 	/** Destructor */
-	virtual ~Tokenizer() { };
+	~Tokenizer() override { };
 
 	/** Set the char array that requires tokenization
 	 *

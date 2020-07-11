@@ -53,13 +53,13 @@ class SVMOcas : public LinearMachine
 		SVMOcas(
 			float64_t C, const std::shared_ptr<Features>& traindat,
 			std::shared_ptr<Labels> trainlab);
-		virtual ~SVMOcas();
+		~SVMOcas() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type SVMOCAS
 		 */
-		virtual EMachineType get_classifier_type() { return CT_SVMOCAS; }
+		EMachineType get_classifier_type() override { return CT_SVMOCAS; }
 
 		/** set C
 		 *
@@ -124,7 +124,7 @@ class SVMOcas : public LinearMachine
 		virtual float64_t compute_primal_objective() const;
 
 		/** @return object name */
-		inline const char* get_name() const { return "SVMOcas"; }
+		inline const char* get_name() const override { return "SVMOcas"; }
 	protected:
 		/** compute W
 		 *
@@ -187,7 +187,7 @@ class SVMOcas : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		void init();

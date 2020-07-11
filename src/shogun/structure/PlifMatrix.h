@@ -37,7 +37,7 @@ class PlifMatrix: public SGObject
 		/** destructor
 		 *
 		 */
-		~PlifMatrix();
+		~PlifMatrix() override;
 
 		/** get array of all plifs
 		 *
@@ -187,7 +187,7 @@ class PlifMatrix: public SGObject
 
 
 		/** @return object name */
-		virtual const char* get_name() const { return "PlifMatrix"; }
+		const char* get_name() const override { return "PlifMatrix"; }
 
 	protected:
 

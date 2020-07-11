@@ -48,10 +48,10 @@ class MulticlassLibLinear : public RandomMixin<LinearMulticlassMachine>
 		MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~MulticlassLibLinear();
+		~MulticlassLibLinear() override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MulticlassLibLinear";
 		}
@@ -143,7 +143,7 @@ class MulticlassLibLinear : public RandomMixin<LinearMulticlassMachine>
 protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 		/** obtain regularizer (w0) matrix */
 		virtual SGMatrix<float64_t> obtain_regularizer_matrix() const;

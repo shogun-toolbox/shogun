@@ -58,7 +58,7 @@ public:
 
 
 	/* Destructor */
-	virtual ~AdamUpdater();
+	~AdamUpdater() override;
 
 	/** Set learning rate
 	 *
@@ -89,7 +89,7 @@ public:
 	 *
 	 * @return name AdamUpdater
 	 */
-	virtual const char* get_name() const { return "AdamUpdater"; }
+	const char* get_name() const override { return "AdamUpdater"; }
 
 	/** Update the target variable based on the given negative descend direction
 	 *
@@ -100,8 +100,8 @@ public:
 	 * @param raw_negative_descend_direction the negative descend direction given the current value
 	 * @param learning_rate learning rate
 	 */
-	virtual void update_variable(SGVector<float64_t> variable_reference,
-		SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate);
+	void update_variable(SGVector<float64_t> variable_reference,
+		SGVector<float64_t> raw_negative_descend_direction, float64_t learning_rate) override;
 
 protected:
 	/** Get the negative descend direction given current variable and gradient
@@ -115,8 +115,8 @@ protected:
 	 * 
 	 * @return negative descend direction (that is, the given gradient in the class)
 	 */
-	virtual float64_t get_negative_descend_direction(float64_t variable,
-		float64_t gradient, index_t idx, float64_t learning_rate);
+	float64_t get_negative_descend_direction(float64_t variable,
+		float64_t gradient, index_t idx, float64_t learning_rate) override;
 
 	/* learning_rate at iteration */
 	float64_t m_log_learning_rate;

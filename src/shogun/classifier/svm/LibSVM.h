@@ -46,16 +46,16 @@ class LibSVM : public SVM
 		LibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab,
 				LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
-		virtual ~LibSVM();
+		~LibSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual EMachineType get_classifier_type() { return CT_LIBSVM; }
+		EMachineType get_classifier_type() override { return CT_LIBSVM; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LibSVM"; }
+		const char* get_name() const override { return "LibSVM"; }
 
 	private:
 		void register_params();
@@ -69,7 +69,7 @@ class LibSVM : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	protected:
 		/** solver type */

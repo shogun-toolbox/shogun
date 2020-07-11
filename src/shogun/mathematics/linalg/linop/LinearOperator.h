@@ -31,7 +31,7 @@ public:
 	LinearOperator(index_t dimension);
 
 	/** destructor */
-	virtual ~LinearOperator();
+	~LinearOperator() override;
 
 	/** @return the dimension on which the linear operator can apply */
 	const index_t get_dimension() const;
@@ -45,7 +45,7 @@ public:
 	virtual SGVector<T> apply(SGVector<T> b) const=0;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "LinearOperator";
 	}

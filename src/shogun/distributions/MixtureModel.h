@@ -56,29 +56,29 @@ class MixtureModel : public Distribution
 		MixtureModel(std::vector<std::shared_ptr<Distribution>> components, SGVector<float64_t> weights);
 
 		/* destructor */
-		~MixtureModel();
+		~MixtureModel() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MixtureModel"; }
+		const char* get_name() const override { return "MixtureModel"; }
 
 		/** learn mixture model
 		 *
 		 * @param data training data
 		 * @return whether training was successful
 		 */
-		bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** get number of parameters in model
 		 *
 		 * @return number of parameters in model
 		 */
-		int32_t get_num_model_parameters() { return 1; }
+		int32_t get_num_model_parameters() override { return 1; }
 
 		/** get model parameter (logarithmic)
 		 *
 		 * @return model parameter (logarithmic)
 		 */
-		float64_t get_log_model_parameter(int32_t num_param=1);
+		float64_t get_log_model_parameter(int32_t num_param=1) override;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -86,14 +86,14 @@ class MixtureModel : public Distribution
 		 * @param num_example which example
 		 * @return derivative of likelihood (logarithmic)
 		 */
-		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
+		float64_t get_log_derivative(int32_t num_param, int32_t num_example) override;
 
 		/** compute log likelihood for example
 		 *
 		 * @param num_example which example
 		 * @return log likelihood for example
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		float64_t get_log_likelihood_example(int32_t num_example) override;
 
 		/** get weights
 		 *

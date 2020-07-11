@@ -22,10 +22,10 @@ public:
     ECOCOVOEncoder() {}
 
     /** destructor */
-    virtual ~ECOCOVOEncoder() {}
+    ~ECOCOVOEncoder() override {}
 
     /** get name */
-    virtual const char* get_name() const
+    const char* get_name() const override
     {
         return "ECOCOVOEncoder";
     }
@@ -33,7 +33,7 @@ public:
     /** init codebook.
      * @param num_classes number of classes in this problem
      */
-    virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
+    SGMatrix<int32_t> create_codebook(int32_t num_classes) override;
 };
 
 }

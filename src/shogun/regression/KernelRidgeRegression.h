@@ -64,7 +64,7 @@ class KernelRidgeRegression : public KernelMachine
 		KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~KernelRidgeRegression() {}
+		~KernelRidgeRegression() override {}
 
 		/** set regularization constant
 		 *
@@ -96,13 +96,13 @@ class KernelRidgeRegression : public KernelMachine
 		 *
 		 * @return classifier type KernelRidgeRegression
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_KERNELRIDGEREGRESSION;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "KernelRidgeRegression"; }
+		const char* get_name() const override { return "KernelRidgeRegression"; }
 
 	protected:
 		/** Train regression
@@ -113,7 +113,7 @@ class KernelRidgeRegression : public KernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** Train regression using Cholesky decomposition.
 		 * Assumes that m_alpha is already allocated.

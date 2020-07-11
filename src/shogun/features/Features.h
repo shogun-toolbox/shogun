@@ -86,7 +86,7 @@ class Features : public SGObject
 		 */
 		virtual std::shared_ptr<Features> duplicate() const=0;
 
-		virtual ~Features();
+		~Features() override;
 
 		/** get feature type
 		 *

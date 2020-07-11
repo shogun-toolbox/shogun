@@ -66,14 +66,14 @@ public:
 	}
 
 	/** destructor */
-	virtual ~TreeMachine()
+	~TreeMachine() override
 	{
 	}
 
 	/** get name
 	 * @return class of the tree
 	 */
-	virtual const char* get_name() const { return "TreeMachine"; }
+	const char* get_name() const override { return "TreeMachine"; }
 
 	/** set root
 	 * @param root the root node of the tree

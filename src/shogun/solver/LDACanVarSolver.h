@@ -81,6 +81,8 @@ namespace shogun
 			canvar();
 		}
 
+		~LDACanVarSolver() override = default;
+
 		/** @returns eigenvectors to project features into the transformed space
 		 */
 		SGMatrix<T> get_eigenvectors();

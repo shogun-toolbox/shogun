@@ -86,7 +86,7 @@ public:
 	LeastAngleRegression(bool lasso);
 
 	/** default destructor */
-	virtual ~LeastAngleRegression();
+	~LeastAngleRegression() override;
 
 	/** switch estimator
 	 *
@@ -139,13 +139,13 @@ public:
 	 *
 	 * @return classifier type LinearRidgeRegression
 	 */
-	virtual EMachineType get_classifier_type()
+	EMachineType get_classifier_type() override
 	{
 		return CT_LARS;
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "LeastAngleRegression"; }
+	const char* get_name() const override { return "LeastAngleRegression"; }
 
 protected:
 

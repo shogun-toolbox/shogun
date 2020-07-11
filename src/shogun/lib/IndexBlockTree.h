@@ -60,7 +60,7 @@ public:
 	IndexBlockTree(SGVector<float64_t> ind_t);
 
 	/** destructor */
-	virtual ~IndexBlockTree();
+	~IndexBlockTree() override;
 
 	/** get root IndexBlock */
 	std::shared_ptr<IndexBlock> get_root_block() const;
@@ -84,13 +84,13 @@ public:
 	virtual SGVector<float64_t> get_SLEP_ind_t() const;
 
 	/** returns relation type */
-	virtual EIndexBlockRelationType get_relation_type() const { return TREE; }
+	EIndexBlockRelationType get_relation_type() const override { return TREE; }
 
 	/** whether relation is general, i.e. not well ordered */
 	bool is_general() const;
 
 	/** get name */
-	const char* get_name() const { return "IndexBlockTree"; };
+	const char* get_name() const override { return "IndexBlockTree"; };
 
 protected:
 

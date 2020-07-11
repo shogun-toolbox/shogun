@@ -86,19 +86,19 @@ public:
 	KLCovarianceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~KLCovarianceInferenceMethod();
+	~KLCovarianceInferenceMethod() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name KLCovarianceInferenceMethod
 	 */
-	virtual const char* get_name() const { return "KLCovarianceInferenceMethod"; }
+	const char* get_name() const override { return "KLCovarianceInferenceMethod"; }
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type KL_COVARIANCE
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_KL_COVARIANCE; }
+	EInferenceType get_inference_type() const override { return INF_KL_COVARIANCE; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -117,7 +117,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** get diagonal vector
 	 *
@@ -130,36 +130,36 @@ public:
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
 	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 protected:
 	/** update covariance matrix of the approximation to the posterior */
-	virtual void update_approx_cov();
+	void update_approx_cov() override;
 
 	/** update alpha matrix */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** update cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** the helper function to compute
 	 * the negative log marginal likelihood
 	 *
 	 * @return negative log marginal likelihood
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood_helper();
+	float64_t get_negative_log_marginal_likelihood_helper() override;
 
 	/** compute the gradient wrt variational parameters
 	 * given the current variational parameters (mu and s2)
 	 *
 	 * @return gradient of negative log marginal likelihood
 	 */
-	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
+	void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient) override;
 
 	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
@@ -169,7 +169,7 @@ protected:
 	 *
 	 * @return true if precomputed parameters are valid
 	 */
-	virtual bool precompute();
+	bool precompute() override;
 
 	/** compute matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt  hyperparameter in cov function
@@ -182,7 +182,7 @@ protected:
 	 * @param dK the gradient wrt hyperparameter related to cov
 	 */
 
-	virtual float64_t get_derivative_related_cov(SGMatrix<float64_t> dK);
+	float64_t get_derivative_related_cov(SGMatrix<float64_t> dK) override;
 private:
 	void init();
 

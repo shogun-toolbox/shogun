@@ -47,7 +47,7 @@ namespace shogun
 class Penalty:public SGObject
 {
 public:
-	virtual ~Penalty() {};
+	~Penalty() override {};
 
 	/** Given the value of a target variable,
 	 * this method returns the penalty of the variable 

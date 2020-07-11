@@ -70,7 +70,7 @@ public:
 	ShiftInvariantKernel(const std::shared_ptr<Features >&l, const std::shared_ptr<Features >&r);
 
 	/** Destructor. */
-	virtual ~ShiftInvariantKernel();
+	~ShiftInvariantKernel() override;
 
 	/**
 	 * Initialize kernel.
@@ -79,7 +79,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/** Method that precomputes the distance */
 	virtual void precompute_distance();
@@ -88,7 +88,7 @@ public:
 	 * Method that releases any precomputed distance instance in addition to
 	 * clean up the base class methods.
 	 */
-	virtual void cleanup();
+	void cleanup() override;
 
 	/** compute kernel function for features a and b
 	 * idx_{a,b} denote the index of the feature vectors
@@ -100,22 +100,22 @@ public:
 	 * @param y index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t x, int32_t y)=0;
+	float64_t compute(int32_t x, int32_t y) override =0;
 
 	/** @return kernel type */
-	virtual EKernelType get_kernel_type()=0;
+	EKernelType get_kernel_type() override =0;
 
 	/** @return feature type of distance used */
-	virtual EFeatureType get_feature_type()=0;
+	EFeatureType get_feature_type() override =0;
 
 	/** @return feature class of distance used */
-	virtual EFeatureClass get_feature_class()=0;
+	EFeatureClass get_feature_class() override =0;
 
 	/** @return the distance type */
 	virtual EDistanceType get_distance_type() const;
 
 	/** @return name Distance */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "ShiftInvariantKernel";
 	}
@@ -136,7 +136,7 @@ protected:
 
 private:
 	/** Registers the parameters (serialization support). */
-	virtual void register_params();
+	void register_params() override;
 
 	/** Precomputed distance instance */
 	std::shared_ptr<CustomDistance> m_precomputed_distance;

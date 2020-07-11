@@ -86,19 +86,19 @@ public:
 	KLCholeskyInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~KLCholeskyInferenceMethod();
+	~KLCholeskyInferenceMethod() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name KLCholeskyInferenceMethod
 	 */
-	virtual const char* get_name() const { return "KLCholeskyInferenceMethod"; }
+	const char* get_name() const override { return "KLCholeskyInferenceMethod"; }
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type KL_CHOLESKY
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_KL_CHOLESKY; }
+	EInferenceType get_inference_type() const override { return INF_KL_CHOLESKY; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -111,25 +111,25 @@ public:
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 protected:
 	/** update alpha vector */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** the helper function to compute
 	 * the negative log marginal likelihood
 	 *
 	 * @return negative log marginal likelihood
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood_helper();
+	float64_t get_negative_log_marginal_likelihood_helper() override;
 
 	/** compute the gradient wrt variational parameters
 	 * given the current variational parameters (mu and s2)
 	 *
 	 * @return gradient of negative log marginal likelihood
 	 */
-	virtual void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient);
+	void get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient) override;
 
 	/** pre-compute the information for optimization.
 	 * This function needs to be called before calling
@@ -140,13 +140,13 @@ protected:
 	 * @return true if precomputed parameters are valid
 	 *
 	 */
-	virtual bool precompute();
+	bool precompute() override;
 
 	/** compute posterior Sigma matrix*/
-	virtual void update_Sigma();
+	void update_Sigma() override;
 
 	/** compute inv(corrected_Kernel)*Sigma matrix */
-	virtual void update_InvK_Sigma();
+	void update_InvK_Sigma() override;
 private:
 	void init();
 

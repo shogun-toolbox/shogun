@@ -42,7 +42,7 @@ template <class ST> struct SGSparseVectorEntry;
 		StreamingFile(const char* fname, char rw='r');
 
 		/** default destructor */
-		virtual ~StreamingFile();
+		~StreamingFile() override;
 
 #ifndef SWIG // SWIG should skip this
 		/**
@@ -266,7 +266,7 @@ template <class ST> struct SGSparseVectorEntry;
 
 
 		/** @return object name */
-		virtual const char* get_name() const { return "StreamingFile"; }
+		const char* get_name() const override { return "StreamingFile"; }
 
 	protected:
 

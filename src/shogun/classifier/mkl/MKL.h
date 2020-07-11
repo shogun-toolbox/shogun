@@ -89,9 +89,9 @@ class MKL : public SVM
 
 		/** Destructor
 		 */
-		virtual ~MKL();
+		~MKL() override;
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const;
+		std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override;
 
 		/** SVM to use as constraint generator in MKL SIP
 		 *
@@ -243,7 +243,7 @@ class MKL : public SVM
 		virtual void compute_sum_beta(float64_t* sumw);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MKL"; }
+		const char* get_name() const override { return "MKL"; }
 
 	protected:
 		/** train MKL classifier
@@ -254,7 +254,7 @@ class MKL : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case

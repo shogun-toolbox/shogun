@@ -37,20 +37,14 @@ namespace shogun
 		template <typename... T>
 		Seedable(T... args) : Parent(args...)
 		{
-			init();
-		}
-
-		virtual const char* get_name() const override
-		{
-			return "Seedable";
-		}
-
-	private:
-		void init()
-		{
 			Parent::watch_param(random::kSeed, &m_seed);
 			Parent::add_callback_function(
 			    random::kSeed, std::bind(seed_callback, this, std::ref(m_seed)));
+		}
+
+		const char* get_name() const override
+		{
+			return "Seedable";
 		}
 
 	protected:

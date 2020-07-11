@@ -54,13 +54,13 @@ public:
 	/** default constructor */
 	ProbitLikelihood();
 
-	virtual ~ProbitLikelihood();
+	~ProbitLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name ProbitLikelihood
 	 */
-	virtual const char* get_name() const { return "ProbitLikelihood"; }
+	const char* get_name() const override { return "ProbitLikelihood"; }
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
@@ -76,8 +76,8 @@ public:
 	 *
 	 * @return final variances evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const;
+	SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const override;
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
@@ -93,14 +93,14 @@ public:
 	 *
 	 * @return final variances evaluated by likelihood function
 	 */
-	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const;
+	SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab=NULL) const override;
 
 	/** get model type
 	 *
 	 * @return model type PROBIT
 	 */
-	virtual ELikelihoodModelType get_model_type() const { return LT_PROBIT; }
+	ELikelihoodModelType get_model_type() const override { return LT_PROBIT; }
 
 	/** returns the logarithm of the point-wise likelihood \f$log(p(y_i|f_i))\f$
 	 * for each label \f$y_i\f$.
@@ -113,8 +113,8 @@ public:
 	 *
 	 * @return logarithm of the point-wise likelihood
 	 */
-	virtual SGVector<float64_t> get_log_probability_f(std::shared_ptr<const Labels> lab,
-			SGVector<float64_t> func) const;
+	SGVector<float64_t> get_log_probability_f(std::shared_ptr<const Labels> lab,
+			SGVector<float64_t> func) const override;
 
 	/** get derivative of log likelihood \f$log(P(y|f))\f$ with respect to
 	 * function location \f$f\f$
@@ -126,8 +126,8 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_log_probability_derivative_f(
-			std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const;
+	SGVector<float64_t> get_log_probability_derivative_f(
+			std::shared_ptr<const Labels> lab, SGVector<float64_t> func, index_t i) const override;
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:
@@ -145,8 +145,8 @@ public:
 	 *
 	 * @return log zeroth moments \f$log(Z_i)\f$
 	 */
-	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const;
+	SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const override;
 
 	/** returns the first moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
@@ -162,8 +162,8 @@ public:
 	 *
 	 * @return first moment of \f$q(f_i)\f$
 	 */
-	virtual float64_t get_first_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const;
+	float64_t get_first_moment(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const override;
 
 	/** returns the second moment of a given (unnormalized) probability
 	 * distribution \f$q(f_i) = Z_i^-1
@@ -179,14 +179,14 @@ public:
 	 *
 	 * @return the second moment of \f$q(f_i)\f$
 	 */
-	virtual float64_t get_second_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const;
+	float64_t get_second_moment(SGVector<float64_t> mu,
+			SGVector<float64_t> s2, std::shared_ptr<const Labels> lab, index_t i) const override;
 
 	/** return whether logit likelihood function supports binary classification
 	 *
 	 * @return true
 	 */
-	virtual bool supports_binary() const { return true; }
+	bool supports_binary() const override { return true; }
 
 };
 }

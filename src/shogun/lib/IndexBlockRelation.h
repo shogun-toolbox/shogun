@@ -37,12 +37,12 @@ public:
 	}
 
 	/** destructor */
-	virtual ~IndexBlockRelation()
+	~IndexBlockRelation() override
 	{
 	}
 
 	/** get name */
-	const char* get_name() const { return "IndexBlockRelation"; };
+	const char* get_name() const override { return "IndexBlockRelation"; };
 
 	/** get relation type */
 	virtual EIndexBlockRelationType get_relation_type() const = 0;

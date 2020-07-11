@@ -79,7 +79,7 @@ public:
 	 * Destructor, frees up buffer.
 	 *
 	 */
-	~ParseBuffer();
+	~ParseBuffer() override;
 
 	/**
 	 * Return the next position to write the example
@@ -169,7 +169,7 @@ public:
 	 *
 	 * @return ParseBuffer
 	 */
-	virtual const char* get_name() const { return "ParseBuffer"; }
+	const char* get_name() const override { return "ParseBuffer"; }
 
 	/** Initialize vector if free_vectors_on_destruct is True and the vector is NULL
 	 *

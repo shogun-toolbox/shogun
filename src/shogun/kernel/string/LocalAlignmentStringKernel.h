@@ -43,7 +43,7 @@ class LocalAlignmentStringKernel: public StringKernel<char>
 			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			float64_t opening=10, float64_t extension=2);
 
-		virtual ~LocalAlignmentStringKernel();
+		~LocalAlignmentStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -51,16 +51,16 @@ class LocalAlignmentStringKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type LOCALALIGNMENT
 		 */
-		virtual EKernelType get_kernel_type()
+		EKernelType get_kernel_type() override
 		{
 			return K_LOCALALIGNMENT;
 		}
@@ -69,7 +69,7 @@ class LocalAlignmentStringKernel: public StringKernel<char>
 		 *
 		 * @return name LocalAlignment
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LocalAlignmentStringKernel";
 		}
@@ -83,7 +83,7 @@ class LocalAlignmentStringKernel: public StringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 
 	private:

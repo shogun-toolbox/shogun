@@ -52,10 +52,10 @@ struct ResultSet : public SGObject
 	ResultSet();
 
 	/** destructor */
-	virtual ~ResultSet();
+	~ResultSet() override;
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 	/** argmax */
 	std::shared_ptr<StructuredData> argmax;
@@ -110,7 +110,7 @@ class StructuredModel : public SGObject
 		StructuredModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels);
 
 		/** destructor */
-		virtual ~StructuredModel();
+		~StructuredModel() override;
 
 		/** initialize the optimization problem for primal solver
 		 *
@@ -255,7 +255,7 @@ class StructuredModel : public SGObject
 		virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "StructuredModel"; }
+		const char* get_name() const override { return "StructuredModel"; }
 
 		/** initializes the part of the model that needs to be used during training.
 		 * In this class this method is empty and it can be re-implemented for any

@@ -35,10 +35,10 @@ public:
 	ShareBoost(const std::shared_ptr<DenseFeatures<float64_t> >&features, const std::shared_ptr<MulticlassLabels >&labs, int32_t num_nonzero_feas);
 
     /** destructor */
-	virtual ~ShareBoost() {}
+	~ShareBoost() override {}
 
     /** get name */
-    virtual const char* get_name() const { return "ShareBoost"; }
+    const char* get_name() const override { return "ShareBoost"; }
 
 	/** set number of non-zero features the algorithm should seek */
 	void set_num_nonzero_feas(int32_t n) { m_nonzero_feas = n; }
@@ -56,7 +56,7 @@ public:
 protected:
 
 	/** train machine */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 private:
 	void init_sb_params(); ///< init machine parameters

@@ -67,14 +67,14 @@ public:
 	typedef std::function<float32_t(SGMatrix<float32_t>)> operation;
 
 	StreamingMMD();
-	virtual ~StreamingMMD();
+	~StreamingMMD() override;
 
-	virtual float64_t compute_statistic();
+	float64_t compute_statistic() override;
 	virtual float64_t compute_variance();
 
 	virtual SGVector<float64_t> compute_multiple();
 
-	virtual SGVector<float64_t> sample_null();
+	SGVector<float64_t> sample_null() override;
 
 	void use_gpu(bool gpu);
 	void cleanup();
@@ -91,10 +91,10 @@ public:
 	void set_null_approximation_method(ENullApproximationMethod nmethod);
 	const ENullApproximationMethod get_null_approximation_method() const;
 
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 protected:
 	virtual const operation get_direct_estimation_method() const=0;
-	virtual float64_t normalize_statistic(float64_t statistic) const=0;
+	float64_t normalize_statistic(float64_t statistic) const override =0;
 	virtual const float64_t normalize_variance(float64_t variance) const=0;
 	bool use_gpu() const;
 	std::shared_ptr<KernelSelectionStrategy> get_strategy();

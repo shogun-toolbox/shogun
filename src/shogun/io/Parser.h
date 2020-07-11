@@ -32,7 +32,7 @@ public:
 	Parser(const SGVector<char>& string, std::shared_ptr<Tokenizer> tokenizer);
 
 	/** destructor */
-	virtual ~Parser();
+	~Parser() override;
 
 	/** check for next line in the stream
 	 *
@@ -78,7 +78,7 @@ public:
 	void set_text(const SGVector<char>& text);
 
 	/** @return object name */
-	virtual const char* get_name() const { return "Parser"; }
+	const char* get_name() const override { return "Parser"; }
 
 private:
 	/** class initialization */

@@ -37,7 +37,7 @@ class ApproxJointDiagonalizer : public SGObject
 		};
 
 		/** destructor */
-		virtual ~ApproxJointDiagonalizer()
+		~ApproxJointDiagonalizer() override
 		{
 		}
 

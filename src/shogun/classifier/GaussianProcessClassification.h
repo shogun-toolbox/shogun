@@ -64,7 +64,7 @@ public:
 	 */
 	GaussianProcessClassification(const std::shared_ptr<Inference>& method);
 
-	virtual ~GaussianProcessClassification();
+	~GaussianProcessClassification() override;
 
 	/** apply machine to data in means of binary classification problem
 	 *
@@ -72,8 +72,8 @@ public:
 	 *
 	 * @return classified labels (label is either -1 or 1)
 	 */
-	virtual std::shared_ptr<BinaryLabels>
-	apply_binary(std::shared_ptr<Features> data);
+	std::shared_ptr<BinaryLabels>
+	apply_binary(std::shared_ptr<Features> data) override;
 
 	/** returns a vector of of the posterior predictive means
 	 *
@@ -106,7 +106,7 @@ public:
 	 *
 	 * @return classifier type GAUSSIANPROCESS
 	 */
-	virtual EMachineType get_classifier_type()
+	EMachineType get_classifier_type() override
 	{
 		return CT_GAUSSIANPROCESSCLASS;
 	}
@@ -115,7 +115,7 @@ public:
 	 *
 	 * @return name GaussianProcessClassification
 	 */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "GaussianProcessClassification";
 	}
@@ -125,8 +125,8 @@ public:
 	 *
 	 * @return classified labels (label starts from 0)
 	 */
-	virtual std::shared_ptr<MulticlassLabels>
-	apply_multiclass(std::shared_ptr<Features> data = NULL);
+	std::shared_ptr<MulticlassLabels>
+	apply_multiclass(std::shared_ptr<Features> data = NULL) override;
 
 protected:
 	/** train classifier
@@ -135,7 +135,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	bool train_machine(std::shared_ptr<Features> data = NULL) override;
 };
 }
 #endif /* _GAUSSIANPROCESSCLASSIFICATION_H_ */

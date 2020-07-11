@@ -52,7 +52,7 @@ class FKFeatures: public DenseFeatures<float64_t>
 		/** copy constructor */
 		FKFeatures(const FKFeatures &orig);
 
-		virtual ~FKFeatures();
+		~FKFeatures() override;
 
 		/** set HMMs
 		 *
@@ -99,7 +99,7 @@ class FKFeatures: public DenseFeatures<float64_t>
 		inline float64_t get_weight_a() { return weight_a; };
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FKFeatures"; }
+		const char* get_name() const override { return "FKFeatures"; }
 
 	protected:
 		/** compute feature vector
@@ -109,8 +109,8 @@ class FKFeatures: public DenseFeatures<float64_t>
 		 * @param target
 		 * @return something floaty
 		 */
-		virtual float64_t* compute_feature_vector(
-			int32_t num, int32_t& len, float64_t* target=NULL) const;
+		float64_t* compute_feature_vector(
+			int32_t num, int32_t& len, float64_t* target=NULL) const override;
 
 		/** computes the feature vector to the address addr
 		 *

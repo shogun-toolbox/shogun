@@ -83,7 +83,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		WeightedDegreePositionStringKernel(
 			const std::shared_ptr<Features>& l, const std::shared_ptr<Features>& r, int32_t degree);
 
-		virtual ~WeightedDegreePositionStringKernel();
+		~WeightedDegreePositionStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -91,22 +91,22 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type WEIGHTEDDEGREEPOS
 		 */
-		virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEPOS; }
+		EKernelType get_kernel_type() override { return K_WEIGHTEDDEGREEPOS; }
 
 		/** return the kernel's name
 		 *
 		 * @return name WeightedDegreePos
 		 */
-		virtual const char* get_name() const { return "WeightedDegreePositionStringKernel"; }
+		const char* get_name() const override { return "WeightedDegreePositionStringKernel"; }
 
 		/** initialize optimization
 		 *
@@ -115,8 +115,8 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param alphas alphas
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t p_count, int32_t *IDX, float64_t * alphas)
+		bool init_optimization(
+			int32_t p_count, int32_t *IDX, float64_t * alphas) override
 		{
 			return init_optimization(p_count, IDX, alphas, -1);
 		}
@@ -140,14 +140,14 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization();
+		bool delete_optimization() override;
 
 		/** compute optimized
 		*
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx)
+		float64_t compute_optimized(int32_t idx) override
 		{
 			ASSERT(get_is_initialized())
 			const auto& alphabet = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_alphabet();
@@ -171,15 +171,15 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param alphas alphas
 		 * @param factor factor
 		 */
-		virtual void compute_batch(
+		void compute_batch(
 			int32_t num_vec, int32_t* vec_idx, float64_t* target,
 			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+			float64_t factor=1.0) override;
 
 		/** clear normal
 		 * subkernel functionality
 		 */
-		virtual void clear_normal()
+		void clear_normal() override
 		{
 			if ((opt_type==FASTBUTMEMHUNGRY) && (tries->get_use_compact_terminal_nodes()))
 			{
@@ -205,7 +205,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight)
+		void add_to_normal(int32_t idx, float64_t weight) override
 		{
 			add_example_to_tree(idx, weight);
 			set_is_initialized(true);
@@ -215,7 +215,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 *
 		 * @return number of subkernels
 		 */
-		virtual int32_t get_num_subkernels()
+		int32_t get_num_subkernels() override
 		{
 			if (position_weights.size() == 0)
 				return (int32_t) ceil(1.0*seq_length/mkl_stepsize) ;
@@ -230,7 +230,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param subkernel_contrib subkernel contribution
 		 */
 		inline void compute_by_subkernel(
-			int32_t idx, float64_t * subkernel_contrib)
+			int32_t idx, float64_t * subkernel_contrib) override
 		{
 			if (get_is_initialized())
 			{
@@ -246,7 +246,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 * @param num_weights number of weights will be stored here
 		 * @return subkernel weights
 		 */
-		inline const float64_t* get_subkernel_weights(int32_t& num_weights)
+		inline const float64_t* get_subkernel_weights(int32_t& num_weights) override
 		{
 			num_weights = get_num_subkernels() ;
 
@@ -266,7 +266,7 @@ class WeightedDegreePositionStringKernel: public StringKernel<char>
 		 *
 		 * @param w weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> w)
+		void set_subkernel_weights(SGVector<float64_t> w) override
 		{
 			float64_t* weights2=w.vector;
 			int32_t num_weights2=w.vlen;
@@ -566,7 +566,7 @@ s		 * @return if setting was successful
 		 *  @exception ShogunException Will be thrown if an error
 		 *                             occurres.
 		 */
-		virtual void load_serializable_post() noexcept(false);
+		void load_serializable_post() override;
 
 	protected:
 		/** create emtpy tries */
@@ -597,7 +597,7 @@ s		 * @return if setting was successful
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 		/** compute with mismatch
 		 *
@@ -647,7 +647,7 @@ s		 * @return if setting was successful
 			char* bvec, float64_t *posweights_rhs, int32_t blen);
 
 		/** remove lhs from kernel */
-		virtual void remove_lhs();
+		void remove_lhs() override;
 
 	private:
 		/** Do basic initialisations like default settings

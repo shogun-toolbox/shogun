@@ -48,19 +48,19 @@ class EMMixtureModel : public EMBase<MixModelData>
 		EMMixtureModel();
 
 		/** destructor */
-		virtual ~EMMixtureModel();
+		~EMMixtureModel() override;
 
 		/** returns name of class */
-		virtual const char* get_name() const { return "EMMixtureModel"; }
+		const char* get_name() const override { return "EMMixtureModel"; }
 
 		/** expectation step
 		 *
 		 * @return updated value log_likelihood
 		 */
-		virtual float64_t expectation_step();
+		float64_t expectation_step() override;
 
 		/** maximization step */
-		virtual void maximization_step();
+		void maximization_step() override;
 };
 } /* shogun */
 #endif /* _EMMIXTUREMODEL_H__ */

@@ -55,7 +55,7 @@ class CombinedKernel : public Kernel
 		 */
 		CombinedKernel(int32_t size, bool append_subkernel_weights);
 
-		virtual ~CombinedKernel();
+		~CombinedKernel() override;
 
 		/** initialize kernel. Provided features have to be combined features.
 		 * If they are not, all subkernels are tried to be initialised with the
@@ -65,16 +65,16 @@ class CombinedKernel : public Kernel
 		 * @param rhs features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs);
+		bool init(std::shared_ptr<Features> lhs, std::shared_ptr<Features> rhs) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type COMBINED
 		 */
-		virtual EKernelType get_kernel_type()
+		EKernelType get_kernel_type() override
 		{
 			return K_COMBINED;
 		}
@@ -83,7 +83,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return feature type UNKNOWN
 		 */
-		virtual EFeatureType get_feature_type()
+		EFeatureType get_feature_type() override
 		{
 			return F_UNKNOWN;
 		}
@@ -92,7 +92,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return feature class COMBINED
 		 */
-		virtual EFeatureClass get_feature_class()
+		EFeatureClass get_feature_class() override
 		{
 			return C_COMBINED;
 		}
@@ -101,7 +101,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return name Combined
 		 */
-		virtual const char* get_name() const { return "CombinedKernel"; }
+		const char* get_name() const override { return "CombinedKernel"; }
 
 		/** list kernels */
 		void list_kernels();
@@ -170,7 +170,7 @@ class CombinedKernel : public Kernel
 		 * @param p kernel property
 		 * @return if kernel has given property
 		 */
-		virtual bool has_property(EKernelProperty p)
+		bool has_property(EKernelProperty p) override
 		{
 			if (p != KP_LINADD)
 				return Kernel::has_property(p);
@@ -253,7 +253,7 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return number of subkernels
 		 */
-		inline int32_t get_num_subkernels()
+		inline int32_t get_num_subkernels() override
 		{
 			if (append_subkernel_weights)
 			{
@@ -284,19 +284,19 @@ class CombinedKernel : public Kernel
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			return initialized;
 		}
 
 		/** remove lhs from kernel */
-		virtual void remove_lhs();
+		void remove_lhs() override;
 
 		/** remove rhs from kernel */
-		virtual void remove_rhs();
+		void remove_rhs() override;
 
 		/** remove lhs and rhs from kernel */
-		virtual void remove_lhs_and_rhs();
+		void remove_lhs_and_rhs() override;
 
 		/** initialize optimization
 		 *
@@ -305,21 +305,21 @@ class CombinedKernel : public Kernel
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t * weights);
+		bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t * weights) override;
 
 		/** delete optimization
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization();
+		bool delete_optimization() override;
 
 		/** compute optimized
 		 *
 		 * @param idx index to compute
 		 * @return optimized value at given index
 		 */
-		virtual float64_t compute_optimized(int32_t idx);
+		float64_t compute_optimized(int32_t idx) override;
 
 		/** computes output for a batch of examples in an optimized fashion
 		 * (favorable if kernel supports it, i.e. has KP_BATCHEVALUATION.  to
@@ -329,10 +329,10 @@ class CombinedKernel : public Kernel
 		 * alphas arguments are the number of support vectors, their indices and
 		 * weights
 		 */
-		virtual void compute_batch(
+		void compute_batch(
 			int32_t num_vec, int32_t* vec_idx, float64_t* target,
 			int32_t num_suppvec, int32_t* IDX, float64_t* alphas,
-			float64_t factor=1.0);
+			float64_t factor=1.0) override;
 
 		/** emulates batch computation, via linadd optimization w^t x or even
 		 * down to sum_i alpha_i K(x_i,x)
@@ -354,43 +354,43 @@ class CombinedKernel : public Kernel
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		void add_to_normal(int32_t idx, float64_t weight) override;
 
 		/** clear normal vector */
-		virtual void clear_normal();
+		void clear_normal() override;
 
 		/** compute by subkernel
 		 *
 		 * @param idx index
 		 * @param subkernel_contrib subkernel contribution
 		 */
-		virtual void compute_by_subkernel(
-			int32_t idx, float64_t * subkernel_contrib);
+		void compute_by_subkernel(
+			int32_t idx, float64_t * subkernel_contrib) override;
 
 		/** get subkernel weights
 		 *
 		 * @param num_weights where number of weights is stored
 		 * @return subkernel weights
 		 */
-		virtual const float64_t* get_subkernel_weights(int32_t& num_weights);
+		const float64_t* get_subkernel_weights(int32_t& num_weights) override;
 
 		/** get subkernel weights (swig compatible)
 		 *
 		 * @return subkernel weights
 		 */
-		virtual SGVector<float64_t> get_subkernel_weights();
+		SGVector<float64_t> get_subkernel_weights() override;
 
 		/** set subkernel weights
 		 *
 		 * @param weights new subkernel weights
 		 */
-		virtual void set_subkernel_weights(SGVector<float64_t> weights);
+		void set_subkernel_weights(SGVector<float64_t> weights) override;
 
 		/** set optimization type
 		 *
 		 * @param t optimization type
 		 */
-		virtual void set_optimization_type(EOptimizationType t);
+		void set_optimization_type(EOptimizationType t) override;
 
 		/** precompute all sub-kernels */
 		bool precompute_subkernels();
@@ -413,7 +413,7 @@ class CombinedKernel : public Kernel
 		 * @return gradient with respect to parameter
 		 */
 		SGMatrix<float64_t> get_parameter_gradient(Parameters::const_reference param,
-				index_t index=-1);
+				index_t index=-1) override;
 #endif
 
 		/** Get the Kernel array
@@ -449,7 +449,7 @@ class CombinedKernel : public Kernel
 		 * @param y y
 		 * @return computed kernel function
 		 */
-		virtual float64_t compute(int32_t x, int32_t y);
+		float64_t compute(int32_t x, int32_t y) override;
 
 		/** adjust the variables num_lhs, num_rhs and initialized
 		 * based on the kernel to be appended/inserted

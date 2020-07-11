@@ -21,7 +21,7 @@ class PlifBase : public SGObject
 	public:
 		/** default constructor */
 		PlifBase() {};
-		virtual ~PlifBase() {};
+		~PlifBase() override {};
 
 		/** lookup penalty float64_t
 		 *

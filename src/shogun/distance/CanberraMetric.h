@@ -43,7 +43,7 @@ class CanberraMetric: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 */
 		CanberraMetric(const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r);
-		virtual ~CanberraMetric();
+		~CanberraMetric() override;
 
 		/** init distance
 		 *
@@ -51,28 +51,28 @@ class CanberraMetric: public DenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get distance type we are
 		 *
 		 * @return distance type CANBERRA
 		 */
-		virtual EDistanceType get_distance_type() { return D_CANBERRA; }
+		EDistanceType get_distance_type() override { return D_CANBERRA; }
 
 		/** get name of the distance
 		 *
 		 * @return name Canberra-Metric
 		 */
-		virtual const char* get_name() const { return "CanberraMetric"; }
+		const char* get_name() const override { return "CanberraMetric"; }
 
 	protected:
 		/// compute distance for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 };
 
 } // namespace shogun

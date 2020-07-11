@@ -36,7 +36,7 @@ class VarianceKernelNormalizer : public KernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~VarianceKernelNormalizer() = default;
+		~VarianceKernelNormalizer() override = default;
 
 		/** initialization of the normalizer
          * @param k kernel */
@@ -77,8 +77,8 @@ class VarianceKernelNormalizer : public KernelNormalizer
 		 * @param idx_lhs index of left hand side vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize(
-			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const
+		float64_t normalize(
+			float64_t value, int32_t idx_lhs, int32_t idx_rhs) const override
 		{
 			return value*meandiff;
 		}
@@ -87,7 +87,7 @@ class VarianceKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the left hand side feature vector
 		 * @param idx_lhs index of left hand side vector
 		 */
-		virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+		float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 		{
 			return value*sqrt_meandiff;
 		}
@@ -96,13 +96,13 @@ class VarianceKernelNormalizer : public KernelNormalizer
 		 * @param value value of a component of the right hand side feature vector
 		 * @param idx_rhs index of right hand side vector
 		 */
-		virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+		float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 		{
 			return value*sqrt_meandiff;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "VarianceKernelNormalizer"; }
+		const char* get_name() const override { return "VarianceKernelNormalizer"; }
 
     protected:
 		/** scaling constant */

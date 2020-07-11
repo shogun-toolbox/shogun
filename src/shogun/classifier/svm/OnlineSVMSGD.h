@@ -40,13 +40,13 @@ class OnlineSVMSGD : public OnlineLinearMachine
 		 */
 		OnlineSVMSGD(float64_t C, std::shared_ptr<StreamingDotFeatures> traindat);
 
-		virtual ~OnlineSVMSGD();
+		~OnlineSVMSGD() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type OnlineSVMSGD
 		 */
-		virtual EMachineType get_classifier_type() { return CT_SVMSGD; }
+		EMachineType get_classifier_type() override { return CT_SVMSGD; }
 
 		/** train classifier
 		 *
@@ -56,7 +56,7 @@ class OnlineSVMSGD : public OnlineLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** set C
 		 *
@@ -139,7 +139,7 @@ class OnlineSVMSGD : public OnlineLinearMachine
 		inline std::shared_ptr<LossFunction> get_loss_function() {  return loss; }
 
 		/** @return object name */
-		inline const char* get_name() const { return "OnlineSVMSGD"; }
+		inline const char* get_name() const override { return "OnlineSVMSGD"; }
 
 	protected:
 		/** calibrate

@@ -51,7 +51,7 @@ class SpectrumRBFKernel: public StringKernel<char>
 			const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
 		/** destructor */
-		virtual ~SpectrumRBFKernel();
+		~SpectrumRBFKernel() override;
 
 		/** initialize kernel
 		 *
@@ -59,10 +59,10 @@ class SpectrumRBFKernel: public StringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** get degree
 		 *
@@ -77,13 +77,13 @@ class SpectrumRBFKernel: public StringKernel<char>
 		 *
 		 * @return kernel type
 		 */
-		virtual EKernelType get_kernel_type() { return K_SPECTRUMRBF; }
+		EKernelType get_kernel_type() override { return K_SPECTRUMRBF; }
 
 		/** return the kernel's name
 		 *
 		 * @return name
 		 */
-		virtual const char* get_name() const { return "SpectrumRBFKernel"; }
+		const char* get_name() const override { return "SpectrumRBFKernel"; }
 
 		/** set degree
 		 *
@@ -124,7 +124,7 @@ class SpectrumRBFKernel: public StringKernel<char>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 		/** register the parameters */
 		virtual void register_param();

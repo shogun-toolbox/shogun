@@ -69,7 +69,7 @@ class CustomDistance: public Distance
 		CustomDistance(
 			const float32_t* dm, int32_t rows, int32_t cols);
 
-		virtual ~CustomDistance();
+		~CustomDistance() override;
 
 		/** initialize distance with dummy features
 		 *
@@ -89,34 +89,34 @@ class CustomDistance: public Distance
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up distance */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of distance we are
 		 *
 		 * @return distance type CUSTOM
 		 */
-		virtual EDistanceType get_distance_type() { return D_CUSTOM; }
+		EDistanceType get_distance_type() override { return D_CUSTOM; }
 
 		/** return feature type the distance can deal with
 		 *
 		 * @return feature type ANY
 		 */
-		virtual EFeatureType get_feature_type() { return F_ANY; }
+		EFeatureType get_feature_type() override { return F_ANY; }
 
 		/** return feature class the distance can deal with
 		 *
 		 * @return feature class ANY
 		 */
-		virtual EFeatureClass get_feature_class() { return C_ANY; }
+		EFeatureClass get_feature_class() override { return C_ANY; }
 
 		/** return the distance's name
 		 *
 		 * @return name Custom
 		 */
-		virtual const char* get_name() const { return "CustomDistance"; }
+		const char* get_name() const override { return "CustomDistance"; }
 
 		/** set distance matrix (only elements from upper triangle)
 		 * from elements of upper triangle (concat'd), including the
@@ -328,7 +328,7 @@ class CustomDistance: public Distance
 		 *
 		 * @return number of vectors of left-hand side
 		 */
-		virtual int32_t get_num_vec_lhs()
+		int32_t get_num_vec_lhs() override
 		{
 			return num_rows;
 		}
@@ -337,7 +337,7 @@ class CustomDistance: public Distance
 		 *
 		 * @return number of vectors of right-hand side
 		 */
-		virtual int32_t get_num_vec_rhs()
+		int32_t get_num_vec_rhs() override
 		{
 			return num_cols;
 		}
@@ -346,7 +346,7 @@ class CustomDistance: public Distance
 		 *
 		 * @return true if features are assigned
 		 */
-		virtual bool has_features()
+		bool has_features() override
 		{
 			return (num_rows>0) && (num_cols>0);
 		}
@@ -358,7 +358,7 @@ class CustomDistance: public Distance
 		 * @param col col
 		 * @return computed distance function
 		 */
-		virtual float64_t compute(int32_t row, int32_t col);
+		float64_t compute(int32_t row, int32_t col) override;
 
 	private:
 		void init();

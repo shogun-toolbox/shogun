@@ -32,7 +32,7 @@ public:
 	 *
 	 * @return name Function
 	 */
-	virtual const char* get_name() const { return "Function"; }
+	const char* get_name() const override { return "Function"; }
 };
 }
 #endif /* _FUNCTION_H_ */

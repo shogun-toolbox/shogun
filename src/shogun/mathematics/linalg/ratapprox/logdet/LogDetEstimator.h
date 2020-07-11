@@ -58,7 +58,7 @@ public:
 		std::shared_ptr<OperatorFunction<float64_t>> operator_log);
 
 	/** Destructor */
-	virtual ~LogDetEstimator();
+	~LogDetEstimator() override;
 
 	/**
 	 * Method that gives num_estimates number of log-det estimates with running
@@ -79,7 +79,7 @@ public:
 	SGMatrix<float64_t> sample_without_averaging(index_t num_estimates);
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "LogDetEstimator";
 	}

@@ -43,7 +43,7 @@ class Time : public SGObject
 		 * @param start if time measurement shall be started
 		 */
 		Time(bool start=true);
-		virtual ~Time();
+		~Time() override;
 
 		/** get current cpu runtime
 		 *
@@ -119,7 +119,7 @@ class Time : public SGObject
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "Time"; }
+		const char* get_name() const override { return "Time"; }
 
 	protected:
 		/** start runtime */

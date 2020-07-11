@@ -56,7 +56,7 @@ public:
 	}
 
 	/** default destructor */
-	virtual ~MultitaskKernelNormalizer() = default;
+	~MultitaskKernelNormalizer() override = default;
 
 	/** initialization of the normalizer
 	 * @param k kernel */
@@ -113,8 +113,8 @@ public:
 	 * @param idx_lhs index of left hand side vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize(float64_t value, int32_t idx_lhs,
-			int32_t idx_rhs) const
+	float64_t normalize(float64_t value, int32_t idx_lhs,
+			int32_t idx_rhs) const override
 	{
 		//lookup tasks
 		const auto& task_idx_lhs = task_vector_lhs[idx_lhs];
@@ -134,7 +134,7 @@ public:
 	 * @param value value of a component of the left hand side feature vector
 	 * @param idx_lhs index of left hand side vector
 	 */
-	virtual float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const
+	float64_t normalize_lhs(float64_t value, int32_t idx_lhs) const override
 	{
 		error("normalize_lhs not implemented");
 		return 0;
@@ -144,7 +144,7 @@ public:
 	 * @param value value of a component of the right hand side feature vector
 	 * @param idx_rhs index of right hand side vector
 	 */
-	virtual float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const
+	float64_t normalize_rhs(float64_t value, int32_t idx_rhs) const override
 	{
 		error("normalize_rhs not implemented");
 		return 0;
@@ -211,7 +211,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MultitaskKernelNormalizer";
 	}

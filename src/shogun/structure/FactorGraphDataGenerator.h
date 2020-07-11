@@ -37,7 +37,7 @@ public:
 	FactorGraphDataGenerator();
 
 	/** @return class name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "FactorGraphDataGenerator";
 	}

@@ -144,7 +144,7 @@ public:
 	RBM(int32_t num_hidden, int32_t num_visible,
 		ERBMVisibleUnitType visible_unit_type = RBMVUT_BINARY);
 
-	virtual ~RBM();
+	~RBM() override;
 
 	/** Adds a group of visible units to the RBM
 	 *
@@ -344,7 +344,7 @@ public:
 	/** Returns the number of parameters */
 	virtual int32_t get_num_parameters() { return m_num_params; }
 
-	virtual const char* get_name() const { return "RBM"; }
+	const char* get_name() const override { return "RBM"; }
 
 protected:
 	/** Computes the mean of the hidden states given the visible states */

@@ -73,7 +73,7 @@ class CommWordStringKernel : public StringKernel<uint16_t>
 			const std::shared_ptr<StringFeatures<uint16_t>>& l, const std::shared_ptr<StringFeatures<uint16_t>>& r,
 			bool use_sign=false, int32_t size=10);
 
-		virtual ~CommWordStringKernel();
+		~CommWordStringKernel() override;
 
 		/** initialize kernel
 		 *
@@ -81,22 +81,22 @@ class CommWordStringKernel : public StringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** clean up kernel */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type COMMWORDSTRING
 		 */
-		virtual EKernelType get_kernel_type() { return K_COMMWORDSTRING; }
+		EKernelType get_kernel_type() override { return K_COMMWORDSTRING; }
 
 		/** return the kernel's name
 		 *
 		 * @return name CommWordString
 		 */
-		virtual const char* get_name() const { return "CommWordStringKernel"; }
+		const char* get_name() const override { return "CommWordStringKernel"; }
 
 		/** initialize dictionary
 		 *
@@ -111,37 +111,37 @@ class CommWordStringKernel : public StringKernel<uint16_t>
 		 * @param weights weights
 		 * @return if initializing was successful
 		 */
-		virtual bool init_optimization(
-			int32_t count, int32_t *IDX, float64_t* weights);
+		bool init_optimization(
+			int32_t count, int32_t *IDX, float64_t* weights) override;
 
 		/** delete optimization
 		 *
 		 * @return if deleting was successful
 		 */
-		virtual bool delete_optimization();
+		bool delete_optimization() override;
 
 		/** compute optimized
 		*
 		* @param idx index to compute
 		* @return optimized value at given index
 		*/
-		virtual float64_t compute_optimized(int32_t idx);
+		float64_t compute_optimized(int32_t idx) override;
 
 		/** add to normal
 		 *
 		 * @param idx where to add
 		 * @param weight what to add
 		 */
-		virtual void add_to_normal(int32_t idx, float64_t weight);
+		void add_to_normal(int32_t idx, float64_t weight) override;
 
 		/** clear normal */
-		virtual void clear_normal();
+		void clear_normal() override;
 
 		/** return feature type the kernel can deal with
 		 *
 		 * @return feature type WORD
 		 */
-		virtual EFeatureType get_feature_type() { return F_WORD; }
+		EFeatureType get_feature_type() override { return F_WORD; }
 
 		/** get dictionary
 		 *
@@ -208,7 +208,7 @@ class CommWordStringKernel : public StringKernel<uint16_t>
 		 * @param idx_b index b
 		 * @return computed kernel function at indices a,b
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b)
+		float64_t compute(int32_t idx_a, int32_t idx_b) override
 		{
 			return compute_helper(idx_a, idx_b, false);
 		}

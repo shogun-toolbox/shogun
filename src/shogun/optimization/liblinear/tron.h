@@ -64,7 +64,7 @@ public:
 	 */
 	Tron(
 		const function *fun_obj, float64_t eps = 0.1, int32_t max_iter = 1000);
-	virtual ~Tron();
+	~Tron() override;
 
 	/** tron
 	 *
@@ -74,7 +74,7 @@ public:
 	void tron(float64_t *w, float64_t max_train_time);
 
 	/** @return object name */
-	virtual const char* get_name() const { return "Tron"; }
+	const char* get_name() const override { return "Tron"; }
 
 private:
 	int32_t trcg(float64_t delta, double* g, double* s, double* r);

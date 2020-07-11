@@ -44,7 +44,7 @@ namespace shogun
 		SGVector<float64_t> m_feature_importances;
 
 	public:
-		virtual ~FeatureImportanceTree() = default;
+		~FeatureImportanceTree() override = default;
 
 	private:
 		void compute_feature_importance_impl(

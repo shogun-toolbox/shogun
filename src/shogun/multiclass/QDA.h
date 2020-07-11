@@ -76,14 +76,14 @@ class QDA : public NativeMulticlassMachine
 		 */
 		QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs);
 
-		virtual ~QDA();
+		~QDA() override;
 
 		/** apply QDA to data
 		 *
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 		/** set store_covs
 		 *
@@ -113,7 +113,7 @@ class QDA : public NativeMulticlassMachine
 		 *
 		 * @return classifier type QDA
 		 */
-		virtual EMachineType get_classifier_type() { return CT_QDA; }
+		EMachineType get_classifier_type() override { return CT_QDA; }
 
 		/** set features
 		 *
@@ -140,7 +140,7 @@ class QDA : public NativeMulticlassMachine
 		 *
 		 * @return object name
 		 */
-		virtual const char* get_name() const { return "QDA"; }
+		const char* get_name() const override { return "QDA"; }
 
 		/** get a class' mean vector
 		 *
@@ -173,7 +173,7 @@ class QDA : public NativeMulticlassMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 	private:
 		void init();

@@ -21,7 +21,7 @@ namespace shogun
 	{
 	public:
 		PipelineBuilder() {}
-		virtual ~PipelineBuilder();
+		~PipelineBuilder() override;
 
 		/** Add a transformer with default name to pipeline. The name is
 		 * obtained by transformer->get_name().
@@ -68,7 +68,7 @@ namespace shogun
 		 */
 		std::shared_ptr<Pipeline> build();
 
-		virtual const char* get_name() const override
+		const char* get_name() const override
 		{
 			return "PipelineBuilder";
 		}
@@ -92,17 +92,17 @@ namespace shogun
 
 	public:
 		Pipeline();
-		virtual ~Pipeline();
+		~Pipeline() override;
 
-		virtual std::shared_ptr<Labels> apply(std::shared_ptr<Features> data = NULL) override;
+		std::shared_ptr<Labels> apply(std::shared_ptr<Features> data = NULL) override;
 
-		virtual const char* get_name() const override
+		const char* get_name() const override
 		{
 			return "Pipeline";
 		}
 
 		/** List all stages in the pipeline.*/
-		virtual std::string to_string() const override;
+		std::string to_string() const override;
 
 		/** Get a transformer in the pipeline.
 		 * @param name name of the transformer
@@ -115,16 +115,16 @@ namespace shogun
 		 */
 		std::shared_ptr<Machine> get_machine() const;
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override;
+		std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override;
 
-		virtual EProblemType get_machine_problem_type() const override;
+		EProblemType get_machine_problem_type() const override;
 
 	protected:
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL) override;
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 		std::vector<std::pair<std::string, variant<std::shared_ptr<Transformer>, std::shared_ptr<Machine>>>>
 		    m_stages;
-		virtual bool train_require_labels() const override;
+		bool train_require_labels() const override;
 	};
 }
 

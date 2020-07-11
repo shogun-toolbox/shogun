@@ -81,7 +81,7 @@ class TOPFeatures : public DenseFeatures<float64_t>
 		/** copy constructor */
 		TOPFeatures(const TOPFeatures &orig);
 
-		virtual ~TOPFeatures();
+		~TOPFeatures() override;
 
 		/** set HMMs
 		 *
@@ -111,7 +111,7 @@ class TOPFeatures : public DenseFeatures<float64_t>
 		bool compute_relevant_indizes(const std::shared_ptr<HMM>& hmm, T_HMM_INDIZES* hmm_idx);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "TOPFeatures"; }
+		const char* get_name() const override { return "TOPFeatures"; }
 
 	protected:
 		/** compute feature vector
@@ -121,8 +121,8 @@ class TOPFeatures : public DenseFeatures<float64_t>
 		 * @param target
 		 * @return something floaty
 		 */
-		virtual float64_t* compute_feature_vector(
-			int32_t num, int32_t& len, float64_t* target=NULL) const;
+		float64_t* compute_feature_vector(
+			int32_t num, int32_t& len, float64_t* target=NULL) const override;
 
 		/** computes the feature vector to the address addr
 		 *

@@ -56,18 +56,18 @@ class RegressionLabels : public DenseLabels
 		 *
 		 * @return label type real
 		 */
-		virtual ELabelType get_label_type() const;
+		ELabelType get_label_type() const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "RegressionLabels"; }
+		const char* get_name() const override { return "RegressionLabels"; }
 
 		/** shallow-copy of the labels object
 		 * @see Labels::duplicate
 		 */
-		virtual std::shared_ptr<Labels> duplicate() const;
+		std::shared_ptr<Labels> duplicate() const override;
 
 #ifndef SWIG // SWIG should skip this part
-		virtual std::shared_ptr<Labels> shallow_subset_copy();
+		std::shared_ptr<Labels> shallow_subset_copy() override;
 #endif
 };
 

@@ -38,13 +38,13 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		 */
 		NewtonSVM(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab, int32_t itr=20);
 
-		virtual ~NewtonSVM();
+		~NewtonSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type NewtonSVM
 		 */
-		virtual EMachineType get_classifier_type() { return CT_NEWTONSVM; }
+		EMachineType get_classifier_type() override { return CT_NEWTONSVM; }
 
 		/**
 		 * set C
@@ -90,11 +90,11 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		inline void set_num_iter(int32_t iter) { num_iter=iter; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "NewtonSVM"; }
+		const char* get_name() const override { return "NewtonSVM"; }
 
 	protected:
-		virtual void init_model(std::shared_ptr<Features> data);
-		virtual void iteration();
+		void init_model(std::shared_ptr<Features> data) override;
+		void iteration() override;
 
 	private:
 		void obj_fun_linear();

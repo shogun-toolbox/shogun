@@ -44,7 +44,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingFileFromSparseFeatures();
+	~StreamingFileFromSparseFeatures() override;
 
 	/**
 	 * This function will be called for reading vectors from the
@@ -54,7 +54,7 @@ public:
 	 * @param vec vector
 	 * @param len length of vector
 	 */
-	virtual void get_sparse_vector(SGSparseVectorEntry<T>* &vec, int32_t &len);
+	void get_sparse_vector(SGSparseVectorEntry<T>* &vec, int32_t &len) override;
 
 	/**
 	 * This function will be called for reading vectors and labels
@@ -65,20 +65,20 @@ public:
 	 * @param len length of vector
 	 * @param label label
 	 */
-	virtual void get_sparse_vector_and_label(SGSparseVectorEntry<T>* &vec, int32_t &len, float64_t &label);
+	void get_sparse_vector_and_label(SGSparseVectorEntry<T>* &vec, int32_t &len, float64_t &label) override;
 
 	/**
 	 * Reset the stream so the next example returned is the first
 	 * example in the SparseFeatures object.
 	 *
 	 */
-	void reset_stream()
+	void reset_stream() override
 	{
 		vector_num = 0;
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "StreamingFileFromSparseFeatures";
 

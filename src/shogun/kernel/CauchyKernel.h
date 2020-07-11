@@ -54,29 +54,29 @@ public:
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/**
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type() { return K_CAUCHY; }
+	EKernelType get_kernel_type() override { return K_CAUCHY; }
 
 	/**
 	 * @return type of features
 	 */
-	virtual EFeatureType get_feature_type() { return m_distance->get_feature_type(); }
+	EFeatureType get_feature_type() override { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	virtual EFeatureClass get_feature_class() { return m_distance->get_feature_class(); }
+	EFeatureClass get_feature_class() override { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const { return "CauchyKernel"; }
+	const char* get_name() const override { return "CauchyKernel"; }
 
-	virtual ~CauchyKernel();
+	~CauchyKernel() override;
 
 protected:
 
@@ -87,7 +87,7 @@ protected:
 	 * @param idx_b right-side index
 	 * @return kernel value
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 private:
 

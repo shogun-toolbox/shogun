@@ -38,7 +38,7 @@ namespace shogun
 		    std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** destructor */
-		virtual ~LevenshteinDistance()
+		~LevenshteinDistance() override
 		{
 		}
 
@@ -48,11 +48,11 @@ namespace shogun
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool
+		bool
 		init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 		/** cleanup distance */
-		virtual void cleanup() override
+		void cleanup() override
 		{
 		}
 
@@ -60,7 +60,7 @@ namespace shogun
 		 *
 		 * @return distance type D_LEVENSHTEIN
 		 */
-		virtual EDistanceType get_distance_type() override
+		EDistanceType get_distance_type() override
 		{
 			return D_LEVENSHTEIN;
 		}
@@ -69,7 +69,7 @@ namespace shogun
 		 *
 		 * @return feature class STRING
 		 */
-		virtual EFeatureClass get_feature_class()
+		EFeatureClass get_feature_class() override
 		{
 			return C_STRING;
 		}
@@ -78,7 +78,7 @@ namespace shogun
 		 *
 		 * @return feature type F_UNKNOWN
 		 */
-		virtual EFeatureType get_feature_type()
+		EFeatureType get_feature_type() override
 		{
 			return F_UNKNOWN;
 		}
@@ -87,7 +87,7 @@ namespace shogun
 		 *
 		 * @return name Levenshtein
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "LevenshteinDistance";
 		}
@@ -100,7 +100,7 @@ namespace shogun
 		 * @param rhs features of right-hand side
 		 * @return replaced right-hand side features
 		 */
-		virtual std::shared_ptr<Features>
+		std::shared_ptr<Features>
 		replace_rhs(std::shared_ptr<Features> rhs) override;
 
 		/** replace left-hand side features used in distance matrix
@@ -112,14 +112,14 @@ namespace shogun
 		 * @return replaced left-hand side features
 		 */
 
-		virtual std::shared_ptr<Features>
+		std::shared_ptr<Features>
 		replace_lhs(std::shared_ptr<Features> lhs) override;
 
 	protected:
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b) override;
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		float64_t

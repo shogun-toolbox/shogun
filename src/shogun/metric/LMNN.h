@@ -44,10 +44,10 @@ class LMNN : public SGObject
 		LMNN(std::shared_ptr<Features> features, const std::shared_ptr<Labels>& labels, int32_t k);
 
 		/** destructor */
-		virtual ~LMNN();
+		~LMNN() override;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const;
+		const char* get_name() const override;
 
 		/**
 		 * LMNN algorithm to learn a linear transformation of the original feature
@@ -249,10 +249,10 @@ class LMNNStatistics : public SGObject
 		LMNNStatistics();
 
 		/** destructor */
-		virtual ~LMNNStatistics();
+		~LMNNStatistics() override;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const;
+		const char* get_name() const override;
 
 		/**
 		 * resize LMNNStatistics::obj, LMNNStatistics::stepsize and

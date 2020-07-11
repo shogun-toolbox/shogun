@@ -35,7 +35,7 @@ public:
 	      float64_t weight=1.0, const char* name="task");
 
 	/** destructor */
-	~IndexBlock();
+	~IndexBlock() override;
 
 	/** get min index */
 	index_t get_min_index() const { return m_min_index; }
@@ -51,7 +51,7 @@ public:
 	void set_weight(float64_t weight) { m_weight = weight; }
 
 	/** get name */
-	virtual const char* get_name() const { return "IndexBlock"; };
+	const char* get_name() const override { return "IndexBlock"; };
 
 	/** get subtasks */
 	std::vector<std::shared_ptr<IndexBlock>> get_sub_blocks();

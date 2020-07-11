@@ -67,19 +67,19 @@ public:
 	EPInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features, std::shared_ptr<MeanFunction> mean,
 			std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~EPInferenceMethod();
+	~EPInferenceMethod() override;
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type EP
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_EP; }
+	EInferenceType get_inference_type() const override { return INF_EP; }
 
 	/** returns the name of the inference method
 	 *
 	 * @return name EP
 	 */
-	virtual const char* get_name() const { return "EPInferenceMethod"; }
+	const char* get_name() const override { return "EPInferenceMethod"; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @return negative log marginal likelihood
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood();
+	float64_t get_negative_log_marginal_likelihood() override;
 
 	/** returns vector to compute posterior mean of Gaussian Process under EP
 	 * approximation:
@@ -123,7 +123,7 @@ public:
 	 *
 	 * @return vector \f$\alpha\f$
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** returns upper triangular factor \f$L^T\f$ of the Cholesky decomposition
 	 * (\f$LL^T\f$) of the matrix:
@@ -139,7 +139,7 @@ public:
 	 * @return upper triangular factor of the Cholesky decomposition of the
 	 * matrix \f$B\f$
 	 */
-	virtual SGMatrix<float64_t> get_cholesky();
+	SGMatrix<float64_t> get_cholesky() override;
 
 	/** returns diagonal vector of the diagonal matrix:
 	 *
@@ -152,7 +152,7 @@ public:
 	 *
 	 * @return diagonal vector of the matrix \f$\tilde{S}^{\frac{1}{2}}\f$
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 	/** returns mean vector \f$\mu\f$ of the Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$, which is an approximation to the
@@ -174,7 +174,7 @@ public:
 	 *
 	 * @return mean vector \f$\mu\f$
 	 */
-	virtual SGVector<float64_t> get_posterior_mean();
+	SGVector<float64_t> get_posterior_mean() override;
 
 	/** returns covariance matrix \f$\Sigma=(K^{-1}+\tilde{S})^{-1}\f$ of the
 	 * Gaussian distribution \f$\mathcal{N}(\mu,\Sigma)\f$, which is an
@@ -195,7 +195,7 @@ public:
 	 *
 	 * @return covariance matrix \f$\Sigma\f$
 	 */
-	virtual SGMatrix<float64_t> get_posterior_covariance();
+	SGMatrix<float64_t> get_posterior_covariance() override;
 
 	/** returns tolerance of the EP approximation
 	 *
@@ -237,20 +237,20 @@ public:
 	 * @return whether combination of Laplace approximation inference method and
 	 * given likelihood function supports binary classification
 	 */
-	virtual bool supports_binary() const
+	bool supports_binary() const override
 	{
 		check_members();
 		return m_model->supports_binary();
 	}
 
 	/** update all matrices Expect gradients*/
-	virtual void update();
+	void update() override;
 
 	/** Set a minimizer
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
+	void register_minimizer(std::shared_ptr<Minimizer> minimizer) override;
 
 	/** Specify behavious when EP does not converge: failure or warning
 	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning
@@ -262,13 +262,13 @@ public:
 
 protected:
 	/** update gradients */
-	virtual void compute_gradient();
+	void compute_gradient() override;
 
 	/** update alpha matrix */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** update Cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();
@@ -282,7 +282,7 @@ protected:
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class
@@ -291,8 +291,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -301,8 +301,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -311,8 +311,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -321,8 +321,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override;
 
 private:
 	void init();

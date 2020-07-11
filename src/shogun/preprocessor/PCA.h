@@ -128,15 +128,15 @@ class PCA : public DensePreprocessor<float64_t>
 		PCA(EPCAMethod method, bool do_whitening=false, EPCAMemoryMode mem=MEM_REALLOCATE);
 
 		/** destructor */
-		virtual ~PCA();
+		~PCA() override;
 
-		virtual void fit(std::shared_ptr<Features> features);
+		void fit(std::shared_ptr<Features> features) override;
 
 		/** apply preprocessor to feature vector
 		 * @param vector feature vector
 		 * @return processed feature vector
 		 */
-		virtual SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector);
+		SGVector<float64_t> apply_to_feature_vector(SGVector<float64_t> vector) override;
 
 		/** get transformation matrix, i.e. eigenvectors (potentially scaled if
 		 * do_whitening is true)
@@ -152,10 +152,10 @@ class PCA : public DensePreprocessor<float64_t>
 		SGVector<float64_t> get_mean();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "PCA"; }
+		const char* get_name() const override { return "PCA"; }
 
 		/** @return a type of preprocessor */
-		virtual EPreprocessorType get_type() const { return P_PCA; }
+		EPreprocessorType get_type() const override { return P_PCA; }
 
 		/** return the PCA memory mode being used */
 		EPCAMemoryMode get_memory_mode() const;
@@ -189,7 +189,7 @@ class PCA : public DensePreprocessor<float64_t>
 
 		void init();
 
-		virtual SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t>);
+		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t>) override;
 
 	protected:
 

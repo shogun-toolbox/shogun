@@ -73,7 +73,7 @@ public:
 	 */
 	StreamingDotFeatures(DotFeatures* dot_features, float64_t* lab=NULL);
 
-	virtual ~StreamingDotFeatures();
+	~StreamingDotFeatures() override;
 
 	/** compute dot product between vectors of two
 	 * StreamingDotFeatures objects.

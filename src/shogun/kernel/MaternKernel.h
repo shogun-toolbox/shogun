@@ -54,7 +54,7 @@ namespace shogun
 		    float64_t nu);
 
 		/** destructor */
-		~MaternKernel();
+		~MaternKernel() override;
 
 		/** return the kernel's name
 		 *

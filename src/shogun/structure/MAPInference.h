@@ -53,10 +53,10 @@ public:
 	MAPInference(std::shared_ptr<FactorGraph> fg, EMAPInferType inference_method);
 
 	/** destructor */
-	virtual ~MAPInference();
+	~MAPInference() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "MAPInference"; }
+	const char* get_name() const override { return "MAPInference"; }
 
 	/** perform inference */
 	virtual void inference();
@@ -104,10 +104,10 @@ public:
 	MAPInferImpl(std::shared_ptr<FactorGraph> fg);
 
 	/** destructor */
-	virtual ~MAPInferImpl();
+	~MAPInferImpl() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "MAPInferImpl"; }
+	const char* get_name() const override { return "MAPInferImpl"; }
 
 	/** perform inference (need to be implemented)
 	 *

@@ -80,19 +80,19 @@ public:
 	ExactInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~ExactInferenceMethod();
+	~ExactInferenceMethod() override;
 
 	/** return what type of inference we are
 	 *
 	 * @return inference type EXACT
 	 */
-	virtual EInferenceType get_inference_type() const { return INF_EXACT; }
+	EInferenceType get_inference_type() const override { return INF_EXACT; }
 
 	/** returns the name of the inference method
 	 *
 	 * @return name Exact
 	 */
-	virtual const char* get_name() const { return "ExactInferenceMethod"; }
+	const char* get_name() const override { return "ExactInferenceMethod"; }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -112,7 +112,7 @@ public:
 	 * where \f$y\f$ are the labels, \f$X\f$ are the features, and \f$\theta\f$
 	 * represent hyperparameters.
 	 */
-	virtual float64_t get_negative_log_marginal_likelihood();
+	float64_t get_negative_log_marginal_likelihood() override;
 
 	/** get alpha vector
 	 *
@@ -124,7 +124,7 @@ public:
 	 *
 	 * where \f$\mu\f$ is the mean and \f$K\f$ is the prior covariance matrix.
 	 */
-	virtual SGVector<float64_t> get_alpha();
+	SGVector<float64_t> get_alpha() override;
 
 	/** get Cholesky decomposition matrix
 	 *
@@ -137,7 +137,7 @@ public:
 	 * where \f$K\f$ is the prior covariance matrix, \f$sW\f$ is the vector
 	 * returned by get_diagonal_vector(), and \f$I\f$ is the identity matrix.
 	 */
-	virtual SGMatrix<float64_t> get_cholesky();
+	SGMatrix<float64_t> get_cholesky() override;
 
 	/** get diagonal vector
 	 *
@@ -150,7 +150,7 @@ public:
 	 * where \f$Cov\f$ is the posterior covariance matrix, \f$K\f$ is the prior
 	 * covariance matrix, and \f$sW\f$ is the diagonal vector.
 	 */
-	virtual SGVector<float64_t> get_diagonal_vector();
+	SGVector<float64_t> get_diagonal_vector() override;
 
 	/** returns mean vector \f$\mu\f$ of the posterior Gaussian distribution
 	 * \f$\mathcal{N}(\mu,\Sigma)\f$
@@ -161,7 +161,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	virtual SGVector<float64_t> get_posterior_mean();
+	SGVector<float64_t> get_posterior_mean() override;
 
 	/** returns covariance matrix \f$\Sigma\f$ of the posterior Gaussian
 	 * distribution \f$\mathcal{N}(\mu,\Sigma)\f$
@@ -172,35 +172,35 @@ public:
 	 *
 	 * @return covariance matrix
 	 */
-	virtual SGMatrix<float64_t> get_posterior_covariance();
+	SGMatrix<float64_t> get_posterior_covariance() override;
 
 	/**
 	 * @return whether combination of exact inference method and given
 	 * likelihood function supports regression
 	 */
-	virtual bool supports_regression() const
+	bool supports_regression() const override
 	{
 		check_members();
 		return m_model->supports_regression();
 	}
 
 	/** update matrices except gradients*/
-	virtual void update();
+	void update() override;
 
         /** Set a minimizer
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
+	void register_minimizer(std::shared_ptr<Minimizer> minimizer) override;
 protected:
 	/** check if members of object are valid for inference */
-	virtual void check_members() const;
+	void check_members() const override;
 
 	/** update alpha matrix */
-	virtual void update_alpha();
+	void update_alpha() override;
 
 	/** update Cholesky matrix */
-	virtual void update_chol();
+	void update_chol() override;
 
 	/** update mean vector of the posterior Gaussian */
 	virtual void update_mean();
@@ -211,7 +211,7 @@ protected:
 	/** update matrices which are required to compute negative log marginal
 	 * likelihood derivatives wrt hyperparameter
 	 */
-	virtual void update_deriv();
+	void update_deriv() override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * CInference class
@@ -220,8 +220,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
 	 * likelihood model
@@ -230,8 +230,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_likelihood_model(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_likelihood_model(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
 	 * parameter
@@ -240,8 +240,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override;
 
 	/** returns derivative of negative log marginal likelihood wrt mean
 	 * function's parameter
@@ -250,11 +250,11 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_mean(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_mean(
+			Parameters::const_reference param) override;
 
 	/** update gradients */
-	virtual void compute_gradient();
+	void compute_gradient() override;
 private:
 	/** covariance matrix of the the posterior Gaussian distribution */
 	SGMatrix<float64_t> m_Sigma;

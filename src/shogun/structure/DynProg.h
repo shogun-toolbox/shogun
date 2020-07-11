@@ -73,7 +73,7 @@ public:
 	 * @param p_num_svms number of SVMs
 	 */
 	DynProg(int32_t p_num_svms=8);
-	virtual ~DynProg();
+	~DynProg() override;
 
 	// model related functions
 	/** set number of states
@@ -554,7 +554,7 @@ protected:
 	bool extend_orf(int32_t orf_from, int32_t orf_to, int32_t start, int32_t &last_pos, int32_t to);
 
 	/** @return object name */
-	virtual const char* get_name() const { return "DynProg"; }
+	const char* get_name() const override { return "DynProg"; }
 
 private:
 	/** a helper method to return the index 

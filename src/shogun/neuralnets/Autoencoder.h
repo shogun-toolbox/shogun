@@ -124,7 +124,7 @@ public:
 	 *
 	 * @return True if training succeeded, false otherwise
 	 */
-	virtual bool train(std::shared_ptr<Features> data);
+	bool train(std::shared_ptr<Features> data) override;
 
 	/** Computes the activation of the hidden layer given the input data
 	 *
@@ -132,8 +132,8 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual std::shared_ptr<DenseFeatures< float64_t >> transform(
-		std::shared_ptr<DenseFeatures< float64_t >> data);
+	std::shared_ptr<DenseFeatures< float64_t >> transform(
+		std::shared_ptr<DenseFeatures< float64_t >> data) override;
 
 	/** Reconstructs the input data
 	 *
@@ -161,9 +161,9 @@ public:
 		get_layer(1)->contraction_coefficient = coeff;
 	}
 
-	virtual ~Autoencoder() {}
+	~Autoencoder() override {}
 
-	virtual const char* get_name() const { return "Autoencoder"; }
+	const char* get_name() const override { return "Autoencoder"; }
 
 	/** Sets noise type for denoising autoencoders.
 	 *
@@ -210,7 +210,7 @@ protected:
 	 * @param targets desired values for the network's output, matrix of size
 	 * num_neurons_output_layer*batch_size
 	 */
-	virtual float64_t compute_error(SGMatrix<float64_t> targets);
+	float64_t compute_error(SGMatrix<float64_t> targets) override;
 
 private:
 	void init();

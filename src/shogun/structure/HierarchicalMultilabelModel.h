@@ -48,15 +48,15 @@ public:
 	                             SGVector<int32_t> taxonomy, bool leaf_nodes_mandatory = false);
 
 	/** destructor */
-	virtual ~HierarchicalMultilabelModel();
+	~HierarchicalMultilabelModel() override;
 
 	/** create empty StructuredLabels object */
-	virtual std::shared_ptr<StructuredLabels > structured_labels_factory(int32_t num_labels = 0);
+	std::shared_ptr<StructuredLabels > structured_labels_factory(int32_t num_labels = 0) override;
 
 	/** @return the dimensionality of the joint feature space, i.e., the
 	 * dimension of the weight vector \f$w\f$.
 	 */
-	virtual int32_t get_dim() const;
+	int32_t get_dim() const override;
 
 	/** get joint feature vector
 	 *
@@ -69,8 +69,8 @@ public:
 	 *
 	 * @return joint feature vector
 	 */
-	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                std::shared_ptr<StructuredData > y);
+	SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
+	                std::shared_ptr<StructuredData > y) override;
 
 	/** obtain the argmax of
 	 *
@@ -82,8 +82,8 @@ public:
 	 * @param feat_idx index of the feature vector to use
 	 * @param training whether training is being used
 	 */
-	virtual std::shared_ptr<ResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
-	                            bool const training = true);
+	std::shared_ptr<ResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
+	                            bool const training = true) override;
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -92,7 +92,7 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2);
+	float64_t delta_loss(std::shared_ptr<StructuredData > y1, std::shared_ptr<StructuredData > y2) override;
 
 	/** initialize the optimization problem
 	 *
@@ -105,7 +105,7 @@ public:
 	 * @param ub upper bounds for w
 	 * @param C regularization matrix, w'Cw
 	 */
-	virtual void init_primal_opt(
+	void init_primal_opt(
 	        float64_t regularization,
 	        SGMatrix<float64_t> &A,
 	        SGVector<float64_t> a,
@@ -113,10 +113,10 @@ public:
 	        SGVector<float64_t> &b,
 	        SGVector<float64_t> &lb,
 	        SGVector<float64_t> &ub,
-	        SGMatrix<float64_t> &C);
+	        SGMatrix<float64_t> &C) override;
 
 	/** @return name of the SGSerializable */
-	virtual const char * get_name() const
+	const char * get_name() const override
 	{
 		return "HierarchicalMultilabelModel";
 	}

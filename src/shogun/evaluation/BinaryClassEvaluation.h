@@ -31,14 +31,19 @@ public:
 	BinaryClassEvaluation() : Evaluation() {};
 
 	/** destructor */
-	virtual ~BinaryClassEvaluation() {};
+	~BinaryClassEvaluation() override {};
 
 	/** evaluate labels
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) = 0;
+	float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth) override = 0;
+
+	const char* get_name() const override 
+	{
+		return "BinaryClassEvaluation";
+	}
 };
 
 }

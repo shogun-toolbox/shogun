@@ -58,7 +58,7 @@ public:
 	NeuralLayers();
 
 	/** destructor */
-	virtual ~NeuralLayers();
+	~NeuralLayers() override;
 
 	/** Adds input neural layer.
 	 *
@@ -128,7 +128,7 @@ public:
 
 	/** Returns name of the object
 	 */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 
 private:
 	std::vector<std::shared_ptr<NeuralLayer>> m_layers;

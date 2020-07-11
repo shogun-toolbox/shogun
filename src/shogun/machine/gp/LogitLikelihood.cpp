@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return f(x)=(1/sqrt(2*PI*sigma^2))*exp(-(x-mu)^2/(2*sigma^2))
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return (1.0 / (std::sqrt(2 * Math::PI) * m_sigma)) *
 			   std::exp(-Math::sq(x - m_mu) / (2.0 * Math::sq(m_sigma)));
@@ -133,7 +133,7 @@ public:
 	 *
 	 * @return f(x)=1/(1+exp(-a*x))
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return 1.0 / (1.0 + std::exp(-m_a * x));
 	}
@@ -160,7 +160,7 @@ public:
 		m_g=std::move(g);
 	}
 
-	virtual ~ProductFunction()
+	~ProductFunction() override
 	{
 
 
@@ -172,7 +172,7 @@ public:
 	 *
 	 * @return h(x)=f(x)*g(x)
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return (*m_f)(x)*(*m_g)(x);
 	}
@@ -191,7 +191,7 @@ public:
 	/** default constructor */
 	LinearFunction() { }
 
-	virtual ~LinearFunction() { }
+	~LinearFunction() override { }
 
 	/** returns value of the function at given point
 	 *
@@ -199,7 +199,7 @@ public:
 	 *
 	 * @return f(x)=x
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return x;
 	}
@@ -212,7 +212,7 @@ public:
 	/** default constructor */
 	QuadraticFunction() { }
 
-	virtual ~QuadraticFunction() { }
+	~QuadraticFunction() override { }
 
 	/** returns value of the function at given point
 	 *
@@ -220,7 +220,7 @@ public:
 	 *
 	 * @return f(x)=x^2
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		return Math::sq(x);
 	}

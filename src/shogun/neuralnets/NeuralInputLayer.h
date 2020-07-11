@@ -75,17 +75,17 @@ public:
 	NeuralInputLayer(int32_t width, int32_t height, int32_t num_channels,
 		int32_t start_index = 0);
 
-	virtual ~NeuralInputLayer() {}
+	~NeuralInputLayer() override {}
 
 	/** Returns true */
-	virtual bool is_input() { return true; }
+	bool is_input() override { return true; }
 
 	/** Copies inputs[start_index:start_index+num_neurons, :] into the
 	 * layer's activations
 	 *
 	 * @param inputs Input features matrix, size num_features*num_cases
 	 */
-	virtual void compute_activations(SGMatrix<float64_t> inputs);
+	void compute_activations(SGMatrix<float64_t> inputs) override;
 
 	/** Gets the index of the first feature that the layer connects to,
 	 * i.e the activations of the layer are copied from
@@ -99,7 +99,7 @@ public:
 	 */
 	virtual void set_start_index(int32_t i) { m_start_index = i; }
 
-	virtual const char* get_name() const { return "NeuralInputLayer"; }
+	const char* get_name() const override { return "NeuralInputLayer"; }
 
 private:
 	void init();

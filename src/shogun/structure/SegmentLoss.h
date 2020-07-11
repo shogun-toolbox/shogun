@@ -26,7 +26,7 @@ class SegmentLoss : public SGObject
 		 */
 		SegmentLoss();
 
-		virtual ~SegmentLoss();
+		~SegmentLoss() override;
 
 		/** get segment loss for a given range
 		 *
@@ -85,7 +85,7 @@ class SegmentLoss : public SGObject
 		/**
 		 * @return object name
 		 */
-		virtual const char* get_name() const { return "SegmentLoss"; }
+		const char* get_name() const override { return "SegmentLoss"; }
 	protected:
 
 		/** segment loss matrix*/

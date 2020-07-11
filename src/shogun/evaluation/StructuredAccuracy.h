@@ -25,7 +25,7 @@ public:
 	StructuredAccuracy();
 
 	/** destructor */
-	virtual ~StructuredAccuracy();
+	~StructuredAccuracy() override;
 
 	/** evaluate accuracy
 	 *
@@ -34,7 +34,7 @@ public:
 	 *
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth);
+	float64_t evaluate(std::shared_ptr<Labels > predicted, std::shared_ptr<Labels > ground_truth) override;
 
 	/** NOT IMPLEMENTED
 	 * constructs confusion matrix for multiclass classification
@@ -50,13 +50,13 @@ public:
 	*
 	* @return maximize evaluation criterion
 	*/
-	inline EEvaluationDirection get_evaluation_direction() const
+	inline EEvaluationDirection get_evaluation_direction() const override
 	{
 		return ED_MAXIMIZE;
 	}
 
 	/** @return name of SGSerializable */
-	virtual const char * get_name() const
+	const char * get_name() const override
 	{
 		return "StructuredAccuracy";
 	}

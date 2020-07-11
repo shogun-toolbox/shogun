@@ -41,10 +41,10 @@ public:
 		EMAPInferType inf_type = TREE_MAX_PROD, bool verbose = false);
 
 	/** destructor */
-	~FactorGraphModel();
+	~FactorGraphModel() override;
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "FactorGraphModel"; }
+	const char* get_name() const override { return "FactorGraphModel"; }
 
 	/** add a new factor type, NOTE: a factor type is not allowed to change
 	 * once it has been added to the FactorGraphModel. Secondly, the model itself
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y);
+	SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y) override;
 
 	/**
 	 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -114,7 +114,7 @@ public:
 	 *
 	 * @return structure with the predicted output
 	 */
-	virtual std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+	std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true) override;
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -123,13 +123,13 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
+	float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2) override;
 
 	/** initializes the part of the model that needs to be used during training.
 	 * In this class this method is empty and it can be re-implemented for any
 	 * particular StructuredModel
 	 */
-	virtual void init_training();
+	void init_training() override;
 
 	/** initialize the optimization problem for primal solver
 	 *
@@ -142,18 +142,18 @@ public:
 	 * @param ub upper bounds for w
 	 * @param C  regularization matrix, w'Cw
 	 */
-	virtual void init_primal_opt(
+	void init_primal_opt(
 			float64_t regularization,
 			SGMatrix< float64_t > & A,  SGVector< float64_t > a,
 			SGMatrix< float64_t > B,  SGVector< float64_t > & b,
 			SGVector< float64_t > & lb, SGVector< float64_t > & ub,
-			SGMatrix < float64_t >  & C);
+			SGMatrix < float64_t >  & C) override;
 
 	/**
 	 * return the dimensionality of the joint feature space, i.e.
 	 * the dimension of the weight vector \f$w\f$
 	 */
-	virtual int32_t get_dim() const;
+	int32_t get_dim() const override;
 
 private:
 	/** register and initialize parameters */

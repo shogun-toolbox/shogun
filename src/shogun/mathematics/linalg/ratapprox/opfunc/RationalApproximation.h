@@ -78,7 +78,7 @@ public:
 		EOperatorFunction function_type);
 
 	/** destructor */
-	virtual ~RationalApproximation();
+	~RationalApproximation() override;
 
 	/**
 	 * precompute method that computes extremal eigenvalues using the eigensolver
@@ -88,7 +88,7 @@ public:
 	 * Automatically computes the number of shifts if they have not been
 	 * specified or are zero using set_shifts_from_accuracy().
 	 */
-	virtual void precompute();
+	void precompute() override;
 
 	/** Computes the number of shifts from the current set accuracy \f$\epsilon\f$
 	 * using
@@ -106,7 +106,7 @@ public:
 	/**
 	 * Method that computes for a particular sample
 	 */
-	virtual float64_t compute(SGVector<float64_t> sample) const = 0;
+	float64_t compute(SGVector<float64_t> sample) const override = 0;
 
 	/** @return shifts */
 	SGVector<complex128_t> get_shifts() const;
@@ -124,7 +124,7 @@ public:
 	void set_num_shifts(index_t num_shifts);
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "RationalApproximation";
 	}

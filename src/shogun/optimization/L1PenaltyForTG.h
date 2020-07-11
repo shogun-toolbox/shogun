@@ -55,20 +55,20 @@ public:
 	L1PenaltyForTG():L1Penalty() { init(); }
 
 	/* Destructor */
-	virtual ~L1PenaltyForTG() {}
+	~L1PenaltyForTG() override {}
 
 	/** returns the name of the class
 	 *
 	 * @return name L1PenaltyForTG
 	 */
-	virtual const char* get_name() const { return "L1PenaltyForTG"; }
+	const char* get_name() const override { return "L1PenaltyForTG"; }
 
 	/** Do proximal projection/operation in place
 	 * @param variable the raw variable
 	 * @param proximal_weight weight of the penalty
 	 */
-	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
-		float64_t proximal_weight);
+	void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight) override;
 
 protected:
 	/** u is defined in Figure 2 of the reference */

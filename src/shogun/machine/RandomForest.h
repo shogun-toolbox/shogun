@@ -76,19 +76,19 @@ public:
 	RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** destructor */
-	virtual ~RandomForest();
+	~RandomForest() override;
 
 	/** get name
 	 *
 	 * @return RandomForest
 	 */
-	virtual const char* get_name() const { return "RandomForest"; }
+	const char* get_name() const override { return "RandomForest"; }
 
 	/** machine is set to modified CART(RandomCART) and cannot be changed
 	 *
 	 * @param machine the machine to use for bagging
 	 */
-	virtual void set_machine(std::shared_ptr<Machine> machine);
+	void set_machine(std::shared_ptr<Machine> machine) override;
 
 	/** set weights
 	 *
@@ -118,7 +118,7 @@ public:
 	 *
 	 * @return PT_MULTICLASS or PT_REGRESSION
 	 */
-	virtual EProblemType get_machine_problem_type() const;
+	EProblemType get_machine_problem_type() const override;
 
 	/** set problem type - multiclass classification or regression
 	 *
@@ -146,13 +146,13 @@ public:
 
 protected:
 
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 	/** sets parameters of CARTree - sets machine labels and weights here
 	 *
 	 * @param m machine
 	 * @param idx indices of training vectors chosen in current bag
 	 */
-	virtual void set_machine_parameters(std::shared_ptr<Machine> m, SGVector<index_t> idx);
+	void set_machine_parameters(std::shared_ptr<Machine> m, SGVector<index_t> idx) override;
 
 private:
 	/** initialize parameters */

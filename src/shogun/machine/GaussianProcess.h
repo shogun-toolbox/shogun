@@ -45,13 +45,13 @@ namespace shogun
 		 */
 		GaussianProcess(std::shared_ptr<Inference> method);
 
-		virtual ~GaussianProcess();
+		~GaussianProcess() override;
 
 		/** returns name of the machine
 		 *
 		 * @return name GaussianProcess
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "GaussianProcess";
 		}
@@ -102,7 +102,7 @@ namespace shogun
 		 *
 		 * @param lab labels to set
 		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab)
+		void set_labels(std::shared_ptr<Labels> lab) override
 		{
 			Machine::set_labels(lab);
 			m_method->set_labels(lab);
@@ -126,7 +126,7 @@ namespace shogun
 			not_implemented(SOURCE_LOCATION);
 		}
 
-		virtual bool train_require_labels() const override
+		bool train_require_labels() const override
 		{
 			return false;
 		}

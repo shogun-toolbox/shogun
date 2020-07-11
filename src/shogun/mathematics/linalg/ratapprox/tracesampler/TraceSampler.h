@@ -44,7 +44,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~TraceSampler()
+	~TraceSampler() override
 	{
 		SG_TRACE("{} destroyed ({})", this->get_name(), fmt::ptr(this));
 	}
@@ -76,7 +76,7 @@ public:
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "TraceSampler";
 	}

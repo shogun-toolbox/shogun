@@ -12,10 +12,12 @@
 #include <shogun/distance/Distance.h>
 #include <shogun/features/SparseFeatures.h>
 
+#define IGNORE_IN_CLASSLIST
+
 namespace shogun
 {
 /** @brief template class SparseDistance */
-template <class ST> class SparseDistance : public Distance
+IGNORE_IN_CLASSLIST template <class ST> class SparseDistance : public Distance
 {
 	public:
 		/** default constructor */
@@ -27,7 +29,7 @@ template <class ST> class SparseDistance : public Distance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override
 		{
 			Distance::init(l,r);
 
@@ -49,27 +51,27 @@ template <class ST> class SparseDistance : public Distance
 		 *
 		 * @return feature class SPARSE
 		 */
-		virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+		EFeatureClass get_feature_class() override { return C_SPARSE; }
 
 		/** get feature type the distance can deal with
 		 *
 		 * @return template-specific feature type
 		 */
-		virtual EFeatureType get_feature_type();
+		EFeatureType get_feature_type() override;
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
 		 *
 		 *  @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const {
+		const char* get_name() const override {
 			return "SparseDistance"; }
 
 		/** cleanup distance
 		 *
 		 * abstract base method
 		 */
-		virtual void cleanup()=0;
+		void cleanup() override =0;
 
 		/** get distance type we are
 		 *
@@ -77,7 +79,7 @@ template <class ST> class SparseDistance : public Distance
 		 *
 		 * @return distance type
 		 */
-		virtual EDistanceType get_distance_type()=0;
+		EDistanceType get_distance_type() override =0;
 };
 
 /** get feature type the DREAL distance can deal with

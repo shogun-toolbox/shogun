@@ -36,7 +36,7 @@ class UWedgeSep: public ICAConverter
 		UWedgeSep();
 
 		/** destructor */
-		virtual ~UWedgeSep();
+		~UWedgeSep() override;
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -54,14 +54,14 @@ class UWedgeSep: public ICAConverter
 		SGNDArray<float64_t> get_covs() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "UWedgeSep"; };
+		const char* get_name() const override { return "UWedgeSep"; };
 
 	protected:
 
 		/** init */
 		void init();
 
-		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
+		void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) override;
 
 	private:
 

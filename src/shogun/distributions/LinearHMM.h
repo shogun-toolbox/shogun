@@ -53,7 +53,7 @@ class LinearHMM : public Distribution
 		 */
 		LinearHMM(int32_t p_num_features, int32_t p_num_symbols);
 
-		virtual ~LinearHMM();
+		~LinearHMM() override;
 
 		/** estimate LinearHMM distribution
 		 *
@@ -63,7 +63,7 @@ class LinearHMM : public Distribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
+		bool train(std::shared_ptr<Features> data=NULL) override;
 
 		/** alternative train distribution
 		 *
@@ -97,14 +97,14 @@ class LinearHMM : public Distribution
 		 * @param num_example which example
 		 * @return likelihood for example
 		 */
-		float64_t get_likelihood_example(int32_t num_example);
+		float64_t get_likelihood_example(int32_t num_example) override;
 
 		/** get logarithm of one example's likelihood
 		 *
 		 * @param num_example which example
 		 * @return logarithm of example's likelihood
 		 */
-		virtual float64_t get_log_likelihood_example(int32_t num_example);
+		float64_t get_log_likelihood_example(int32_t num_example) override;
 
 		/** get logarithm of one example's derivative's likelihood
 		 *
@@ -112,8 +112,8 @@ class LinearHMM : public Distribution
 		 * @param num_example which example
 		 * @return logarithm of example's derivative
 		 */
-		virtual float64_t get_log_derivative(
-			int32_t num_param, int32_t num_example);
+		float64_t get_log_derivative(
+			int32_t num_param, int32_t num_example) override;
 
 		/** obsolete get logarithm of one example's derivative's
 		 *  likelihood
@@ -156,7 +156,7 @@ class LinearHMM : public Distribution
 		 *
 		 * @return number of model parameters
 		 */
-		virtual int32_t get_num_model_parameters() { return num_params; }
+		int32_t get_num_model_parameters() override { return num_params; }
 
 		/** get positional log parameter
 		 *
@@ -175,7 +175,7 @@ class LinearHMM : public Distribution
 		 * @param num_param which param
 		 * @result logarithm of given model parameter
 		 */
-		virtual float64_t get_log_model_parameter(int32_t num_param)
+		float64_t get_log_model_parameter(int32_t num_param) override
 		{
 			ASSERT(log_transition_probs.size() == num_params)
 			ASSERT(num_param<num_params)
@@ -210,16 +210,16 @@ class LinearHMM : public Distribution
 		virtual bool set_transition_probs(const SGMatrix<float64_t>& probs);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LinearHMM"; }
+		const char* get_name() const override { return "LinearHMM"; }
 
 		/** set feature vectors
 		 *
 		 * @param f new feature vectors
 		 */
-		virtual void set_features(std::shared_ptr<Features> f);
+		void set_features(std::shared_ptr<Features> f) override;
 
 	protected:
-		virtual void load_serializable_post() noexcept(false);
+		void load_serializable_post() override;
 
 	private:
 		void init();

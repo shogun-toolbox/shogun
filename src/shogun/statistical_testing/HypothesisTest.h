@@ -73,7 +73,7 @@ public:
 	HypothesisTest();
 
 	/** Destructor */
-	virtual ~HypothesisTest();
+	~HypothesisTest() override;
 
 	/**
 	 * Method that enables/disables the training-testing mode. If this option
@@ -163,7 +163,7 @@ public:
 	virtual SGVector<float64_t> sample_null()=0;
 
 	/** @return The name of the class */
-	virtual const char* get_name() const;
+	const char* get_name() const override;
 protected:
 	explicit HypothesisTest(index_t num_distributions);
 	internal::DataManager& get_data_mgr();

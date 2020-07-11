@@ -49,7 +49,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public SGObject
 		}
 
 		/** Destructor */
-		virtual ~CGCArray()
+		~CGCArray() override
 		{
 			for (int32_t i=0; i<size; i++)
 				SG_UNREF(array[i]);
@@ -88,7 +88,7 @@ IGNORE_IN_CLASSLIST template <class T> class CGCArray : public SGObject
 		 *
 		 * @return name of object
 		 */
-		virtual const char* get_name() const { return "GCArray"; }
+		const char* get_name() const override { return "GCArray"; }
 
 	protected:
 		/// array

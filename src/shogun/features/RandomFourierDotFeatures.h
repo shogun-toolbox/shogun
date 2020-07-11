@@ -77,22 +77,22 @@ public:
 
 	RandomFourierDotFeatures(const RandomFourierDotFeatures& orig);
 
-	virtual std::shared_ptr<Features> duplicate() const;
+	std::shared_ptr<Features> duplicate() const override;
 
-	virtual ~RandomFourierDotFeatures();
+	~RandomFourierDotFeatures() override;
 
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "RandomFourierDotFeatures";
 	}
 
 protected:
 
-	virtual float64_t post_dot(float64_t dot_result, index_t par_idx) const;
+	float64_t post_dot(float64_t dot_result, index_t par_idx) const override;
 
-	virtual void generate_random_params(SGVector<float64_t>& vec);
+	void generate_random_params(SGVector<float64_t>& vec) override;
 
-	virtual int32_t get_num_params() const;
+	int32_t get_num_params() const override;
 
 private:
 	void init(KernelName kernel_name, const SGVector<float64_t>& params);

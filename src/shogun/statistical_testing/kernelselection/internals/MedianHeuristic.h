@@ -52,14 +52,14 @@ class MedianHeuristic : public KernelSelection
 public:
 	MedianHeuristic(KernelManager&, std::shared_ptr<MMD>);
 	MedianHeuristic(const MedianHeuristic& other)=delete;
-	~MedianHeuristic();
+	~MedianHeuristic() override;
 	MedianHeuristic& operator=(const MedianHeuristic& other)=delete;
-	virtual std::shared_ptr<shogun::Kernel> select_kernel() override;
-	virtual SGVector<float64_t> get_measure_vector() override;
-	virtual SGMatrix<float64_t> get_measure_matrix() override;
+	std::shared_ptr<shogun::Kernel> select_kernel() override;
+	SGVector<float64_t> get_measure_vector() override;
+	SGMatrix<float64_t> get_measure_matrix() override;
 protected:
-	virtual void init_measures() override;
-	virtual void compute_measures() override;
+	void init_measures() override;
+	void compute_measures() override;
 	std::shared_ptr<CustomDistance> distance;
 	SGVector<float64_t> measures;
 	int32_t n;

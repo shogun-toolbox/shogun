@@ -39,14 +39,14 @@ public:
 	 */
 	GaussianProcessRegression(const std::shared_ptr<Inference>& method);
 
-	virtual ~GaussianProcessRegression();
+	~GaussianProcessRegression() override;
 
 	/** apply regression to data
 	 *
 	 * @param data (test)data to be classified
 	 * @return classified labels
 	 */
-	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 	/** get predicted mean vector
 	 *
@@ -66,7 +66,7 @@ public:
 	 *
 	 * @return classifier type GaussianProcessRegression
 	 */
-	virtual EMachineType get_classifier_type()
+	EMachineType get_classifier_type() override
 	{
 		return CT_GAUSSIANPROCESSREGRESSION;
 	}
@@ -75,7 +75,7 @@ public:
 	 *
 	 * @return name GaussianProcessRegression
 	 */
-	virtual const char* get_name() const { return "GaussianProcessRegression"; }
+	const char* get_name() const override { return "GaussianProcessRegression"; }
 
 protected:
 	/** train regression
@@ -84,7 +84,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 	/** check whether training labels are valid for regression
 	 *
@@ -92,7 +92,7 @@ protected:
 	 *
 	 * @return whether training labels are valid for regression
 	 */
-	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const
+	bool is_label_valid(std::shared_ptr<Labels >lab) const override
 	{
 		return lab->get_label_type()==LT_REGRESSION;
 	}

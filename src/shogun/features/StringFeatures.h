@@ -105,7 +105,7 @@ template <class ST> class StringFeatures : public Features
 		StringFeatures(const std::shared_ptr<File>& loader, EAlphabet alpha=DNA);
 
 		/** destructor */
-		virtual ~StringFeatures();
+		~StringFeatures() override;
 
 		/** cleanup string features.
 		 *
@@ -135,13 +135,13 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * @return feature class STRING
 		 */
-		virtual EFeatureClass get_feature_class() const;
+		EFeatureClass get_feature_class() const override;
 
 		/** get feature type
 		 *
 		 * @return templated feature type
 		 */
-		virtual EFeatureType get_feature_type() const;
+		EFeatureType get_feature_type() const override;
 
 		/** get alphabet used in string features
 		 *
@@ -153,7 +153,7 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * @return feature object
 		 */
-		virtual std::shared_ptr<Features> duplicate() const;
+		std::shared_ptr<Features> duplicate() const override;
 
 		/** get string for selected example num
 		 *
@@ -263,7 +263,7 @@ template <class ST> class StringFeatures : public Features
 		virtual int32_t get_max_vector_length() const;
 
 		/** @return number of vectors, possibly of subset */
-		virtual int32_t get_num_vectors() const;
+		int32_t get_num_vectors() const override;
 
 		/** get number of symbols
 		 *
@@ -325,7 +325,7 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * @param loader File object via which to load data
 		 */
-		virtual void load(std::shared_ptr<File> loader);
+		void load(std::shared_ptr<File> loader) override;
 
 		/** load ascii line-based string features from file.
 		 *
@@ -450,7 +450,7 @@ template <class ST> class StringFeatures : public Features
 		 *
 		 * @param writer File object via which to save data
 		 */
-		virtual void save(std::shared_ptr<File> writer);
+		void save(std::shared_ptr<File> writer) override;
 
 		/** load compressed features from file
 		 *
@@ -613,13 +613,13 @@ template <class ST> class StringFeatures : public Features
 		 * @param indices indices of feature elements to copy
 		 * @return new Features instance with copies of feature data
 		 */
-		virtual std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const;
+		std::shared_ptr<Features> copy_subset(SGVector<index_t> indices) const override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "StringFeatures"; }
+		const char* get_name() const override { return "StringFeatures"; }
 
 		/** post method when subset is changed */
-		virtual void subset_changed_post();
+		void subset_changed_post() override;
 
 	protected:
 		/** compute feature vector for sample num

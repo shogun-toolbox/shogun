@@ -66,19 +66,19 @@ public:
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
 			std::shared_ptr<Features> inducing_features);
 
-	virtual ~SingleSparseInference();
+	~SingleSparseInference() override;
 
 	/** returns the name of the inference method
 	 *
 	 * @return name SingleSparseInference
 	 */
-	virtual const char* get_name() const { return "SingleSparseInference"; }
+	const char* get_name() const override { return "SingleSparseInference"; }
 
 	/** set kernel
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual void set_kernel(std::shared_ptr<Kernel> kern);
+	void set_kernel(std::shared_ptr<Kernel> kern) override;
 
 	/** opitmize inducing features
 	 *
@@ -152,8 +152,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_noise(
-		Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_inducing_noise(
+		Parameters::const_reference param) override =0;
 
 
 	/** returns derivative of negative log marginal likelihood wrt parameter of
@@ -163,8 +163,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inference_method(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_inference_method(
+			Parameters::const_reference param) override;
 
 
 	/** returns derivative of negative log marginal likelihood wrt kernel's
@@ -174,8 +174,8 @@ protected:
 	 *
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_kernel(
-			Parameters::const_reference param);
+	SGVector<float64_t> get_derivative_wrt_kernel(
+			Parameters::const_reference param) override;
 
 	/** check the bound constraint is vailid or not
 	 *
@@ -218,7 +218,7 @@ protected:
 	 * @param param parameter of given kernel
 	 * @return derivative of negative log marginal likelihood
 	 */
-	virtual SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param)=0;
+	SGVector<float64_t> get_derivative_wrt_inducing_features(Parameters::const_reference param) override =0;
 
 	/** whether the kernel supports to get the gradient wrt inducing points or not*/
 	bool m_fully_sparse;

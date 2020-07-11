@@ -49,10 +49,10 @@ class MaxTestPower : public MaxMeasure
 public:
 	MaxTestPower(KernelManager&, std::shared_ptr<MMD>);
 	MaxTestPower(const MaxTestPower& other)=delete;
-	~MaxTestPower();
+	~MaxTestPower() override;
 	MaxTestPower& operator=(const MaxTestPower& other)=delete;
 protected:
-	virtual void compute_measures();
+	void compute_measures() override;
 	float64_t lambda;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

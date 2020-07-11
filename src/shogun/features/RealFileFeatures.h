@@ -43,7 +43,7 @@ class RealFileFeatures: public DenseFeatures<float64_t>
 		/** copy constructor */
 		RealFileFeatures(const RealFileFeatures& orig);
 
-		virtual ~RealFileFeatures();
+		~RealFileFeatures() override;
 
 		/** load feature matrix
 		 *
@@ -59,7 +59,7 @@ class RealFileFeatures: public DenseFeatures<float64_t>
 		int32_t get_label(int32_t idx);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "RealFileFeatures"; }
+		const char* get_name() const override { return "RealFileFeatures"; }
 
 	protected:
 		/** compute feature vector for sample num
@@ -69,8 +69,8 @@ class RealFileFeatures: public DenseFeatures<float64_t>
 		 * @param len len
 		 * @param target target
 		 */
-		virtual float64_t* compute_feature_vector(
-			int32_t num, int32_t& len, float64_t* target=NULL) const;
+		float64_t* compute_feature_vector(
+			int32_t num, int32_t& len, float64_t* target=NULL) const override;
 
 		/** load base data
 		 *

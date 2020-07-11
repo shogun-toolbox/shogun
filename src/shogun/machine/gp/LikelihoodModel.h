@@ -65,7 +65,7 @@ public:
 	/** default constructor */
 	LikelihoodModel();
 
-	virtual ~LikelihoodModel();
+	~LikelihoodModel() override;
 
 	/** returns the logarithm of the predictive density of \f$y_*\f$:
 	 *

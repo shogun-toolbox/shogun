@@ -95,7 +95,7 @@ public:
 	Inference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
 			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~Inference();
+	~Inference() override;
 
 	/** return what type of inference we are, e.g. exact, FITC, Laplace, etc.
 	 *
@@ -242,8 +242,8 @@ public:
 	 * @return map of gradient. Keys are names of parameters, values are values
 	 * of derivative with respect to that parameter.
 	 */
-	virtual std::map<std::string, SGVector<float64_t>> get_gradient(
-		std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters)
+	std::map<std::string, SGVector<float64_t>> get_gradient(
+		std::map<Parameters::value_type, std::shared_ptr<SGObject>> parameters) override
 	{
 	        return get_negative_log_marginal_likelihood_derivatives(parameters);
 	}
@@ -252,7 +252,7 @@ public:
 	 *
 	 * @return vector that represents the function value
 	 */
-	virtual SGVector<float64_t> get_value()
+	SGVector<float64_t> get_value() override
 	{
 		SGVector<float64_t> result(1);
 		result[0]=get_negative_log_marginal_likelihood();

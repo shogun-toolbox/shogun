@@ -36,7 +36,7 @@ namespace shogun
 
 		/** Destructor
 		 */
-		~ShogunEnv();
+		~ShogunEnv() override;
 
 		/** get the global io object
 		 *

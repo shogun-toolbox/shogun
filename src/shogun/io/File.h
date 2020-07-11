@@ -60,7 +60,7 @@ public:
 	File(const char* fname, char rw='r', const char* name=NULL);
 
 	/** default destructor */
-	virtual ~File();
+	~File() override;
 
 	/** close */
 	void close()
@@ -486,7 +486,7 @@ public:
 	//@}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "File"; }
+	const char* get_name() const override { return "File"; }
 
     /** read whole file in memory
      *

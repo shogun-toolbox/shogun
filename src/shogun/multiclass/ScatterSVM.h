@@ -63,20 +63,20 @@ class ScatterSVM : public MulticlassSVM
 		ScatterSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~ScatterSVM();
+		~ScatterSVM() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type LIBSVM
 		 */
-		virtual EMachineType get_classifier_type() { return CT_SCATTERSVM; }
+		EMachineType get_classifier_type() override { return CT_SCATTERSVM; }
 
 		/** classify one example
 		 *
 		 * @param num number of example to classify
 		 * @return resulting classification
 		 */
-		virtual float64_t apply_one(int32_t num);
+		float64_t apply_one(int32_t num) override;
 
 		/** classify one vs rest
 		 *
@@ -85,7 +85,7 @@ class ScatterSVM : public MulticlassSVM
 		virtual std::shared_ptr<Labels> classify_one_vs_rest();
 
 		/** @return object name */
-		virtual const char* get_name() const { return "ScatterSVM"; }
+		const char* get_name() const override { return "ScatterSVM"; }
 
 	protected:
 		/** train SVM classifier
@@ -96,7 +96,7 @@ class ScatterSVM : public MulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		void compute_norm_wc();

@@ -52,19 +52,19 @@ public:
 	SMDMinimizer(std::shared_ptr<FirstOrderStochasticCostFunction >fun);
 
 	/** Destructor */
-	virtual ~SMDMinimizer();
+	~SMDMinimizer() override;
 
 	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
 	/** returns the name of the class
 	 *
 	 * @return name SMDMinimizer
 	 */
-	virtual const char* get_name() const { return "SMDMinimizer"; }
+	const char* get_name() const override { return "SMDMinimizer"; }
 
 	/** Set projection function
 	 * @param mapping_fun mapping/projection function
@@ -73,7 +73,7 @@ public:
 
 protected:
 	/**  init the minimization process */
-	virtual void init_minimization();
+	void init_minimization() override;
 
 	/** mapping function */
 	std::shared_ptr<MappingFunction> m_mapping_fun;

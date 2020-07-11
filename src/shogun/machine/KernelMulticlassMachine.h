@@ -35,10 +35,10 @@ class KernelMulticlassMachine : public MulticlassMachine
 		KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~KernelMulticlassMachine();
+		~KernelMulticlassMachine() override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "KernelMulticlassMachine";
 		}
@@ -66,28 +66,28 @@ class KernelMulticlassMachine : public MulticlassMachine
 	protected:
 
 		/** init machine for training with kernel init */
-		virtual bool init_machine_for_train(std::shared_ptr<Features> data);
+		bool init_machine_for_train(std::shared_ptr<Features> data) override;
 
 		/** init machines for applying with kernel init */
-		virtual bool init_machines_for_apply(std::shared_ptr<Features> data);
+		bool init_machines_for_apply(std::shared_ptr<Features> data) override;
 
 		/** check kernel availability */
-		virtual bool is_ready();
+		bool is_ready() override;
 
 		/** construct kernel machine from given kernel machine */
-		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const;
+		std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const override;
 
 		/** return number of rhs feature vectors */
-		virtual int32_t get_num_rhs_vectors() const;
+		int32_t get_num_rhs_vectors() const override;
 
 		/** set subset to the features of the machine, deletes old one
 		 *
 		 * @param subset subset indices to set
 		 */
-		virtual void add_machine_subset(SGVector<index_t> subset);
+		void add_machine_subset(SGVector<index_t> subset) override;
 
 		/** deletes any subset set to the features of the machine */
-		virtual void remove_machine_subset();
+		void remove_machine_subset() override;
 
 	protected:
 

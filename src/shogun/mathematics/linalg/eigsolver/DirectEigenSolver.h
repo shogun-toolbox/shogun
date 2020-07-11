@@ -33,16 +33,16 @@ public:
 	DirectEigenSolver(const std::shared_ptr<DenseMatrixOperator<float64_t>>& linear_operator);
 
 	/** destructor */
-	virtual ~DirectEigenSolver();
+	~DirectEigenSolver() override;
 
 	/**
 	 * compute method for computing eigenvalues of a real valued dense matrix
 	 * linear operator
 	 */
-	virtual void compute();
+	void compute() override;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DirectEigenSolver";
 	}

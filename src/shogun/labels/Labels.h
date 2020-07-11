@@ -54,7 +54,7 @@ namespace shogun
 		Labels(const Labels& orig);
 
 		/** destructor */
-		virtual ~Labels();
+		~Labels() override;
 
 		virtual bool is_valid() const = 0;
 

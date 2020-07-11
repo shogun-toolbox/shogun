@@ -63,7 +63,7 @@ public:
 	 *
 	 * @return name AdaptMomentumCorrection
 	 */
-	virtual const char* get_name() const { return "AdaptMomentumCorrection"; }
+	const char* get_name() const override { return "AdaptMomentumCorrection"; }
 
 	/** Set a standard momentum method 
 	 * @param correction standard momentum method (eg, StandardMomentumCorrection)
@@ -72,19 +72,19 @@ public:
 	virtual void set_momentum_correction(std::shared_ptr<MomentumCorrection> correction);
 
 	/*  Destructor */
-	virtual ~AdaptMomentumCorrection();
+	~AdaptMomentumCorrection() override;
 
 	/** Is the standard momentum method  initialized?
 	 *
 	 *  @return whether the standard method  is initialized
 	 */
-	virtual bool is_initialized();
+	bool is_initialized() override;
 
 	/** Set the weight (momentum) for the standard momentum method
 	 *
 	 * @param weight momentum
 	 */
-	virtual void set_correction_weight(float64_t weight);
+	void set_correction_weight(float64_t weight) override;
 
 	/**  Initialize m_previous_descend_direction
 	 *
@@ -96,14 +96,14 @@ public:
 	 * @param idx the index of the direction
 	 * @return DescendPair (corrected descend direction and the change to correct descend direction)
 	*/
-	virtual DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
-		index_t idx);
+	DescendPair get_corrected_descend_direction(float64_t negative_descend_direction,
+		index_t idx) override;
 
 	/**  Initialize m_previous_descend_direction
 	 *
 	 *  @return len the length of m_previous_descend_direction to be initialized
 	 */
-	virtual void initialize_previous_direction(index_t len);
+	void initialize_previous_direction(index_t len) override;
 
 	/** Set adaptive weights used in this method
 	 *

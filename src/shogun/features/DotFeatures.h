@@ -57,7 +57,7 @@ class DotFeatures : public Features
 		 */
 		DotFeatures(std::shared_ptr<File> loader);
 
-		virtual ~DotFeatures() { }
+		~DotFeatures() override { }
 
 		/** obtain the dimensionality of the feature space
 		 *

@@ -54,7 +54,7 @@ public:
 	L1Penalty()
 		:SparsePenalty() {init();}
 
-	virtual ~L1Penalty() {}
+	~L1Penalty() override {}
 
 	/** Given the value of a target variable,
 	 * this method returns the penalty of the variable 
@@ -62,13 +62,13 @@ public:
 	 * @param variable value of the variable
 	 * @return penalty of the variable
 	 */
-	virtual float64_t get_penalty(float64_t variable);
+	float64_t get_penalty(float64_t variable) override;
 
 	/** returns the name of the class
 	 *
 	 * @return name L1Penalty
 	 */
-	virtual const char* get_name() const { return "L1Penalty"; }
+	const char* get_name() const override { return "L1Penalty"; }
 
 	/** Return the gradient of the penalty wrt a target variable
 	 *
@@ -80,8 +80,8 @@ public:
 	 * @return the gradient of the penalty wrt the variable
 	 */
 
-	virtual float64_t get_penalty_gradient(float64_t variable,
-		float64_t gradient_of_variable) {return 0.0;}
+	float64_t get_penalty_gradient(float64_t variable,
+		float64_t gradient_of_variable) override {return 0.0;}
 
 	/** Set the rounding epsilon
 	 *
@@ -94,15 +94,15 @@ public:
 	 * @param variable the raw variable
 	 * @param proximal_weight weight of the penalty
 	 */
-	virtual void update_variable_for_proximity(SGVector<float64_t> variable,
-		float64_t proximal_weight);
+	void update_variable_for_proximity(SGVector<float64_t> variable,
+		float64_t proximal_weight) override;
 
 	/** Get the sparse variable
 	 * @param variable the raw variable
 	 * @param penalty_weight weight of the penalty
 	 * @return sparse value of the variable
 	 */
-	virtual float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight);
+	float64_t get_sparse_variable(float64_t variable, float64_t penalty_weight) override;
 
 protected:
 	/** rounding epsilon */

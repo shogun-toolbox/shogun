@@ -80,18 +80,18 @@ public:
 	C45ClassifierTree();
 
 	/** destructor */
-	virtual ~C45ClassifierTree();
+	~C45ClassifierTree() override;
 
 	/** get name
 	 * @return class name C45ClassifierTree
 	 */
-	virtual const char* get_name() const { return "C45ClassifierTree"; }
+	const char* get_name() const override { return "C45ClassifierTree"; }
 
 	/** classify data using C4.5 Tree
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** prune decision tree - uses reduced error pruning algorithm
 	 *
@@ -157,7 +157,7 @@ protected:
 	/** train machine - build C4.5 Tree from training data
 	 * @param data training data
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+	bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 private:
 

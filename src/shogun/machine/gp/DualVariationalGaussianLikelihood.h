@@ -65,20 +65,20 @@ public:
 	/** default constructor */
 	DualVariationalGaussianLikelihood();
 
-	virtual ~DualVariationalGaussianLikelihood();
+	~DualVariationalGaussianLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name DualVariationalGaussianLikelihood
 	 */
-	virtual const char* get_name() const { return "DualVariationalGaussianLikelihood"; }
+	const char* get_name() const override { return "DualVariationalGaussianLikelihood"; }
 
 	/** returns the expection of the logarithm of a given probability distribution
 	 * wrt the variational distribution given m_mu and m_s2
 	 *
 	 * @return expection
 	 */
-	virtual SGVector<float64_t> get_variational_expection();
+	SGVector<float64_t> get_variational_expection() override;
 
 #ifndef SWIG
 	/** get derivative of the variational expection of log likelihood
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const;
+	SGVector<float64_t> get_variational_first_derivative(Parameters::const_reference param) const override;
 #endif
 
 	/** return whether likelihood function supports
@@ -97,7 +97,7 @@ public:
 	 *
 	 * @return boolean
 	 */
-	virtual bool supports_derivative_wrt_hyperparameter() const;
+	bool supports_derivative_wrt_hyperparameter() const override;
 
 #ifndef SWIG
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to given
@@ -108,7 +108,7 @@ public:
 	 *
 	 * @return derivative
 	 */
-	virtual SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const;
+	SGVector<float64_t> get_first_derivative_wrt_hyperparameter(Parameters::const_reference param) const override;
 #endif
 
 	/** set the variational distribution given data and parameters
@@ -121,8 +121,8 @@ public:
 	 * Note that the variational distribution is Gaussian
 	 *
 	 */
-	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab);
+	bool set_variational_distribution(SGVector<float64_t> mu,
+		SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) override;
 
 	/** check whether the dual parameters are valid or not.
 	 *
@@ -219,7 +219,7 @@ public:
 	 *
 	 * The default value is 1e-6.
 	 */
-	virtual void set_noise_factor(float64_t noise_factor);
+	void set_noise_factor(float64_t noise_factor) override;
 protected:
 
 	/** The dual variables (lambda) for the variational parameter s2.

@@ -80,7 +80,7 @@ public:
 	 */
 	BinaryLabels(const DenseLabels& dense);
 
-	virtual bool is_valid() const override;
+	bool is_valid() const override;
 
 	/** Make sure the label is valid, otherwise raise SG_ERROR.
 	 *
@@ -88,15 +88,15 @@ public:
 	*
 	* @param context optional message to convey the context
 	 */
-	virtual void ensure_valid(const char * context = NULL) override;
+	void ensure_valid(const char * context = NULL) override;
 
 	/** get label type
 	 *
 	 * @return label type binary
 	 */
-	virtual ELabelType get_label_type() const override;
+	ELabelType get_label_type() const override;
 
-	virtual std::shared_ptr<Labels> duplicate() const override;
+	std::shared_ptr<Labels> duplicate() const override;
 
 	/** Converts all scores to calibrated probabilities by fitting a
 	 * sigmoid function using the method described in
@@ -119,13 +119,13 @@ public:
 	void scores_to_probabilities(float64_t a = 0, float64_t b = 0);
 
 	/** @return object name */
-	virtual const char * get_name() const override
+	const char * get_name() const override
 	{
 		return "BinaryLabels";
 	}
 
 #ifndef SWIG // SWIG should skip this part
-	virtual std::shared_ptr<Labels> shallow_subset_copy() override;
+	std::shared_ptr<Labels> shallow_subset_copy() override;
 #endif
 };
 

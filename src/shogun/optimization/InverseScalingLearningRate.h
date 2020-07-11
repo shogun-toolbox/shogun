@@ -55,20 +55,20 @@ public:
 	InverseScalingLearningRate():LearningRate() { init(); }
 
 	/*  Destructor */
-	virtual ~InverseScalingLearningRate() {}
+	~InverseScalingLearningRate() override {}
 
 	/** returns the name of the class
 	 *           
 	 * @return name InverseScalingLearningRate
 	 */
-	virtual const char* get_name() const { return "InverseScalingLearningRate"; }
+	const char* get_name() const override { return "InverseScalingLearningRate"; }
 
 	/** Get the learning rate for descent direction
 	 * @param iter_counter the number of iterations
 	 *
 	 * @return the learning rate (A.K.A step size/length)
 	 */
-	virtual float64_t get_learning_rate(int32_t iter_counter);
+	float64_t get_learning_rate(int32_t iter_counter) override;
 
 	/** Set the initial learning rate
 	 *

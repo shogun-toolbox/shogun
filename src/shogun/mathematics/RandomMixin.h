@@ -51,10 +51,17 @@ namespace shogun
 		template <typename... T>
 		RandomMixin(T... args) : Seedable<Parent>(args...)
 		{
-			init();
+			init_random_seed();
+
+			Parent::add_callback_function(random::kSeed, [&]() {
+				m_prng = PRNG(Seedable<Parent>::m_seed);
+			});
+
+			Parent::watch_method(
+			    random::kSetRandomSeed, &this_t::set_random_seed);
 		}
 
-		virtual std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
+		std::shared_ptr<SGObject> clone(ParameterProperties pp = ParameterProperties::ALL) const override
 		{
 			auto clone = std::dynamic_pointer_cast<this_t>(Parent::clone());
 			clone->m_prng = m_prng;
@@ -78,18 +85,6 @@ namespace shogun
 			init_random_seed();
 			random_seed_callback(this);
 			return true;
-		}
-
-		void init()
-		{
-			init_random_seed();
-
-			Parent::add_callback_function(random::kSeed, [&]() {
-				m_prng = PRNG(Seedable<Parent>::m_seed);
-			});
-
-			Parent::watch_method(
-			    random::kSetRandomSeed, &this_t::set_random_seed);
 		}
 
 	protected:

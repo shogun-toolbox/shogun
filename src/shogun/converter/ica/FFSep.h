@@ -37,7 +37,7 @@ class FFSep: public ICAConverter
 		FFSep();
 
 		/** destructor */
-		virtual ~FFSep();
+		~FFSep() override;
 
 
 		/** getter for tau parameter
@@ -56,13 +56,13 @@ class FFSep: public ICAConverter
 		SGNDArray<float64_t> get_covs() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "FFSep"; };
+		const char* get_name() const override { return "FFSep"; };
 
 	protected:
 		/** init */
 		void init();
 
-		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
+		void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) override;
 
 	private:
 

@@ -75,13 +75,13 @@ class SVRLight: public SVMLight
 		SVRLight(float64_t C, float64_t epsilon, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 		/** default destructor */
-		virtual ~SVRLight();
+		~SVRLight() override;
 
 		/** get classifier type
 		 *
 		 * @return classifier type SVRLIGHT
 		 */
-		virtual EMachineType get_classifier_type();
+		EMachineType get_classifier_type() override;
 
 		/** SVR learn */
 		void   svr_learn();
@@ -95,9 +95,9 @@ class SVRLight: public SVMLight
 		 * @param label label
 		 * @param totdoc totdoc
 		 */
-		virtual float64_t compute_objective_function(
+		float64_t compute_objective_function(
 			float64_t *a, float64_t *lin, float64_t *c, float64_t* eps,
-			int32_t *label, int32_t totdoc);
+			int32_t *label, int32_t totdoc) override;
 
 		/** update linear component
 		 *
@@ -112,11 +112,11 @@ class SVRLight: public SVMLight
 		 * @param aicache ai cache
 		 * @param c c
 		 */
-		virtual void update_linear_component(
+		void update_linear_component(
 			int32_t* docs, int32_t *label,
 			int32_t *active2dnum, float64_t *a, float64_t* a_old,
 			int32_t *working2dnum, int32_t totdoc,
-			float64_t *lin, float64_t *aicache, float64_t* c);
+			float64_t *lin, float64_t *aicache, float64_t* c) override;
 
 		/** update linear component MKL
 		 *
@@ -179,15 +179,15 @@ class SVRLight: public SVMLight
 		 * @param aicache ai cache
 		 * @param maxdiff maxdiff
 		 */
-		virtual void reactivate_inactive_examples(
+		void reactivate_inactive_examples(
 			int32_t *label,float64_t *a,SHRINK_STATE *shrink_state,
 			float64_t *lin, float64_t *c, int32_t totdoc,int32_t iteration,
 			int32_t *inconsistent,
 			int32_t *docs,float64_t *aicache,
-			float64_t* maxdiff);
+			float64_t* maxdiff) override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SVRLight"; }
+		const char* get_name() const override { return "SVRLight"; }
 
 	protected:
 		/** thread helper for update linear component linadd
@@ -218,7 +218,7 @@ class SVRLight: public SVMLight
 		 * @param j index j
 		 * @return kernel value at i,j
 		 */
-		virtual float64_t compute_kernel(int32_t i, int32_t j);
+		float64_t compute_kernel(int32_t i, int32_t j) override;
 
 		/** train regression
 		 *
@@ -228,7 +228,7 @@ class SVRLight: public SVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** number of train elements */
 		int32_t num_vectors;

@@ -38,7 +38,7 @@ class SOBI: public ICAConverter
 		SOBI();
 
 		/** destructor */
-		virtual ~SOBI();
+		~SOBI() override;
 
 		/** getter for tau parameter
 		 * @return tau vector
@@ -56,14 +56,14 @@ class SOBI: public ICAConverter
 		SGNDArray<float64_t> get_covs() const;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SOBI"; };
+		const char* get_name() const override { return "SOBI"; };
 
 	protected:
 
 		/** init */
 		void init();
 
-		virtual void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features);
+		void fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features) override;
 
 	private:
 

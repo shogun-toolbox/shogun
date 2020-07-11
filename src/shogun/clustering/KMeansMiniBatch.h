@@ -41,10 +41,10 @@ class KMeansMiniBatch : public KMeansBase
 		*/
 		KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
 		
-		virtual ~KMeansMiniBatch();
+		~KMeansMiniBatch() override;
 
 		/** @return object name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "KMeansMiniBatch";
 		}
@@ -59,7 +59,7 @@ class KMeansMiniBatch : public KMeansBase
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** mini-batch KMeans training method
 		 */

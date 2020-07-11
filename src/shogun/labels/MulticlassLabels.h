@@ -67,7 +67,7 @@ class MulticlassLabels : public DenseLabels
 		MulticlassLabels(const MulticlassLabels& orig);
 
 		/** destructor */
-		~MulticlassLabels();
+		~MulticlassLabels() override;
 
 		/** Make sure the label is valid, otherwise raise SG_ERROR.
 		 *
@@ -75,17 +75,17 @@ class MulticlassLabels : public DenseLabels
 		 *
 		 * @param context optional message to convey the context
 		 */
-		virtual void ensure_valid(const char* context=NULL);
+		void ensure_valid(const char* context=NULL) override;
 
-		bool is_valid() const;
+		bool is_valid() const override;
 
 		/** get label type
 		 *
 		 * @return label type multiclass
 		 */
-		virtual ELabelType get_label_type() const;
+		ELabelType get_label_type() const override;
 
-		virtual std::shared_ptr<Labels> duplicate() const;
+		std::shared_ptr<Labels> duplicate() const override;
 
 		/** returns labels containing +1 at positions with ith class
 		 *  and -1 at other positions
@@ -141,9 +141,9 @@ class MulticlassLabels : public DenseLabels
 		SGVector<float64_t> get_confidences_for_class(int32_t i);
 
 		/** @return object name */
-		virtual const char* get_name() const { return "MulticlassLabels"; }
+		const char* get_name() const override { return "MulticlassLabels"; }
 #ifndef SWIG // SWIG should skip this part
-		virtual std::shared_ptr<Labels> shallow_subset_copy();
+		std::shared_ptr<Labels> shallow_subset_copy() override;
 #endif
 		/**
 		 * Cast a generic label object to a multiclass one

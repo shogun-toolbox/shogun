@@ -29,7 +29,7 @@ public:
 	}
 
 	/** destructor */
-	virtual ~LinearSolver()
+	~LinearSolver() override
 	{
 	}
 
@@ -43,7 +43,7 @@ public:
 	virtual SGVector<T> solve(std::shared_ptr<LinearOperator<T>> A, SGVector<ST> b) = 0;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "LinearSolver";
 	}

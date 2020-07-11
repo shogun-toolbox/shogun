@@ -34,14 +34,14 @@ public:
 	EmbeddingConverter();
 
 	/** destructor */
-	virtual ~EmbeddingConverter();
+	~EmbeddingConverter() override;
 
 	/** Apply transformation to features. In-place mode is not supported for
 	 * Tapkee converters.
 	 * @param features features to embed
 	 * @return embedding dense real features
 	 */
-	virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) = 0;
+	std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true) override = 0;
 
 	/** setter for target dimension
 	 * @param dim target dimension
@@ -73,7 +73,7 @@ public:
 	 */
 	std::shared_ptr<Kernel> get_kernel() const;
 
-	virtual const char* get_name() const { return "EmbeddingConverter"; };
+	const char* get_name() const override { return "EmbeddingConverter"; };
 
 protected:
 

@@ -80,7 +80,7 @@ public:
 	KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
 	/** Default destructor */
-	virtual ~KRRNystrom() {}
+	~KRRNystrom() override {}
 
 	/** Set the number of columns/rows to choose
 	 *
@@ -103,14 +103,14 @@ less than number of data points ({})", m_num_rkhs_basis, n);
 	bool train_machine(std::shared_ptr<Features >data) override;
 
 	/** @return object name */
-	virtual const char* get_name() const override { return "KRRNystrom"; }
+	const char* get_name() const override { return "KRRNystrom"; }
 
 protected:
 	/** Train regression using the Nyström method.
 	 *
 	 * @return boolean to indicate success
 	 */
-	virtual bool solve_krr_system() override;
+	bool solve_krr_system() override;
 
 	/** Sample indices to pick rows/columns from kernel matrix
 	 *

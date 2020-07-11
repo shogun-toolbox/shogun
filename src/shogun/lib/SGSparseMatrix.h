@@ -49,7 +49,7 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 		SGSparseMatrix(const SGSparseMatrix &orig);
 
 		/** destructor */
-		virtual ~SGSparseMatrix();
+		~SGSparseMatrix() override;
 
 		/** index access operator */
 		inline const SGSparseVector<T>& operator[](index_t index) const
@@ -198,13 +198,13 @@ template <class T> class SGSparseMatrix : public SGReferencedData
 
 	protected:
 		/** copy data */
-		virtual void copy_data(const SGReferencedData& orig);
+		void copy_data(const SGReferencedData& orig) override;
 
 		/** init data */
-		virtual void init_data();
+		void init_data() override;
 
 		/** free data */
-		virtual void free_data();
+		void free_data() override;
 
 public:
 

@@ -34,7 +34,7 @@ public:
 	Sequence(SGVector< int32_t > seq = SGVector<int32_t>()) : StructuredData(), data(seq) { }
 
 	/** destructor */
-	~Sequence() { }
+	~Sequence() override { }
 
 	/** helper method used to specialize a base class instance
 	 *
@@ -51,7 +51,7 @@ public:
 	}
 
 	/** @return name of SGSerializable */
-	virtual const char* get_name() const { return "Sequence"; }
+	const char* get_name() const override { return "Sequence"; }
 
 	/** returns data */
 	SGVector<int32_t> get_data() const { return data; }
@@ -92,10 +92,10 @@ class SequenceLabels : public StructuredLabels
 		SequenceLabels(SGVector< int32_t > labels, int32_t label_length, int32_t num_labels, int32_t num_states);
 
 		/** destructor */
-		virtual ~SequenceLabels();
+		~SequenceLabels() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SequenceLabels"; }
+		const char* get_name() const override { return "SequenceLabels"; }
 
 		/**
 		 * add a new label to the vector of labels, effectively

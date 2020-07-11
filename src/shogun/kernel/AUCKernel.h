@@ -43,7 +43,7 @@ namespace shogun
 		 */
 		AUCKernel(int32_t size, std::shared_ptr<Kernel> subkernel, std::shared_ptr<Labels> labels);
 
-		virtual ~AUCKernel();
+		~AUCKernel() override;
 
 		/** initialize kernel based on current labeling and subkernel
 		 *
@@ -52,17 +52,17 @@ namespace shogun
 		 */
 		bool setup_auc_maximization();
 
-		virtual EKernelType get_kernel_type() { return K_AUC; }
-		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+		EKernelType get_kernel_type() override { return K_AUC; }
+		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
-		virtual const char* get_name() const { return "AUCKernel"; }
+		const char* get_name() const override { return "AUCKernel"; }
 
-		virtual EFeatureClass get_feature_class() { return C_DENSE; }
+		EFeatureClass get_feature_class() override { return C_DENSE; }
 		
-		virtual EFeatureType get_feature_type() { return F_WORD; }
+		EFeatureType get_feature_type() override { return F_WORD; }
 
 	protected:
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	protected:
 		std::shared_ptr<Kernel> m_subkernel;

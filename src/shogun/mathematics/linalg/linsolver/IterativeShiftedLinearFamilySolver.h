@@ -39,7 +39,7 @@ public:
 	IterativeShiftedLinearFamilySolver(bool store_residuals);
 
 	/** destructor */
-	virtual ~IterativeShiftedLinearFamilySolver();
+	~IterativeShiftedLinearFamilySolver() override;
 
 	/**
 	 * abstract solve method for solving real linear systems which computes
@@ -49,7 +49,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(std::shared_ptr<LinearOperator<T>> A, SGVector<T> b) = 0;
+	SGVector<T> solve(std::shared_ptr<LinearOperator<T>> A, SGVector<T> b) override = 0;
 
 	/**
 	 * abstract method that solves the shifted family of linear systems, multiples
@@ -67,7 +67,7 @@ public:
 		SGVector<ST> weights, bool negate) = 0;
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "IterativeShiftedLinearFamilySolver";
 	}

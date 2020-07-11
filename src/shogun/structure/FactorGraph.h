@@ -38,10 +38,10 @@ public:
 	FactorGraph(const FactorGraph &fg);
 
 	/** deconstructor */
-	~FactorGraph();
+	~FactorGraph() override;
 
 	/** @return class name */
-	virtual const char* get_name() const { return "FactorGraph"; }
+	const char* get_name() const override { return "FactorGraph"; }
 
 	/** add a factor
 	 *

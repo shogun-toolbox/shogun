@@ -55,9 +55,9 @@ namespace shogun
 	{
 	public:
 		CrossValidationFoldStorage();
-		virtual ~CrossValidationFoldStorage();
+		~CrossValidationFoldStorage() override;
 
-		virtual void print_result();
+		void print_result() override;
 
 		/** post update test and true results
 		 */
@@ -67,7 +67,7 @@ namespace shogun
 		 * Class name (used for serialization)
 		 * @return class name
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "CrossValidationFoldStorage";
 		};
@@ -78,7 +78,7 @@ namespace shogun
 		 * has no create() method inside class_list.h
 		 * @return an empty CrossValidationFoldStorage object SG_REF'ed
 		 */
-		virtual std::shared_ptr<SGObject> create_empty() const;
+		std::shared_ptr<SGObject> create_empty() const override;
 
 		/** Current run index is written here */
 		index_t m_current_run_index{};
@@ -115,15 +115,15 @@ namespace shogun
 		CrossValidationStorage();
 
 		/** Destructor */
-		virtual ~CrossValidationStorage();
+		~CrossValidationStorage() override;
 
-		virtual void print_result();
+		void print_result() override;
 
 		/**
 		 * Class name (used for serialization)
 		 * @return class name
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "CrossValidationStorage";
 		};
@@ -143,7 +143,7 @@ namespace shogun
 		 * has no create() method inside class_list.h
 		 * @return an empty CrossValidationStorage object SG_REF'ed
 		 */
-		virtual std::shared_ptr<SGObject> create_empty() const;
+		std::shared_ptr<SGObject> create_empty() const override;
 
 		/** number of runs is initialised here */
 		index_t m_num_runs;

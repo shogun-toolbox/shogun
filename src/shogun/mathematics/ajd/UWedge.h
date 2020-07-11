@@ -35,7 +35,7 @@ class UWedge : public ApproxJointDiagonalizer
 		}
 
 		/** destructor */
-		virtual ~UWedge()
+		~UWedge() override
 		{
 		}
 
@@ -58,17 +58,17 @@ class UWedge : public ApproxJointDiagonalizer
 		 * @param itermax maximum number of iterations
 		 * @return V the matrix that best diagonalizes C
 		 */
-		virtual SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
+		SGMatrix<float64_t> compute(SGNDArray<float64_t> C,
 						   SGMatrix<float64_t> V0 = SGMatrix<float64_t>(NULL,0,0,false),
 						   double eps=1e-12,
-						   int itermax=200)
+						   int itermax=200) override
 		{
 			m_V = diagonalize(C,V0,eps,itermax);
 			return m_V;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "UWedge"; }
+		const char* get_name() const override { return "UWedge"; }
 };
 }
 #endif //UWEDGE_H_

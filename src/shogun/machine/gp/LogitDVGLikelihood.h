@@ -77,19 +77,19 @@ public:
 	/** default constructor */
 	LogitDVGLikelihood();
 
-	virtual ~LogitDVGLikelihood();
+	~LogitDVGLikelihood() override;
 
 	/** returns the name of the likelihood model
 	 *
 	 * @return name LogitDVGLikelihood
 	 */
-	virtual const char* get_name() const { return "LogitDVGLikelihood"; }
+	const char* get_name() const override { return "LogitDVGLikelihood"; }
 
 	/** evaluate the dual objective function
 	 *
 	 * @return the value of Fenchel conjugates given m_lambda
 	 */
-	virtual SGVector<float64_t> get_dual_objective_value();
+	SGVector<float64_t> get_dual_objective_value() override;
 
 #ifndef SWIG
 	/** get the derivative of the dual objective function with respect to param
@@ -98,32 +98,32 @@ public:
 	 * @return the value of of the derivative
 	 *
 	 */
-	virtual SGVector<float64_t> get_dual_first_derivative(Parameters::const_reference param) const;
+	SGVector<float64_t> get_dual_first_derivative(Parameters::const_reference param) const override;
 #endif
 
 	/** get the upper bound for dual parameter (lambda)
 	 *
 	 * @return the upper bound
 	 */
-	virtual float64_t get_dual_upper_bound() const{return 1.0;};
+	float64_t get_dual_upper_bound() const override{return 1.0;};
 
 	/** get the lower bound for dual parameter (lambda)
 	 *
 	 * @return the lower bound
 	 */
-	virtual float64_t get_dual_lower_bound() const{return 0.0;};
+	float64_t get_dual_lower_bound() const override{return 0.0;};
 
 	/** whether the upper bound is strict
 	 *
 	 * @return true if the upper bound is strict
 	 */
-	virtual bool dual_upper_bound_strict() const {return true;};
+	bool dual_upper_bound_strict() const override {return true;};
 
 	/** whether the lower bound is strict
 	 *
 	 * @return true if the lower bound is strict
 	 */
-	virtual bool dual_lower_bound_strict() const {return true;};
+	bool dual_lower_bound_strict() const override {return true;};
 
 	/** get the dual parameter (alpha) for variational mu
 	 *
@@ -132,17 +132,17 @@ public:
 	 *
 	 * @return the dual parameter (alpha)
 	 */
-	virtual SGVector<float64_t> get_mu_dual_parameter() const;
+	SGVector<float64_t> get_mu_dual_parameter() const override;
 
 	/** get the dual parameter (lambda) for variational s2
 	 *
 	 * @return the dual parameter (lambda)
 	 */
-	virtual SGVector<float64_t> get_variance_dual_parameter() const;
+	SGVector<float64_t> get_variance_dual_parameter() const override;
 
 protected:
 	/** this method is called to initialize m_likelihood in init()*/
-	virtual void init_likelihood();
+	void init_likelihood() override;
 
 private:
 	/** initialize private data members for this class */

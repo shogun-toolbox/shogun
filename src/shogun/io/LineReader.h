@@ -42,7 +42,7 @@ public:
 	LineReader(int32_t max_string_length, FILE* stream, std::shared_ptr<Tokenizer> tokenizer);
 
 	/** deconstructor */
-	virtual ~LineReader();
+	~LineReader() override;
 
 	/** check for next line in the stream
 	 *
@@ -66,7 +66,7 @@ public:
 	void set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer);
 
 	/** @return object name */
-	virtual const char* get_name() const { return "LineReader"; }
+	const char* get_name() const override { return "LineReader"; }
 
 private:
 	/** class initialization */

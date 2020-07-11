@@ -53,7 +53,7 @@ public:
 	 *
 	 * Ends the parsing thread. (Waits for pthread_join to complete)
 	 */
-	virtual ~StreamingStringFeatures();
+	~StreamingStringFeatures() override;
 
 	/**
 	 * Sets the read function (in case the examples are
@@ -64,7 +64,7 @@ public:
 	 * The parser uses the function set by this while reading
 	 * unlabelled examples.
 	 */
-	virtual void set_vector_reader();
+	void set_vector_reader() override;
 
 	/**
 	 * Sets the read function (in case the examples are labelled)
@@ -75,7 +75,7 @@ public:
 	 * The parser uses the function set by this while reading
 	 * labelled examples.
 	 */
-	virtual void set_vector_and_label_reader();
+	void set_vector_and_label_reader() override;
 
 	/**
 	 * Set the alphabet to be used.
@@ -130,14 +130,14 @@ public:
 	 *
 	 * To be called before trying to use any feature vectors from this object.
 	 */
-	virtual void start_parser();
+	void start_parser() override;
 
 	/**
 	 * Ends the parsing thread.
 	 *
 	 * Waits for the thread to join.
 	 */
-	virtual void end_parser();
+	void end_parser() override;
 
 	/**
 	 * Instructs the parser to return the next example.
@@ -147,7 +147,7 @@ public:
 	 * @return True on success, false if there are no more
 	 * examples, or an error occurred.
 	 */
-	virtual bool get_next_example();
+	bool get_next_example() override;
 
 	/**
 	 * Return the current feature vector as an SGVector<T>.
@@ -163,7 +163,7 @@ public:
 	 *
 	 * @return The label as a float64_t.
 	 */
-	virtual float64_t get_label();
+	float64_t get_label() override;
 
 	/**
 	 * Release the current example, indicating to the parser that
@@ -171,7 +171,7 @@ public:
 	 *
 	 * The parser is then free to throw away that example.
 	 */
-	virtual void release_example();
+	void release_example() override;
 
 	/**
 	 * Return the length of the current vector.
@@ -185,35 +185,35 @@ public:
 	 *
 	 * @return Feature type as EFeatureType
 	 */
-	virtual EFeatureType get_feature_type() const;
+	EFeatureType get_feature_type() const override;
 
 	/**
 	 * Return the feature class
 	 *
 	 * @return C_STREAMING_STRING
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	EFeatureClass get_feature_class() const override;
 
 	/**
 	 * Return the name.
 	 *
 	 * @return StreamingSparseFeatures
 	 */
-	virtual const char* get_name() const { return "StreamingStringFeatures"; }
+	const char* get_name() const override { return "StreamingStringFeatures"; }
 
 	/**
 	 * Return the number of vectors stored in this object.
 	 *
 	 * @return 1 if current_vector exists, else 0.
 	 */
-	virtual int32_t get_num_vectors() const;
+	int32_t get_num_vectors() const override;
 
 	/**
 	 * Return the number of features in the current vector.
 	 *
 	 * @return length of the vector
 	 */
-	virtual int32_t get_num_features();
+	int32_t get_num_features() override;
 
 private:
 

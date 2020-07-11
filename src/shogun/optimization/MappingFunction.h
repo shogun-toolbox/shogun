@@ -42,7 +42,7 @@ namespace shogun
 class MappingFunction:public SGObject
 {
 public:
-	virtual ~MappingFunction(){};
+	~MappingFunction() override{};
 
 	/** Get dual variable
 	 *

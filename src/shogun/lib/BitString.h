@@ -62,7 +62,7 @@ class BitString : public SGObject
 		}
 
 		/** destructor */
-		~BitString()
+		~BitString() override
 		{
 			cleanup();
 		}
@@ -326,7 +326,7 @@ class BitString : public SGObject
 		inline uint64_t get_length() const { return length-word_len/alphabet->get_num_bits()+1; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "BitString"; }
+		const char* get_name() const override { return "BitString"; }
 
 	private:
 		/** alphabet the bit string is based on */

@@ -37,10 +37,10 @@ public:
 	}
 
     /** destructor */
-	virtual ~ConditionalProbabilityTree() {  }
+	~ConditionalProbabilityTree() override {  }
 
     /** get name */
-    virtual const char* get_name() const { return "ConditionalProbabilityTree"; }
+    const char* get_name() const override { return "ConditionalProbabilityTree"; }
 
 	/** set number of passes */
 	void set_num_passes(int32_t num_passes)
@@ -65,7 +65,7 @@ public:
 	}
 
 	/** apply machine to data in means of multiclass classification problem */
-	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
 	/** apply machine one single example.
 	 * @param ex a vector to be applied
@@ -73,7 +73,7 @@ public:
 	virtual int32_t apply_multiclass_example(SGVector<float32_t> ex);
 
 	/** the labels will be embedded in the streaming features */
-	virtual bool train_require_labels() const { return false; }
+	bool train_require_labels() const override { return false; }
 
 protected:
 	/** train machine
@@ -82,7 +82,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<Features> data);
+	bool train_machine(std::shared_ptr<Features> data) override;
 
 	/** train on a single example (online learning)
 	 * @param ex the example being trained

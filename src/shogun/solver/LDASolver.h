@@ -86,9 +86,7 @@ namespace shogun
 			compute_within_cov();
 		}
 
-		~LDASolver()
-		{
-		}
+		virtual ~LDASolver() = default;
 
 		/** @return the vector of classes' mean */
 		std::vector<SGVector<T>> get_class_mean();

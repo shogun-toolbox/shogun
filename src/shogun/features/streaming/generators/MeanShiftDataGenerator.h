@@ -45,10 +45,10 @@ public:
 			index_t m_dimension_shift=0);
 
 	/** Destructor */
-	virtual ~MeanShiftDataGenerator();
+	~MeanShiftDataGenerator() override;
 
 	/** @return name of SG_SERIALIZABLE */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "MeanShiftDataGenerator";
 	}
@@ -63,10 +63,10 @@ public:
 			index_t m_dimension_shift=0);
 
 	/** get the next example from stream */
-	bool get_next_example();
+	bool get_next_example() override;
 
 	/** release the example when done w/ processing */
-	void release_example();
+	void release_example() override;
 
 private:
 	/** registers all parameters and initializes variables with defaults */

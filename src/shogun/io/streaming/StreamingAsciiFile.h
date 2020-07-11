@@ -43,7 +43,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~StreamingAsciiFile();
+	~StreamingAsciiFile() override;
 
 	/** set delimiting character
 	 *
@@ -65,23 +65,23 @@ public:
 	}
 
 #define GET_VECTOR_DECL(sg_type)					\
-	virtual void get_vector						\
-		(sg_type*& vector, int32_t& len);			\
+	void get_vector						\
+		(sg_type*& vector, int32_t& len) override;			\
 									\
-	virtual void get_vector_and_label				\
-		(sg_type*& vector, int32_t& len, float64_t& label);	\
+	void get_vector_and_label				\
+		(sg_type*& vector, int32_t& len, float64_t& label) override;	\
 									\
-	virtual void get_string						\
-		(sg_type*& vector, int32_t& len);			\
+	void get_string						\
+		(sg_type*& vector, int32_t& len) override;			\
 									\
-	virtual void get_string_and_label				\
-		(sg_type*& vector, int32_t& len, float64_t& label);	\
+	void get_string_and_label			\
+		(sg_type*& vector, int32_t& len, float64_t& label) override;	\
 									\
-	virtual void get_sparse_vector					\
-		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len);	\
+	void get_sparse_vector					\
+		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len) override;	\
 									\
-	virtual void get_sparse_vector_and_label			\
-		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label);
+	void get_sparse_vector_and_label			\
+		(SGSparseVectorEntry<sg_type>*& vector, int32_t& len, float64_t& label) override;
 
 	GET_VECTOR_DECL(bool)
 	GET_VECTOR_DECL(uint8_t)
@@ -101,7 +101,7 @@ public:
 #endif // #ifndef SWIG // SWIG should skip this
 
 	/** @return object name */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "StreamingAsciiFile";
 

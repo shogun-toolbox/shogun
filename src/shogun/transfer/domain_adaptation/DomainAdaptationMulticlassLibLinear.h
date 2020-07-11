@@ -33,13 +33,13 @@ class DomainAdaptationMulticlassLibLinear : public MulticlassLibLinear
 				std::shared_ptr<LinearMulticlassMachine> source_machine);
 
 		/** destructor */
-		virtual ~DomainAdaptationMulticlassLibLinear();
+		~DomainAdaptationMulticlassLibLinear() override;
 
 		/** get submachine outputs */
-		virtual std::shared_ptr<BinaryLabels> get_submachine_outputs(int32_t);
+		std::shared_ptr<BinaryLabels> get_submachine_outputs(int32_t) override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "DomainAdaptationMulticlassLibLinear";
 		}
@@ -74,7 +74,7 @@ class DomainAdaptationMulticlassLibLinear : public MulticlassLibLinear
 protected:
 
 		/** obtain regularizer (w0) matrix */
-		virtual SGMatrix<float64_t> obtain_regularizer_matrix() const;
+		SGMatrix<float64_t> obtain_regularizer_matrix() const override;
 
 private:
 

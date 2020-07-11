@@ -40,19 +40,19 @@ class CustomMahalanobisDistance : public RealDistance
 		CustomMahalanobisDistance(std::shared_ptr<Features> l, std::shared_ptr<Features> r, const SGMatrix<float64_t>& m);
 
 		/** destructor */
-		virtual ~CustomMahalanobisDistance();
+		~CustomMahalanobisDistance() override;
 
 		/** cleanup distance, here only because it is abstract in Distance. It does nothing */
-		virtual void cleanup();
+		void cleanup() override;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const;
+		const char* get_name() const override;
 
 		/** get distance type
 		 *
 		 * @return distance type CUSTOMMAHALANOBIS
 		 */
-		virtual EDistanceType get_distance_type();
+		EDistanceType get_distance_type() override;
 
 	protected:
 		/**
@@ -64,7 +64,7 @@ class CustomMahalanobisDistance : public RealDistance
 		 *
 		 * @return distance value
 		 */
-		virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+		float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 	private:
 		/** register parameters */

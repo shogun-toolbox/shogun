@@ -111,7 +111,7 @@ template<class T> class Cache : public SGObject
 		set_generic<T>();
 	}
 
-	virtual ~Cache()
+	~Cache() override
 	{
 		SG_FREE(cache_block);
 		SG_FREE(lookup_table);
@@ -243,7 +243,7 @@ template<class T> class Cache : public SGObject
 	}
 
 	/** @return object name */
-	virtual const char* get_name() const { return "Cache"; }
+	const char* get_name() const override { return "Cache"; }
 
 	protected:
 	/** if cache is full */

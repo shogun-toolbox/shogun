@@ -37,19 +37,19 @@ namespace shogun
 		 * @param lab labels
 		 */
 		LeastSquaresRegression(std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab);
-		virtual ~LeastSquaresRegression() {}
+		~LeastSquaresRegression() override {}
 
 		/** get classifier type
 		 *
 		 * @return classifier type LeastSquaresRegression
 		 */
-		virtual EMachineType get_classifier_type()
+		EMachineType get_classifier_type() override
 		{
 			return CT_LEASTSQUARESREGRESSION;
 		}
 
 		/** @return object name */
-		virtual const char* get_name() const { return "LeastSquaresRegression"; }
+		const char* get_name() const override { return "LeastSquaresRegression"; }
 
 	private:
 		void init();

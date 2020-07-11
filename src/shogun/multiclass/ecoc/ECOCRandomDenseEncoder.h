@@ -35,7 +35,7 @@ public:
     ECOCRandomDenseEncoder(int32_t maxiter, int32_t codelen, float64_t pposone);
 
     /** destructor */
-    virtual ~ECOCRandomDenseEncoder() {}
+    ~ECOCRandomDenseEncoder() override {}
 
     /** set probability
      * @param pposone probability of +1
@@ -43,12 +43,12 @@ public:
     void set_probability(float64_t pposone);
 
     /** get name */
-    virtual const char* get_name() const { return "ECOCRandomDenseEncoder"; }
+    const char* get_name() const override { return "ECOCRandomDenseEncoder"; }
 
     /** init codebook.
      * @param num_classes number of classes in this problem
      */
-    virtual SGMatrix<int32_t> create_codebook(int32_t num_classes);
+    SGMatrix<int32_t> create_codebook(int32_t num_classes) override;
 
     /** get default code length
      * @param num_classes number of classes

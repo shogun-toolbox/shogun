@@ -66,7 +66,7 @@ class LinearMachine : public Machine
 		LinearMachine();
 
 		/** destructor */
-		virtual ~LinearMachine();
+		~LinearMachine() override;
 
 		/** copy constructor */
 		LinearMachine(const std::shared_ptr<LinearMachine>& machine);
@@ -107,7 +107,7 @@ class LinearMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -115,10 +115,10 @@ class LinearMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
 
 		/** applies to one vector */
-		virtual float64_t apply_one(int32_t vec_idx);
+		float64_t apply_one(int32_t vec_idx) override;
 
 		/** get features
 		 *
@@ -131,7 +131,7 @@ class LinearMachine : public Machine
 		 *
 		 * @return name of the SGSerializable
 		 */
-		virtual const char* get_name() const { return "LinearMachine"; }
+		const char* get_name() const override { return "LinearMachine"; }
 
 	protected:
 

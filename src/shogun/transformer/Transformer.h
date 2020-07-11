@@ -44,12 +44,12 @@ namespace shogun
 		Transformer();
 
 		/** destructor */
-		virtual ~Transformer()
+		~Transformer() override
 		{
 		}
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "Transformer";
 		}
