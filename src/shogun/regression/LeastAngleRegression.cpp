@@ -104,7 +104,9 @@ void LeastAngleRegression::plane_rot(ST x0, ST x1,
 }
 
 template <typename ST, typename U>
-bool LeastAngleRegression::train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data)
+bool LeastAngleRegression::train_machine_templated(
+    const std::shared_ptr<DenseFeatures<ST>>& data,
+    const std::shared_ptr<Labels>& labs)
 {
 	std::vector<SGVector<ST>> m_beta_path_t;
 
@@ -122,7 +124,7 @@ bool LeastAngleRegression::train_machine_templated(const std::shared_ptr<DenseFe
 	m_is_active.resize(n_fea);
 	fill(m_is_active.begin(), m_is_active.end(), false);
 
-	SGVector<ST> y = regression_labels(m_labels)->template get_labels_t<ST>();
+	SGVector<ST> y = regression_labels(labs)->template get_labels_t<ST>();
 	typename SGVector<ST>::EigenVectorXtMap map_y(y.vector, y.size());
 
 	// transpose(X) is more convenient to work with since we care
@@ -429,9 +431,15 @@ SGMatrix<ST> LeastAngleRegression::cholesky_delete(SGMatrix<ST>& R, int32_t i_ki
 	return nR;
 }
 
-template bool LeastAngleRegression::train_machine_templated<floatmax_t>(const std::shared_ptr<DenseFeatures<floatmax_t>>& data);
-template bool LeastAngleRegression::train_machine_templated<float64_t>(const std::shared_ptr<DenseFeatures<float64_t>>& data);
-template bool LeastAngleRegression::train_machine_templated<float32_t>(const std::shared_ptr<DenseFeatures<float32_t>>& data);
+template bool LeastAngleRegression::train_machine_templated<floatmax_t>(
+    const std::shared_ptr<DenseFeatures<floatmax_t>>& data,
+    const std::shared_ptr<Labels>& labs);
+template bool LeastAngleRegression::train_machine_templated<float64_t>(
+    const std::shared_ptr<DenseFeatures<float64_t>>& data,
+    const std::shared_ptr<Labels>& labs);
+template bool LeastAngleRegression::train_machine_templated<float32_t>(
+    const std::shared_ptr<DenseFeatures<float32_t>>& data,
+    const std::shared_ptr<Labels>& labs);
 template SGMatrix<float32_t> LeastAngleRegression::cholesky_insert(const SGMatrix<float32_t>& X, const SGMatrix<float32_t>& X_active, SGMatrix<float32_t>& R, int32_t i_max_corr, int32_t num_active);
 template SGMatrix<float64_t> LeastAngleRegression::cholesky_insert(const SGMatrix<float64_t>& X, const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i_max_corr, int32_t num_active);
 template SGMatrix<floatmax_t> LeastAngleRegression::cholesky_insert(const SGMatrix<floatmax_t>& X, const SGMatrix<floatmax_t>& X_active, SGMatrix<floatmax_t>& R, int32_t i_max_corr, int32_t num_active);

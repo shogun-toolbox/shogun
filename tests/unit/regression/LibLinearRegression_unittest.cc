@@ -30,12 +30,11 @@ TEST(LibLinearRegression, lr_with_bias)
 	auto labels_test = mockData->get_labels_test();
 	auto labels_train = mockData->get_labels_train();
 
-	auto lr =
-		std::make_shared<LibLinearRegression>(1., train_feats, labels_train);
+	auto lr = std::make_shared<LibLinearRegression>(1.);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->set_tube_epsilon(epsilon);
-	lr->train();
+	lr->train(train_feats, labels_train);
 
 	auto predicted_labels =
 		lr->apply(test_feats)->as<RegressionLabels>();
@@ -66,12 +65,11 @@ TEST(LibLinearRegression, lr_without_bias)
 	auto labels_test = mockData->get_labels_test();
 	auto labels_train = mockData->get_labels_train();
 
-	auto lr =
-			std::make_shared<LibLinearRegression>(1., train_feats, labels_train);
+	auto lr = std::make_shared<LibLinearRegression>(1.);
 	lr->set_use_bias(use_bias);
 	lr->set_epsilon(epsilon);
 	lr->set_tube_epsilon(epsilon);
-	lr->train();
+	lr->train(train_feats, labels_train);
 
 	auto predicted_labels =
 			lr->apply(test_feats)->as<RegressionLabels>();

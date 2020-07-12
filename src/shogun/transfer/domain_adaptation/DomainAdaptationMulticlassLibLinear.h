@@ -36,8 +36,7 @@ class DomainAdaptationMulticlassLibLinear : public MulticlassLibLinear
 		virtual ~DomainAdaptationMulticlassLibLinear();
 
 		/** get submachine outputs */
-		virtual std::shared_ptr<BinaryLabels> get_submachine_outputs(int32_t);
-
+		virtual std::shared_ptr<BinaryLabels> get_submachine_outputs(const std::shared_ptr<Features>& data, int32_t i);
 		/** get name */
 		virtual const char* get_name() const
 		{

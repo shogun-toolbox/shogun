@@ -75,10 +75,8 @@ namespace shogun
 		/** constructor (using L2R_L1LOSS_SVC_DUAL as default)
 		 *
 		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab training labels
 		 */
-		LibLinear(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab);
+		LibLinear(float64_t C);
 
 		/** destructor */
 		virtual ~LibLinear();
@@ -199,7 +197,7 @@ namespace shogun
 		SGVector<float64_t> get_linear_term();
 
 		/** set the linear term for qp */
-		void init_linear_term();
+		void init_linear_term(const std::shared_ptr<Labels>&);
 
 		/** check if linear_term been inited
 		 * @return if linear_term been inited
@@ -221,7 +219,9 @@ namespace shogun
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(
+		    const std::shared_ptr<DotFeatures>& data,
+		    const std::shared_ptr<Labels>& labs) override;
 
 	private:
 		/** set up parameters */

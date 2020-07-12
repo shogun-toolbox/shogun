@@ -93,12 +93,8 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		/** constructor (using L2R_L1LOSS_SVC_DUAL as default)
 		 *
 		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab training labels
 		 */
-		LibLinearMTL(
-			float64_t C, std::shared_ptr<DotFeatures> traindat,
-			std::shared_ptr<Labels> trainlab);
+		LibLinearMTL(float64_t C);
 
 		/** destructor */
 		virtual ~LibLinearMTL();
@@ -177,18 +173,6 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		/** set the linear term for qp */
 		inline void set_linear_term(SGVector<float64_t> linear_term)
 		{
-			if (!m_labels)
-				error("Please assign labels first!");
-
-			int32_t num_labels=m_labels->get_num_labels();
-
-			if (num_labels!=linear_term.vlen)
-			{
-				error("Number of labels ({}) does not match number"
-						" of entries ({}) in linear term ", num_labels,
-						linear_term.vlen);
-			}
-
 			m_linear_term = linear_term;
 		}
 
@@ -269,13 +253,13 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		 *
 		 * @return primal objective
 		 */
-		virtual float64_t compute_primal_obj();
+		virtual float64_t compute_primal_obj(const std::shared_ptr<Features>& features, const std::shared_ptr<Labels>& labs);
 
 		/** compute dual objective
 		 *
 		 * @return dual objective
 		 */
-		virtual float64_t compute_dual_obj();
+		virtual float64_t compute_dual_obj(const std::shared_ptr<Features>& features);
 
 		/** compute duality gap
 		 *
@@ -293,8 +277,7 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
-
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override;
 	private:
 		/** set up parameters */
         void init();

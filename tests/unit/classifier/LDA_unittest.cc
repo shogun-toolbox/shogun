@@ -108,8 +108,7 @@ void test_with_method(
 	std::shared_ptr<Labels> labels = std::make_shared<BinaryLabels>(lab);
 
 	auto lda = std::make_shared<LDA>(0, method);
-	lda->put("labels", labels);
-	lda->train(features);
+	lda->train(features, labels);
 
 	auto results = lda->apply_regression(features);
 	projection = results->get<SGVector<ST>>("labels");
@@ -202,10 +201,9 @@ TEST(LDA, num_classes_in_labels_exception)
 	std::shared_ptr<Labels> labels = std::make_shared<MulticlassLabels>(lab);
 	auto features = std::make_shared<DenseFeatures<float64_t>>(feat);
 	auto lda = std::make_shared<LDA>(0, SVD_LDA);
-	lda->put("labels", labels);
 	// should throw an incorrect number of classes exception (expected value is
 	// 2)
-	EXPECT_THROW(lda->train(features), ShogunException);
+	EXPECT_THROW(lda->train(features, labels), ShogunException);
 }
 
 //FLD template testing

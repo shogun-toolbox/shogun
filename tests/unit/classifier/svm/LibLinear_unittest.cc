@@ -53,11 +53,9 @@ public:
 
 
 		ll->set_bias_enabled(biasEnable);
-		ll->set_features(train_feats);
-		ll->set_labels(ground_truth);
 
 		ll->set_liblinear_solver_type(liblinear_solver_type);
-		ll->train();
+		ll->train(train_feats, ground_truth);
 		auto pred = ll->apply_binary(test_feats);
 
 		auto liblin_accuracy = eval->evaluate(pred, ground_truth);
@@ -82,13 +80,11 @@ public:
 
 
 		ll->set_bias_enabled(biasEnable);
-		ll->set_features(train_feats);
 		if (C_value)
 			ll->set_C(0.1,0.1); //Only in the case of L2R_L1LOSS_SVC_DUAL
-		ll->set_labels(ground_truth);
 		ll->set_liblinear_solver_type(liblinear_solver_type);
 		ll->put("seed", seed);
-		ll->train();
+		ll->train(train_feats, ground_truth);
 
 		auto pred = ll->apply_binary(test_feats);
 

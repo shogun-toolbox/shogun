@@ -35,16 +35,6 @@ class SGDQN : public LinearMachine
 		 */
 		SGDQN(float64_t C);
 
-		/** constructor
-		 *
-		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab labels for training features
-		 */
-		SGDQN(
-			float64_t C, std::shared_ptr<DotFeatures> traindat,
-			std::shared_ptr<Labels> trainlab);
-
 		virtual ~SGDQN();
 
 		/** get classifier type
@@ -52,16 +42,6 @@ class SGDQN : public LinearMachine
 		 * @return classifier type SVMSGDQN
 		 */
 		virtual EMachineType get_classifier_type() { return CT_SGDQN; }
-
-		/** train classifier
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data)
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** set C
 		 *
@@ -117,8 +97,12 @@ class SGDQN : public LinearMachine
 		virtual const char* get_name() const { return "SGDQN"; }
 
 	protected:
+		bool train_machine(
+		    const std::shared_ptr<DotFeatures>&,
+		    const std::shared_ptr<Labels>&) override;
+
 		/** calibrate */
-		void calibrate();
+		void calibrate(const std::shared_ptr<DotFeatures>& features);
 
 	private:
 		void init();

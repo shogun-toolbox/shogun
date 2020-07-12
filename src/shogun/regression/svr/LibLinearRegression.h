@@ -50,10 +50,8 @@ class LibLinearRegression : public RandomMixin<LinearMachine>
 
 		/** standard constructor
 		 * @param C C regularization constant value
-		 * @param features features
-		 * @param labs labels
 		 */
-		LibLinearRegression(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs);
+		LibLinearRegression(float64_t C);
 
 		/** destructor */
 		virtual ~LibLinearRegression();
@@ -148,7 +146,9 @@ class LibLinearRegression : public RandomMixin<LinearMachine>
 protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	bool train_machine(
+		const std::shared_ptr<DotFeatures>& data,
+		const std::shared_ptr<Labels>& labs) override;
 
 private:
 		/** solve svr with l1 or l2 loss */

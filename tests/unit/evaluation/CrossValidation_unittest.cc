@@ -168,9 +168,8 @@ protected:
 	std::shared_ptr<T> machine;
 };
 
-typedef ::testing::Types<LibSVM, Perceptron, LibLinear,
-		MulticlassLibLinear, LinearRidgeRegression, KNN,
-		KernelRidgeRegression, LibLinearRegression>
+typedef ::testing::Types<LibSVM, KNN,
+		KernelRidgeRegression>
 MachineTypes;
 
 TYPED_TEST_CASE(CrossValidationTests, MachineTypes);

@@ -64,11 +64,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 		void set_features(std::shared_ptr<DotFeatures> f)
 		{
 			m_features = f;
-			for (auto m: m_machines)
-			{
-				auto machine = m->as<LinearMachine>();
-				machine->set_features(f);
-			}
 		}
 
 		/** get features
@@ -82,6 +77,42 @@ class LinearMulticlassMachine : public MulticlassMachine
 
 	protected:
 
+		bool train_machine(std::shared_ptr<Features> data) override
+		{
+			m_features = data->as<DotFeatures>();
+			require(m_multiclass_strategy, "Multiclass strategy not set");
+			int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
+   			m_multiclass_strategy->set_num_classes(num_classes);
+
+			m_machines.clear();
+			auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
+
+			m_multiclass_strategy->train_start(
+				multiclass_labels(m_labels), train_labels);
+			while (m_multiclass_strategy->train_has_more())
+			{
+				SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();
+				if (subset.vlen)
+				{
+					train_labels->add_subset(subset);
+					add_machine_subset(subset);
+				}
+
+				m_machine->train(data, train_labels);
+				m_machines.push_back(get_machine_from_trained(m_machine));
+
+				if (subset.vlen)
+				{
+					train_labels->remove_subset();
+					remove_machine_subset();
+				}
+			}
+
+			m_multiclass_strategy->train_stop();
+
+
+			return true;
+		}
 		/** init machine for train with setting features */
 		virtual bool init_machine_for_train(std::shared_ptr<Features> data)
 		{
@@ -91,8 +122,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 			if (data)
 				set_features(data->as<DotFeatures>());
 
-			m_machine->as<LinearMachine>()->set_features(m_features);
-
 			return true;
 		}
 
@@ -101,14 +130,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 		{
 			if (data)
 				set_features(data->as<DotFeatures>());
-
-			for (auto m: m_machines)
-			{
-				auto machine = m->as<LinearMachine>();
-				ASSERT(m_features)
-				ASSERT(machine)
-				machine->set_features(m_features);
-			}
 
 			return true;
 		}
@@ -125,7 +146,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** construct linear machine from given linear machine */
 		virtual std::shared_ptr<Machine> get_machine_from_trained(std::shared_ptr<Machine> machine) const
 		{
-			return std::make_shared<LinearMachine>(machine->as<LinearMachine>());
+			return machine->clone(ParameterProperties::MODEL)->as<LinearMachine>();
 		}
 
 		/** get number of rhs feature vectors */

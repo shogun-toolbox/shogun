@@ -36,7 +36,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 */
-		DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<DotFeatures> f, std::shared_ptr<Labels> lab, std::shared_ptr<LinearMachine> presvm, float64_t B);
+		DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<LinearMachine> presvm, float64_t B);
 
 
 		/** destructor */
@@ -62,7 +62,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data);
 
 
 		/** returns SVM that is used as prior information
@@ -126,8 +126,7 @@ class DomainAdaptationSVMLinear : public LibLinear
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
-
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override;
 	protected:
 
 		/** SVM to regularize against */

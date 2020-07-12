@@ -31,16 +31,6 @@ SGDQN::SGDQN(float64_t C)
 	C2=C;
 }
 
-SGDQN::SGDQN(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
-: LinearMachine()
-{
-	init();
-	C1=C;
-	C2=C;
-
-	set_features(std::move(traindat));
-	set_labels(std::move(trainlab));
-}
 
 SGDQN::~SGDQN()
 {
@@ -77,27 +67,14 @@ void SGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1
 		}
 	}
 }
-
-bool SGDQN::train(std::shared_ptr<Features> data)
+bool SGDQN::train_machine(
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
+	const auto binary_labels = labs->as<BinaryLabels>();
 
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-
-	ASSERT(features)
-
-	int32_t num_train_labels=m_labels->get_num_labels();
-	int32_t num_vec=features->get_num_vectors();
-
-	ASSERT(num_vec==num_train_labels)
-	ASSERT(num_vec>0)
+	int32_t num_train_labels = binary_labels->get_num_labels();
+	int32_t num_vec = features->get_num_vectors();
 
 	SGVector<float64_t> w(features->get_dim_feature_space());
 	w.zero();
@@ -122,7 +99,7 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 	float64_t* B=SG_MALLOC(float64_t, w.vlen);
 
 	//Calibrate
-	calibrate();
+	calibrate(features);
 
 	io::info("Training on {} vectors", num_vec);
 
@@ -131,7 +108,6 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
 	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
@@ -192,11 +168,8 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 	return true;
 }
 
-
-
-void SGDQN::calibrate()
+void SGDQN::calibrate(const std::shared_ptr<DotFeatures>& features)
 {
-	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();
 

@@ -31,12 +31,6 @@ namespace shogun
 		/** default constructor */
 		LeastSquaresRegression();
 
-		/** constructor
-		 *
-		 * @param data training data
-		 * @param lab labels
-		 */
-		LeastSquaresRegression(std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab);
 		virtual ~LeastSquaresRegression() {}
 
 		/** get classifier type

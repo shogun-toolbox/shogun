@@ -171,9 +171,12 @@ protected:
 	* @param data training data
 	* @see train_machine
 	*/
-	template <typename ST, typename U = typename std::enable_if_t<
-		                       std::is_floating_point<ST>::value>>
-	bool train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data);
+	template <
+		typename ST, typename U = typename std::enable_if_t<
+		                 std::is_floating_point<ST>::value>>
+	bool train_machine_templated(
+		const std::shared_ptr<DenseFeatures<ST>>& data,
+		const std::shared_ptr<Labels>& labs);
 
 private:
 	/** Initialize and register parameters */

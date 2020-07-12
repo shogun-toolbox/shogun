@@ -33,10 +33,8 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		/** constructor
 		 * @param C constant C
 		 * @param itr constant no of iterations
-		 * @param traindat training features
-		 * @param trainlab labels for features
 		 */
-		NewtonSVM(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab, int32_t itr=20);
+		NewtonSVM(float64_t C, int32_t itr = 20);
 
 		virtual ~NewtonSVM();
 
@@ -93,13 +91,19 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		virtual void init_model(std::shared_ptr<Features> data);
-		virtual void iteration();
+		void init_model(const std::shared_ptr<DotFeatures>& data) override;
+		virtual void iteration(
+		    const std::shared_ptr<DotFeatures>& data,
+		    const std::shared_ptr<Labels>& labs) override;
 
 	private:
-		void obj_fun_linear();
+		void obj_fun_linear(
+		    const std::shared_ptr<DotFeatures>& data,
+		    const std::shared_ptr<Labels>& labs);
 
-		void line_search_linear(const SGVector<float64_t>& d);
+		void line_search_linear(
+		    const SGVector<float64_t>& d, const std::shared_ptr<DotFeatures>& data,
+		    const std::shared_ptr<Labels>& labs);
 
 	protected:
 		/** lambda=1/C */

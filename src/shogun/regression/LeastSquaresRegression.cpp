@@ -22,8 +22,5 @@ LeastSquaresRegression::LeastSquaresRegression()
 	m_tau=0;
 }
 
-LeastSquaresRegression::LeastSquaresRegression(std::shared_ptr<DenseFeatures<float64_t>> data, std::shared_ptr<Labels> lab)
-: LinearRidgeRegression(0, std::move(data), std::move(lab))
-{
-}
+
 #endif

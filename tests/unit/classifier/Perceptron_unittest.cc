@@ -56,8 +56,7 @@ TEST(Perceptron, train)
 	auto test_labels = env->get_labels_test();
 
 	auto perceptron = std::make_shared<Perceptron>();
-	perceptron->set_labels(labels);
-	EXPECT_TRUE(perceptron->train(features));
+	EXPECT_TRUE(perceptron->train(features, labels));
 
 	auto results = perceptron->apply(test_features);
 	auto acc = std::make_shared<AccuracyMeasure>();
@@ -73,8 +72,7 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	auto test_labels = env->get_labels_test();
 
 	auto perceptron = std::make_shared<Perceptron>();
-	perceptron->set_labels(labels);
-	perceptron->train(features);
+	perceptron->train(features, labels);
 
 	auto weights = perceptron->get_w();
 
@@ -82,9 +80,8 @@ TEST(Perceptron, custom_hyperplane_initialization)
 	perceptron_initialized->set_initialize_hyperplane(false);
 	perceptron_initialized->set_w(weights);
 	perceptron_initialized->put<int32_t>("max_iterations", 1);
-	perceptron_initialized->set_labels(labels);
 
-	perceptron_initialized->train(features);
+	perceptron_initialized->train(features, labels);
 	EXPECT_TRUE(perceptron_initialized->get_w().equals(weights));
 }
 

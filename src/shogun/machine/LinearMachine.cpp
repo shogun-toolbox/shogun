@@ -33,13 +33,8 @@ LinearMachine::LinearMachine(const std::shared_ptr<LinearMachine>& machine) : Ma
 
 void LinearMachine::init()
 {
-	bias = 0;
-	features = NULL;
-
 	SG_ADD(&m_w, "w", "Parameter vector w.", ParameterProperties::MODEL);
 	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
-	SG_ADD(
-	    (std::shared_ptr<Features>*)&features, "features", "Feature object.");
 }
 
 
@@ -48,7 +43,8 @@ LinearMachine::~LinearMachine()
 
 }
 
-float64_t LinearMachine::apply_one(int32_t vec_idx)
+float64_t LinearMachine::apply_one(
+    const std::shared_ptr<DotFeatures>& features, int32_t vec_idx)
 {
 	return features->dot(vec_idx, m_w) + bias;
 }
@@ -67,20 +63,11 @@ std::shared_ptr<BinaryLabels> LinearMachine::apply_binary(std::shared_ptr<Featur
 
 SGVector<float64_t> LinearMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-
-	if (!features)
-		return SGVector<float64_t>();
-
+	const auto features = data->as<DotFeatures>();
 	int32_t num=features->get_num_vectors();
-	ASSERT(num>0)
-	ASSERT(m_w.vlen==features->get_dim_feature_space())
+	require(
+	    m_w.vlen == features->get_dim_feature_space(),
+	    "Fetures expected to have {} dimentions", m_w.vlen);
 	SGVector<float64_t> out(num);
 	features->dense_dot_range(out.vector, 0, num, NULL, m_w.vector, m_w.vlen, bias);
 	return out;
@@ -106,16 +93,4 @@ float64_t LinearMachine::get_bias() const
 	return bias;
 }
 
-void LinearMachine::set_features(std::shared_ptr<DotFeatures> feat)
-{
-
-
-	features=std::move(feat);
-}
-
-std::shared_ptr<DotFeatures> LinearMachine::get_features()
-{
-
-	return features;
-}
 
