@@ -69,8 +69,8 @@ namespace shogun
 		 * @param data training data
 		 * @param lab labels
 		 */
-		LinearRidgeRegression(float64_t tau, const std::shared_ptr<DenseFeatures<float64_t>>& data, std::shared_ptr<Labels> lab);
-		~LinearRidgeRegression() override {}
+		LinearRidgeRegression(float64_t tau);
+		~LinearRidgeRegression() override = default;
 
 		/** set regularization constant
 		 *
@@ -106,7 +106,9 @@ namespace shogun
 
 	protected:
 		template <typename T>
-		bool train_machine_templated(const std::shared_ptr<DenseFeatures<T>>& feats);
+		bool train_machine_templated(
+		    const std::shared_ptr<DenseFeatures<T>>& feats,
+		    const std::shared_ptr<Labels>& labs);
 
 	private:
 		void init();

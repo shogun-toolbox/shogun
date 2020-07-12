@@ -36,42 +36,12 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 
 		}
 
-		/** train machine
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data).
-		 *
-		 * @return whether training was successful
-		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL)
-		{
-			return LinearMachine::train(data);
-		}
-
 		virtual bool train_function(std::shared_ptr<Features> data=NULL)
 		{
 			error("Train function of Director Linear Machine needs to be overridden.");
 			return false;
 		}
 
-		/** set features
-		 *
-		 * @param feat features to set
-		 */
-		virtual void set_features(std::shared_ptr<DotFeatures> feat)
-		{
-			LinearMachine::set_features(feat);
-		}
-
-		/** get features
-		 *
-		 * @return features
-		 */
-		virtual std::shared_ptr<DotFeatures> get_features()
-		{
-			return LinearMachine::get_features();
-		}
 
 		/** apply machine to data
 		 * if data is not specified apply to the current features
@@ -99,9 +69,9 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		/** apply machine to data in means of multiclass classification problem */
 		using LinearMachine::apply_multiclass;
 
-		virtual float64_t apply_one(int32_t vec_idx)
+		virtual float64_t apply_one(const std::shared_ptr<DotFeatures>& features, int32_t vec_idx)
 		{
-			return LinearMachine::apply_one(vec_idx);
+			return LinearMachine::apply_one(features, vec_idx);
 		}
 
 		/** set labels
@@ -143,13 +113,12 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
 		 *
-		 * NOT IMPLEMENTED!
-		 *
+		 * NOT IMPLEMENTED!	
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL)
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override
 		{
-			return train_function(data);
+			return LinearMachine::train_machine(data, labs);
 		}
 };
 

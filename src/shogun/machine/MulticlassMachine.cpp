@@ -57,11 +57,11 @@ void MulticlassMachine::init_strategy()
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
-std::shared_ptr<BinaryLabels> MulticlassMachine::get_submachine_outputs(int32_t i)
+std::shared_ptr<BinaryLabels> MulticlassMachine::get_submachine_outputs(const std::shared_ptr<Features>& data, int32_t i)
 {
 	auto machine = m_machines.at(i);
 	ASSERT(machine)
-	return machine->apply_binary();
+	return machine->apply_binary(data);
 }
 
 float64_t MulticlassMachine::get_submachine_output(int32_t i, int32_t num)
@@ -88,7 +88,6 @@ std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::share
 		/* num vectors depends on whether data is provided */
 		int32_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
-
 		int32_t num_machines=m_machines.size();
 		if (num_machines <= 0)
 			error("num_machines = {}, did you train your machine?", num_machines);
@@ -107,11 +106,9 @@ std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::share
 		std::vector<std::shared_ptr<BinaryLabels>> outputs(num_machines);
 		SGVector<float64_t> As(num_machines);
 		SGVector<float64_t> Bs(num_machines);
-
 		for (int32_t i=0; i<num_machines; ++i)
 		{
-			outputs[i] = get_submachine_outputs(i);
-
+			outputs[i] = get_submachine_outputs(data, i);
 			if (heuris==OVA_SOFTMAX)
 			{
 				Statistics::SigmoidParamters params = Statistics::fit_sigmoid(outputs[i]->get_values());
@@ -122,7 +119,6 @@ std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::share
 			if (heuris!=PROB_HEURIS_NONE && heuris!=OVA_SOFTMAX)
 				outputs[i]->scores_to_probabilities(0,0);
 		}
-
 		SGVector<float64_t> output_for_i(num_machines);
 		SGVector<float64_t> r_output_for_i(num_machines);
 		if (heuris!=PROB_HEURIS_NONE)
@@ -180,10 +176,11 @@ std::shared_ptr<MultilabelLabels> MulticlassMachine::apply_multilabel_output(std
 
 	if (is_ready())
 	{
+	
 		/* num vectors depends on whether data is provided */
 		int32_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
-
+		
 		int32_t num_machines=m_machines.size();
 		if (num_machines <= 0)
 			error("num_machines = {}, did you train your machine?", num_machines);
@@ -191,16 +188,14 @@ std::shared_ptr<MultilabelLabels> MulticlassMachine::apply_multilabel_output(std
 
 		auto result=std::make_shared<MultilabelLabels>(num_vectors, n_outputs);
 		std::vector<std::shared_ptr<BinaryLabels>> outputs(num_machines);
-
+		
 		for (int32_t i=0; i < num_machines; ++i)
-			outputs[i] = get_submachine_outputs(i);
-
+			outputs[i] = get_submachine_outputs(data, i);
 		SGVector<float64_t> output_for_i(num_machines);
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			for (int32_t j=0; j<num_machines; j++)
 				output_for_i[j] = outputs[j]->get_value(i);
-
 			result->set_label(i, m_multiclass_strategy->decide_label_multiple_output(output_for_i, n_outputs));
 		}
 		for (int32_t i=0; i < num_machines; ++i)

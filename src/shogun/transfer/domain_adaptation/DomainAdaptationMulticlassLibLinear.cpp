@@ -102,10 +102,10 @@ SGMatrix<float64_t> DomainAdaptationMulticlassLibLinear::obtain_regularizer_matr
 	return w0;
 }
 
-std::shared_ptr<BinaryLabels> DomainAdaptationMulticlassLibLinear::get_submachine_outputs(int32_t i)
+std::shared_ptr<BinaryLabels> DomainAdaptationMulticlassLibLinear::get_submachine_outputs(const std::shared_ptr<Features>& data, int32_t i)
 {
-	auto target_outputs = MulticlassMachine::get_submachine_outputs(i);
-	auto source_outputs = m_source_machine->get_submachine_outputs(i);
+	auto target_outputs = MulticlassMachine::get_submachine_outputs(data, i);
+	auto source_outputs = m_source_machine->get_submachine_outputs(data, i);
 	int32_t n_target_outputs = target_outputs->get_num_labels();
 	ASSERT(n_target_outputs==source_outputs->get_num_labels())
 	SGVector<float64_t> result(n_target_outputs);

@@ -29,18 +29,12 @@ using namespace shogun;
 	init();
 }
 
-LibLinearMTL::LibLinearMTL(
-		float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
-: RandomMixin<LinearMachine>()
+LibLinearMTL::LibLinearMTL(float64_t C): RandomMixin<LinearMachine>()
 {
 	init();
 	C1=C;
 	C2=C;
 	use_bias=true;
-
-	set_features(std::move(traindat));
-	set_labels(std::move(trainlab));
-
 }
 
 
@@ -64,32 +58,16 @@ LibLinearMTL::~LibLinearMTL()
 {
 }
 
-bool LibLinearMTL::train_machine(std::shared_ptr<Features> data)
+bool LibLinearMTL::train_machine(const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
-
-	ASSERT(m_labels)
-
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type DotFeatures");
-
-		set_features(data->as<DotFeatures>());
-	}
-	ASSERT(features)
-	m_labels->ensure_valid();
-
-
+	int32_t num_labels=labs->get_num_labels();
+	require(num_labels==m_linear_term.vlen, "Number of labels ({}) does not match number"
+						" of entries ({}) in linear term ", num_labels,
+						m_linear_term.vlen);
+	labs->ensure_valid();
 	int32_t num_train_labels=m_labels->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
-
-	if (num_vec!=num_train_labels)
-	{
-		error("number of vectors {} does not match "
-				"number of training labels {}",
-				num_vec, num_train_labels);
-	}
 
 
 	float64_t* training_w = NULL;
@@ -114,7 +92,7 @@ bool LibLinearMTL::train_machine(std::shared_ptr<Features> data)
 	prob.y=SG_MALLOC(float64_t, prob.l);
 	prob.use_bias=use_bias;
 
-	auto bl = binary_labels(m_labels);
+	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<prob.l; i++)
 		prob.y[i]=bl->get_label(i);
 
@@ -391,8 +369,9 @@ void LibLinearMTL::solve_l2r_l1l2_svc(const liblinear_problem *prob, double eps,
 }
 
 
-float64_t LibLinearMTL::compute_primal_obj()
+float64_t LibLinearMTL::compute_primal_obj(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
+
 	/* python protype
 	   num_param = param.shape[0]
 	   num_dim = len(all_xt[0])
@@ -436,7 +415,7 @@ return obj
 	io::info("DONE to compute Primal OBJ");
 	// calculate objective value
 	SGMatrix<float64_t> W = get_W();
-
+	const auto features = data->as<DotFeatures>();
 	float64_t obj = 0;
 	int32_t num_vec = features->get_num_vectors();
 	int32_t w_size = features->get_dim_feature_space();
@@ -486,7 +465,7 @@ return obj
 	return obj;
 }
 
-float64_t LibLinearMTL::compute_dual_obj()
+float64_t LibLinearMTL::compute_dual_obj(const std::shared_ptr<Features>& data)
 {
 	/* python prototype
 	   num_xt = len(xt)
@@ -502,7 +481,7 @@ obj -= 0.5 * M[s,t] * alphas[i] * alphas[j] * lt[i] * lt[j] * np.dot(xt[i], xt[j
 
 return obj
 */
-
+	const auto features = data->as<DotFeatures>();
 	io::info("starting to compute DUAL OBJ");
 
 	int32_t num_vec=features->get_num_vectors();

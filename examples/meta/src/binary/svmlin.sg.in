@@ -8,8 +8,8 @@ Features feats_test = create_features(f_feats_test)
 Labels labels_train = create_labels(f_labels_train)
 Labels labels_test = create_labels(f_labels_test)
 
-Machine svm = create_machine("SVMLin", C1=0.9, C2=0.9, epsilon=0.00001, labels=labels_train)
-svm.train(feats_train)
+Machine svm = create_machine("SVMLin", C1=0.9, C2=0.9, epsilon=0.00001)
+svm.train(feats_train, labels_train)
 
 RealVector weights = svm.get_real_vector("w")
 real bias = svm.get_real("bias")

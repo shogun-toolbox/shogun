@@ -29,12 +29,12 @@ def transfer_multitask_l12_logistic_regression (fm_train=traindat,fm_test=testda
 	task_group.append_task(task_one)
 	task_group.append_task(task_two)
 
-	mtlr = MultitaskL12LogisticRegression(0.1,0.1,features,labels,task_group)
+	mtlr = MultitaskL12LogisticRegression(0.1,0.1,task_group)
 	mtlr.set_tolerance(1e-2) # use 1e-2 tolerance
 	mtlr.set_max_iter(10)
-	mtlr.train()
+	mtlr.train(features,labels)
 	mtlr.set_current_task(0)
-	out = mtlr.apply_regression().get_labels()
+	out = mtlr.apply_regression(features).get_labels()
 
 	return out
 

@@ -19,7 +19,7 @@ MulticlassStrategy strategy=create_multiclass_strategy("MulticlassOneVsOneStrate
 #![choose_strategy]
 
 #![create_instance]
-Machine mc_classifier = create_machine("LinearMulticlassMachine", multiclass_strategy=strategy, machine=classifier, labels=labels_train)
+Machine mc_classifier = create_machine("LinearMulticlassMachine", multiclass_strategy=strategy, machine=classifier, labels = labels_train)
 #![create_instance]
 
 #![train_and_apply]

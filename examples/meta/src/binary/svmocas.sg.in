@@ -9,11 +9,11 @@ Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_classifier]
-Machine svm = create_machine("SVMOcas", features=feats_train, labels=labels_train, C1=0.9, C2=0.9, epsilon=0.00001, use_bias=True)
+Machine svm = create_machine("SVMOcas", C1=0.9, C2=0.9, epsilon=0.00001, use_bias=True)
 #![create_classifier]
 
 #![train_and_extract_weights]
-svm.train()
+svm.train(feats_train, labels_train)
 RealVector weights = svm.get_real_vector("w")
 real bias = svm.get_real("bias")
 #![train_and_extract_weights]

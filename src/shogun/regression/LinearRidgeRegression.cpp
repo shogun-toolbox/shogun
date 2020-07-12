@@ -21,15 +21,12 @@ LinearRidgeRegression::LinearRidgeRegression()
 	init();
 }
 
-LinearRidgeRegression::LinearRidgeRegression(
-    float64_t tau, const std::shared_ptr<DenseFeatures<float64_t>>& data, std::shared_ptr<Labels> lab)
+LinearRidgeRegression::LinearRidgeRegression(float64_t tau)
     : DenseRealDispatch<LinearRidgeRegression, LinearMachine>()
 {
 	init();
 
 	set_tau(tau);
-	set_labels(std::move(lab));
-	set_features(data);
 }
 
 void LinearRidgeRegression::init()
@@ -45,12 +42,13 @@ void LinearRidgeRegression::init()
 
 template <typename T>
 bool LinearRidgeRegression::train_machine_templated(
-    const std::shared_ptr<DenseFeatures<T>>& feats)
+    const std::shared_ptr<DenseFeatures<T>>& feats,
+    const std::shared_ptr<Labels>& labs)
 {
 	auto N = feats->get_num_vectors();
 	auto D = feats->get_num_features();
 
-	auto y = regression_labels(m_labels)->get_labels().as<T>();
+	auto y = regression_labels(labs)->get_labels().as<T>();
 	T tau = m_tau;
 
 	SGVector<T> x_mean;

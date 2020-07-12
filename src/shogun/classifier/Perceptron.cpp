@@ -34,15 +34,8 @@ Perceptron::~Perceptron()
 {
 }
 
-void Perceptron::init_model(std::shared_ptr<Features> data)
+void Perceptron::init_model(const std::shared_ptr<DotFeatures>& features)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-
 	int32_t num_feat = features->get_dim_feature_space();
 
 	SGVector<float64_t> w;
@@ -57,13 +50,13 @@ void Perceptron::init_model(std::shared_ptr<Features> data)
 	}
 }
 
-void Perceptron::iteration()
+void Perceptron::iteration(
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 	bool converged = true;
 	SGVector<float64_t> w = get_w();
 
-	auto labels = binary_labels(m_labels)->get_int_labels();
-
+	auto labels = labs->as<BinaryLabels>()->get_int_labels();
 	for (const auto& [v, true_label] : zip_iterator(DotIterator(features), labels))
 	{
 		const auto predicted_label = v.dot(w) + bias;
