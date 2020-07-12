@@ -23,10 +23,10 @@ TEST(SVMOcasTest,train)
 
 	auto ground_truth = std::static_pointer_cast<BinaryLabels>(mockData->get_labels_test());
 
-	auto ocas = std::make_shared<SVMOcas>(1.0, train_feats, ground_truth);
+	auto ocas = std::make_shared<SVMOcas>(1.0);
 	env()->set_num_threads(1);
 	ocas->set_epsilon(1e-5);
-	ocas->train();
+	ocas->train(train_feats, ground_truth);
 	float64_t objective = ocas->compute_primal_objective();
 
 	EXPECT_NEAR(objective, 0.024344632618686062, 1e-2);

@@ -59,13 +59,13 @@ std::shared_ptr<LatentLabels> LatentSVM::apply_latent()
 float64_t LatentSVM::do_inner_loop(float64_t cooling_eps)
 {
 	auto ys = m_model->get_labels()->get_labels();
-	auto feats = (m_model->get_caching() ?
+	std::shared_ptr<DotFeatures> dot_feats = (m_model->get_caching() ?
 			m_model->get_cached_psi_features() :
 			m_model->get_psi_feature_vectors());
-	SVMOcas svm(m_C, feats, ys);
+	const auto feats = std::static_pointer_cast<Features>(dot_feats);
+	SVMOcas svm(m_C);
 	svm.set_epsilon(cooling_eps);
-	svm.train();
-
+	svm.train(feats, ys);
 
 	/* copy the resulting w */
 	set_w(svm.get_w().clone());

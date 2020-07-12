@@ -16,11 +16,11 @@ real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
-Machine svm = create_machine("LibLinear", C1=C, C2=C, labels=labels_train, epsilon=epsilon, liblinear_solver_type="L2R_L2LOSS_SVC", use_bias=True)
+Machine svm = create_machine("LibLinear", C1=C, C2=C, epsilon=epsilon, liblinear_solver_type="L2R_L2LOSS_SVC", use_bias=True)
 #![create_instance]
 
 #![train_and_apply]
-svm.train(features_train)
+svm.train(features_train, labels_train)
 Labels labels_predict = svm.apply(features_test)
 #![train_and_apply]
 

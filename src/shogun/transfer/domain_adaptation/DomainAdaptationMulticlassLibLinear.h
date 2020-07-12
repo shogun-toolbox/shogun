@@ -36,7 +36,7 @@ class DomainAdaptationMulticlassLibLinear : public MulticlassLibLinear
 		~DomainAdaptationMulticlassLibLinear() override;
 
 		/** get submachine outputs */
-		std::shared_ptr<BinaryLabels> get_submachine_outputs(int32_t) override;
+		std::shared_ptr<BinaryLabels> get_submachine_outputs(const std::shared_ptr<Features>& data, int32_t i) override;
 
 		/** get name */
 		const char* get_name() const override

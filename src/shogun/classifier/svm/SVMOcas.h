@@ -47,12 +47,8 @@ class SVMOcas : public LinearMachine
 		/** constructor
 		 *
 		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab labels for training features
 		 */
-		SVMOcas(
-			float64_t C, const std::shared_ptr<Features>& traindat,
-			std::shared_ptr<Labels> trainlab);
+		SVMOcas(float64_t C);
 		~SVMOcas() override;
 
 		/** get classifier type
@@ -187,7 +183,9 @@ class SVMOcas : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(
+		    const std::shared_ptr<DotFeatures>& data,
+		    const std::shared_ptr<Labels>& labs) override;
 
 	private:
 		void init();
@@ -229,6 +227,8 @@ class SVMOcas : public LinearMachine
 
 		/** primal objective */
 		float64_t primal_objective;
+
+		std::shared_ptr<DotFeatures> m_features;
 };
 }
 #endif

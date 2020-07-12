@@ -9,13 +9,13 @@ Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_instance]
-Machine lda = create_machine("LDA", labels=labels_train)
+Machine lda = create_machine("LDA")
 #![create_instance]
 
 #![train_with_double]
-lda.train(features_double)
+lda.train(features_double, labels_train)
 #![train_with_double]
 
 #![train_with_float]
-lda.train(features_float)
+lda.train(features_float, labels_train)
 #![train_with_float]

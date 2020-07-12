@@ -22,7 +22,9 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(const std::shared_ptr<DenseFeatures<T>>& data)
+	bool train_machine_templated(
+	    const std::shared_ptr<DenseFeatures<T>>& data,
+	    const std::shared_ptr<Labels>& labs)
 	{
 		if (data->get_feature_type() == m_expected_feature_type)
 			return true;
@@ -49,7 +51,9 @@ public:
 	{
 	}
 	template <typename T>
-	bool train_machine_templated(const std::shared_ptr<StringFeatures<T>>& data)
+	bool train_machine_templated(
+	    const std::shared_ptr<StringFeatures<T>>& data,
+	    const std::shared_ptr<Labels>& labs)
 	{
 		if (data->get_feature_type() == m_expected_feature_type)
 			return true;
@@ -80,9 +84,8 @@ TYPED_TEST(DenseDispatchCRTP, train_with_dense)
 
 	auto mock_machine =
 	    std::make_shared<DenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
-
-	EXPECT_TRUE(mock_machine->train(features));
+	auto labs = std::make_shared<BinaryLabels>(labels);
+	EXPECT_TRUE(mock_machine->train(features, labs));
 }
 
 typedef ::testing::Types<uint8_t, char, uint16_t> SGCharTypes;
@@ -103,9 +106,8 @@ TYPED_TEST(StringDispatchCRTP, train_with_string)
 	auto labels = SGVector<float64_t>({1, -1});
 
 	auto mock_machine = std::make_shared<StringMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
-
-	EXPECT_TRUE(mock_machine->train(features));
+	auto labs = std::make_shared<BinaryLabels>(labels);
+	EXPECT_TRUE(mock_machine->train(features, labs));
 }
 
 TEST(TrainDense, train_dense_with_wrong_feature_type)
@@ -117,9 +119,8 @@ TEST(TrainDense, train_dense_with_wrong_feature_type)
 
 	auto mock_machine =
 	    std::make_shared<DenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
-
-	EXPECT_THROW(mock_machine->train(features), ShogunException);
+	auto labs = std::make_shared<BinaryLabels>(labels);
+	EXPECT_THROW(mock_machine->train(features, labs), ShogunException);
 }
 
 TEST(TrainDense, train_dense_with_wrong_feature_class)
@@ -132,6 +133,6 @@ TEST(TrainDense, train_dense_with_wrong_feature_class)
 
 	auto mock_machine =
 	    std::make_shared<DenseRealMockMachine>(features->get_feature_type());
-	mock_machine->set_labels(std::make_shared<BinaryLabels>(labels));
-	EXPECT_THROW(mock_machine->train(features), ShogunException);
+	auto labs = std::make_shared<BinaryLabels>(labels);
+	EXPECT_THROW(mock_machine->train(features, labs), ShogunException);
 }

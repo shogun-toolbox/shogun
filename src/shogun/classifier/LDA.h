@@ -112,25 +112,6 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		LDA(
 		    float64_t gamma = 0, ELDAMethod method = AUTO_LDA,
 		    bool bdc_svd = true);
-
-		/** constructor
-		 *
-		 * @param gamma gamma
-		 * @param traindat training features
-		 * @param trainlab labels for training features
-		 * @param method LDA using Fisher's algorithm or Singular Value
-		 * Decomposition : ::FLD_LDA/::SVD_LDA/::AUTO_LDA[default]
-		 * @param bdc_svd when using SVD solver switch between
-		 * Bidiagonal Divide and Conquer algorithm (BDC-SVD) and
-		 * Jacobi's algorithm, for the differences @see linalg::SVDAlgorithm.
-		 * [default = BDC-SVD]
-		 */
-		LDA(
-		    float64_t gamma, const std::shared_ptr<DenseFeatures<float64_t>>& traindat,
-		    std::shared_ptr<Labels> trainlab, ELDAMethod method = AUTO_LDA,
-		    bool bdc_svd = true);
-		~LDA() override;
-
 		/** get classifier type
 		 *
 		 * @return classifier type LDA
@@ -152,9 +133,12 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 *
 		 * @return whether training was successful
 		 */
-		template <typename ST, typename U = typename std::enable_if_t<
-		                           std::is_floating_point<ST>::value>>
-		bool train_machine_templated(const std::shared_ptr<DenseFeatures<ST>>& data);
+		template <
+		    typename ST, typename U = typename std::enable_if_t<
+		                     std::is_floating_point<ST>::value>>
+		bool train_machine_templated(
+		    const std::shared_ptr<DenseFeatures<ST>>& data,
+		    const std::shared_ptr<Labels>& labs);
 
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
@@ -162,7 +146,9 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_svd(std::shared_ptr<DenseFeatures<ST>> data);
+		bool solver_svd(
+		    const std::shared_ptr<DenseFeatures<ST>>& data,
+		    const std::shared_ptr<Labels>& labs);
 
 		/**
 		 * Train the machine with the classic method based on the cholesky
@@ -171,7 +157,9 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_classic(std::shared_ptr<DenseFeatures<ST>> data);
+		bool solver_classic(
+		    const std::shared_ptr<DenseFeatures<ST>>& data,
+		    const std::shared_ptr<Labels>& labs);
 
 	protected:
 

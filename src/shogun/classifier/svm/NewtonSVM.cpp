@@ -30,8 +30,7 @@ NewtonSVM::NewtonSVM() : IterativeMachine<LinearMachine>()
 	t = 0;
 }
 
-NewtonSVM::NewtonSVM(
-    float64_t c, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab, int32_t itr)
+NewtonSVM::NewtonSVM(float64_t c, int32_t itr)
     : IterativeMachine<LinearMachine>()
 {
 	lambda=1/c;
@@ -39,8 +38,6 @@ NewtonSVM::NewtonSVM(
 	prec=1e-6;
 	C=c;
 	t = 0;
-	set_features(std::move(traindat));
-	set_labels(std::move(trainlab));
 }
 
 
@@ -48,26 +45,14 @@ NewtonSVM::~NewtonSVM()
 {
 }
 
-void NewtonSVM::init_model(const std::shared_ptr<Features> data)
+void NewtonSVM::init_model(const std::shared_ptr<DotFeatures>& features)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-
-	ASSERT(features)
-
-	SGVector<float64_t> train_labels = binary_labels(m_labels)->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
 	//Assigning dimensions for whole class scope
 	x_n=num_vec;
 	x_d=num_feat;
-
-	ASSERT(num_vec==train_labels.vlen)
 
 	SGVector<float64_t> weights(x_d);
 	set_w(weights);
@@ -81,9 +66,10 @@ void NewtonSVM::init_model(const std::shared_ptr<Features> data)
 	grad.set_const(0.0);
 }
 
-void NewtonSVM::iteration()
+void NewtonSVM::iteration(
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
-	obj_fun_linear();
+	obj_fun_linear(features, labs);
 	SGVector<float64_t> weights = get_w();
 
 	SGVector<float64_t> sgv;
@@ -132,7 +118,7 @@ void NewtonSVM::iteration()
 	for (int32_t i = 0; i < x_d + 1; i++)
 		step[i] = -s2[i];
 
-	line_search_linear(step);
+	line_search_linear(step, features, labs);
 
 	SGVector<float64_t> tmp_step(step.data(), x_d, false);
 	linalg::add(weights, tmp_step, weights, 1.0, t);
@@ -143,9 +129,11 @@ void NewtonSVM::iteration()
 		m_complete = true;
 }
 
-void NewtonSVM::line_search_linear(const SGVector<float64_t>& d)
+void NewtonSVM::line_search_linear(
+    const SGVector<float64_t>& d, const std::shared_ptr<DotFeatures>& features,
+    const std::shared_ptr<Labels>& labs)
 {
-	SGVector<float64_t> Y = binary_labels(m_labels)->get_labels();
+	SGVector<float64_t> Y = binary_labels(labs)->get_labels();
 	SGVector<float64_t> outz(x_n);
 	SGVector<float64_t> temp1(x_n);
 	SGVector<float64_t> temp1forout(x_n);
@@ -213,11 +201,11 @@ void NewtonSVM::line_search_linear(const SGVector<float64_t>& d)
 	out = outz.clone();
 }
 
-void NewtonSVM::obj_fun_linear()
+void NewtonSVM::obj_fun_linear(
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 	SGVector<float64_t> weights = get_w();
-	SGVector<float64_t> v = binary_labels(m_labels)->get_labels();
-
+	SGVector<float64_t> v = binary_labels(labs)->get_labels();
 	for (int32_t i=0; i<x_n; i++)
 	{
 		if (out[i]<0)

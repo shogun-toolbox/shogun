@@ -141,9 +141,17 @@ namespace shogun
 			else
 			{
 				auto machine = shogun::get<std::shared_ptr<Machine>>(stage.second);
-				if (machine->train_require_labels())
-					machine->set_labels(m_labels);
-				machine->train(current_data);
+				try
+				{
+					if (machine->train_require_labels())
+						machine->set_labels(m_labels);
+					machine->train(current_data);
+				}
+				catch(const std::exception& e)
+				{
+					machine->train(current_data, m_labels);
+				}
+				
 			}
 		}
 		return true;

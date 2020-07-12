@@ -15,28 +15,39 @@ namespace shogun
 	class NonParametricMachine : public Machine
 	{
 	public:
-		NonParametricMachine(): Machine()
+		NonParametricMachine() : Machine()
 		{
-			//TODO : when all refactor is done, m_labels should be removed from 
-            //Machine Class
+			// TODO : when all refactor is done, m_labels should be removed from
+			// Machine Class
 			// SG_ADD(
-			//     &m_labels, "labels", "labels used in train machine algorithm",
-			//     ParameterProperties::READONLY);
-			SG_ADD(&m_features, "features_train",
+			//     &m_labels, "labels", "labels used in train machine
+			//     algorithm", ParameterProperties::READONLY);
+			SG_ADD(
+			    &m_features, "features_train",
 			    "Training features of nonparametric model",
 			    ParameterProperties::READONLY);
 		}
 		virtual ~NonParametricMachine()
 		{
 		}
+		using Machine::train;
 
-		const char* get_name() const override{ return "NonParametricMachine"; }
+		bool train(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& lab) override
+		{
+			m_labels = lab;
+			return Machine::train(data);
+		}
+		const char* get_name() const override
+		{
+			return "NonParametricMachine";
+		}
 
 	protected:
-		
 		std::shared_ptr<Features> m_features;
 
-        //TODO
+		// TODO
 		// when all refactor is done, we should use this m_labels
 		// std::shared_ptr<Labels> m_labels;
 	};

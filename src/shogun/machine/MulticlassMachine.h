@@ -74,10 +74,11 @@ class MulticlassMachine : public BaseMulticlassMachine
 		}
 
 		/** get outputs of i-th submachine
+		 * @param data features to be trained
 		 * @param i number of submachine
 		 * @return outputs
 		 */
-		virtual std::shared_ptr<BinaryLabels> get_submachine_outputs(int32_t i);
+		virtual std::shared_ptr<BinaryLabels> get_submachine_outputs(const std::shared_ptr<Features>& data, int32_t i);
 
 		/** get output of i-th submachine for num-th vector
 		 * @param i number of submachine
