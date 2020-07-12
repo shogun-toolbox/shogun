@@ -36,16 +36,6 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 
 		}
 
-		/** train machine
-		 *
-		 * @param data training data (parameter can be avoided if distance or
-		 * kernel-based classifiers are used and distance/kernels are
-		 * initialized with train data).
-		 *
-		 * @return whether training was successful
-		 */
-		
-
 		virtual bool train_function(std::shared_ptr<Features> data=NULL)
 		{
 			error("Train function of Director Linear Machine needs to be overridden.");
@@ -123,8 +113,7 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
 		 *
-		 * NOT IMPLEMENTED!
-		 *	
+		 * NOT IMPLEMENTED!	
 		 * @return whether training was successful
 		 */
 		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override

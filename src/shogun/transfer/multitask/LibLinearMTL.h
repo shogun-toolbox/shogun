@@ -93,8 +93,6 @@ class LibLinearMTL : public RandomMixin<LinearMachine>
 		/** constructor (using L2R_L1LOSS_SVC_DUAL as default)
 		 *
 		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab training labels
 		 */
 		LibLinearMTL(float64_t C);
 

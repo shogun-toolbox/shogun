@@ -31,12 +31,6 @@ namespace shogun
 		/** default constructor */
 		LeastSquaresRegression();
 
-		/** constructor
-		 *
-		 * @param data training data
-		 * @param lab labels
-		 */
-		
 		virtual ~LeastSquaresRegression() {}
 
 		/** get classifier type

@@ -74,6 +74,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		}
 
 		/** get outputs of i-th submachine
+		 * @param data features to be trained
 		 * @param i number of submachine
 		 * @return outputs
 		 */

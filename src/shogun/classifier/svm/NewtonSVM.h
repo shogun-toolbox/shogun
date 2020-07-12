@@ -33,8 +33,6 @@ class NewtonSVM : public IterativeMachine<LinearMachine>
 		/** constructor
 		 * @param C constant C
 		 * @param itr constant no of iterations
-		 * @param traindat training features
-		 * @param trainlab labels for features
 		 */
 		NewtonSVM(float64_t C, int32_t itr = 20);
 

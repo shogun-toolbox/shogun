@@ -50,8 +50,6 @@ class LibLinearRegression : public RandomMixin<LinearMachine>
 
 		/** standard constructor
 		 * @param C C regularization constant value
-		 * @param features features
-		 * @param labs labels
 		 */
 		LibLinearRegression(float64_t C);
 

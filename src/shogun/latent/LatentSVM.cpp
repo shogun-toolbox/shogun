@@ -62,7 +62,7 @@ float64_t LatentSVM::do_inner_loop(float64_t cooling_eps)
 	std::shared_ptr<DotFeatures> dot_feats = (m_model->get_caching() ?
 			m_model->get_cached_psi_features() :
 			m_model->get_psi_feature_vectors());
-	const auto feats = std::dynamic_pointer_cast<Features>(dot_feats);
+	const auto feats = std::static_pointer_cast<Features>(dot_feats);
 	SVMOcas svm(m_C);
 	svm.set_epsilon(cooling_eps);
 	svm.train(feats, ys);
