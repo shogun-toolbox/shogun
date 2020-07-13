@@ -293,33 +293,33 @@ void DeepAutoencoder::init()
 
 	m_do_pretrain = false;
 
-	SG_ADD(&pt_noise_type, kNoiseType,
+	SG_ADD(&pt_noise_type, "pt_noise_type",
 		"Pre-training Noise Type");
-	SG_ADD(&pt_noise_parameter, kNoiseParameter,
+	SG_ADD(&pt_noise_parameter, "pt_noise_parameter",
 		"Pre-training Noise Parameter");
-	SG_ADD(&pt_contraction_coefficient, kContractionCoefficient,
+	SG_ADD(&pt_contraction_coefficient, "pt_contraction_coefficient",
 	    "Pre-training Contraction Coefficient");
-	SG_ADD(&pt_optimization_method, kOptimizeMethod,
+	SG_ADD(&pt_optimization_method, "pt_optimization_method",
 	    "Pre-training Optimization Method");
-	SG_ADD(&pt_gd_mini_batch_size, kMiniBatchSize,
+	SG_ADD(&pt_gd_mini_batch_size, "pt_gd_mini_batch_size",
 	    "Pre-training Gradient Descent Mini-batch size");
-	SG_ADD(&pt_max_num_epochs, kMaxNumEpochs,
+	SG_ADD(&pt_max_num_epochs, "pt_max_num_epochs",
 	    "Pre-training Max number of Epochs");
-	SG_ADD(&pt_gd_learning_rate, kLearningRate,
+	SG_ADD(&pt_gd_learning_rate, "pt_gd_learning_rate",
 	    "Pre-training Gradient descent learning rate");
-	SG_ADD(&pt_gd_learning_rate_decay, kLearningRateDecay,
+	SG_ADD(&pt_gd_learning_rate_decay, "pt_gd_learning_rate_decay",
 	    "Pre-training Gradient descent learning rate decay");
-	SG_ADD(&pt_gd_momentum, kMomemtum,
+	SG_ADD(&pt_gd_momentum, "pt_gd_momentum",
 	    "Pre-training Gradient Descent Momentum");
-	SG_ADD(&pt_gd_error_damping_coeff, kErrorDampingCoeff,
+	SG_ADD(&pt_gd_error_damping_coeff, "pt_gd_error_damping_coeff",
 	    "Pre-training Gradient Descent Error Damping Coeff");
-	SG_ADD(&pt_epsilon, kEpsilon,
+	SG_ADD(&pt_epsilon, "pt_epsilon",
 	    "Pre-training Epsilon");
-	SG_ADD(&pt_l2_coefficient, kL2Coefficient,
+	SG_ADD(&pt_l2_coefficient, "pt_l2_coefficient",
 	    "Pre-training L2 regularization coeff");
-	SG_ADD(&pt_l1_coefficient, kL1Coefficient,
+	SG_ADD(&pt_l1_coefficient, "pt_l1_coefficient",
 	    "Pre-training L1 regularization coeff");
-	SG_ADD(&m_do_pretrain, kPretrain,
+	SG_ADD(&m_do_pretrain, "do_pretrain",
 	    "Whether to pretrain with relevant parameters");
-	SG_ADD(&m_sigma, kSigma, "Initialization Sigma");
+	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma");
 }
