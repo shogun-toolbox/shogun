@@ -14,13 +14,15 @@
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/View.h>
 
 #include <utility>
 
 using namespace shogun;
 
-CrossValidation::CrossValidation() : Seedable<MachineEvaluation>()
+CrossValidation::CrossValidation() : RandomMixin<MachineEvaluation>()
 {
 	init();
 }
@@ -28,7 +30,7 @@ CrossValidation::CrossValidation() : Seedable<MachineEvaluation>()
 CrossValidation::CrossValidation(
     std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
     std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion)
-    : Seedable<MachineEvaluation>(
+    : RandomMixin<MachineEvaluation>(
           std::move(machine), std::move(features), std::move(labels), std::move(splitting_strategy), std::move(evaluation_criterion))
 {
 	init();
@@ -37,7 +39,7 @@ CrossValidation::CrossValidation(
 CrossValidation::CrossValidation(
     std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
     std::shared_ptr<Evaluation> evaluation_criterion)
-    : Seedable<MachineEvaluation>(
+    : RandomMixin<MachineEvaluation>(
           std::move(machine), std::move(labels), std::move(splitting_strategy), std::move(evaluation_criterion))
 {
 	init();
@@ -49,9 +51,8 @@ CrossValidation::~CrossValidation()
 
 void CrossValidation::init()
 {
-	m_num_runs = 1;
-
-	SG_ADD(&m_num_runs, kNumRuns, "Number of repetitions");
+	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions", ParameterProperties::CONSTRAIN,
+		SG_CONSTRAINT(positive<>()));
 }
 
 std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl() const
@@ -68,7 +69,7 @@ std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl() const
 
 	/* construct evaluation result */
 	auto result = std::make_shared<CrossValidationResult>();
-	result->set_mean(Statistics::mean(results));
+	result->set_mean(linalg::mean(results));
 	if (m_num_runs > 1)
 		result->set_std_dev(Statistics::std_deviation(results));
 	else
@@ -95,6 +96,12 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 
 	SGVector<float64_t> results(num_subsets);
 
+	std::vector<int32_t> seed_vector(num_subsets);
+	UniformIntDistribution<int32_t> seed_dist(std::numeric_limits<int32_t>::min(), 
+		std::numeric_limits<int32_t>::max());
+	std::generate(seed_vector.begin(), seed_vector.end(), 
+		[&](){return seed_dist(m_prng);});
+
 	#pragma omp parallel for shared(results)
 	for (auto i = 0; i<num_subsets; ++i)
 	{
@@ -102,6 +109,9 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 		// model parameters are inferred/learned during training
 		auto machine = make_clone(m_machine,
 				ParameterProperties::HYPER | ParameterProperties::SETTING);
+
+		if (machine->has(random::kSeed))
+			machine->put(random::kSeed, seed_vector[i]);
 
 		SGVector<index_t> idx_train =
 			m_splitting_strategy->generate_subset_inverse(i);
@@ -126,7 +136,7 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean = Statistics::mean(results);
+	float64_t mean = linalg::mean(results);
 
 	SG_TRACE("leaving {}::evaluate_one_run()", get_name());
 	return mean;

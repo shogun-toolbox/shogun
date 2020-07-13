@@ -13,7 +13,7 @@
 
 #include <shogun/evaluation/EvaluationResult.h>
 #include <shogun/evaluation/MachineEvaluation.h>
-#include <shogun/mathematics/Seedable.h>
+#include <shogun/mathematics/RandomMixin.h>
 
 namespace shogun
 {
@@ -123,7 +123,7 @@ namespace shogun
 	 * HP Laboratories.] for details on this subject.
 	 *
 	 */
-	class CrossValidation : public Seedable<MachineEvaluation>
+	class CrossValidation : public RandomMixin<MachineEvaluation>
 	{
 	public:
 		/** constructor */
@@ -175,6 +175,7 @@ namespace shogun
 		 */
 		std::shared_ptr<EvaluationResult> evaluate_impl() const override;
 
+	private:
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then
 		 * calculates
@@ -187,8 +188,7 @@ namespace shogun
 		float64_t evaluate_one_run(int64_t index) const;
 
 		/** number of evaluation runs for one fold */
-		int32_t m_num_runs;
-
+		int32_t m_num_runs = 1;
 	#ifndef SWIG
 	public:
 		static constexpr std::string_view kNumRuns = "num_runs";
