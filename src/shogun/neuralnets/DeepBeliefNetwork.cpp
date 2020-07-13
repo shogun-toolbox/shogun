@@ -661,7 +661,7 @@ void DeepBeliefNetwork::init()
 	    "Gradient descent learning rate decay");
 	SG_ADD(&gd_momentum, "gd_momentum", "Gradient Descent Momentum");
 
-	SG_ADD(&m_sigma, "sigma", "Initialization Sigma");
+	SG_ADD(&m_sigma, kSigma, "Initialization Sigma");
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_visible_units_type, "visible_units_type",

@@ -276,6 +276,26 @@ protected:
 	/** Standard deviation of the gaussian used to initialize the
 	 * parameters */
 	float64_t m_sigma;
+
+#ifndef SWIG
+public:
+	static constexpr std::string_view kNoiseType = "pt_noise_type";
+	static constexpr std::string_view kNoiseParameter = "pt_noise_parameter";
+	static constexpr std::string_view kContractionCoefficient = "pt_contraction_coefficient";
+	static constexpr std::string_view kOptimizeMethod = "pt_optimization_method";
+	static constexpr std::string_view kMiniBatchSize = "pt_gd_mini_batch_size";
+	static constexpr std::string_view kMaxNumEpochs = "pt_max_num_epochs";
+	static constexpr std::string_view kLearningRate = "pt_gd_learning_rate";
+	static constexpr std::string_view kLearningRateDecay = "pt_gd_learning_rate_decay";
+	static constexpr std::string_view kMomemtum = "pt_gd_momentum";
+	static constexpr std::string_view kErrorDampingCoeff = "pt_gd_error_damping_coeff";
+	static constexpr std::string_view kEpsilon = "pt_epsilon";
+	static constexpr std::string_view kL2Coefficient = "pt_l2_coefficient";
+	static constexpr std::string_view kL1Coefficient = "pt_l1_coefficient";
+	static constexpr std::string_view kPretrain = "do_pretrain";
+	static constexpr std::string_view kSigma = "sigma";
+
+#endif
 };
 }
 #endif
