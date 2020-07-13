@@ -322,5 +322,5 @@ void DeepAutoencoder::init()
 	SG_ADD(&m_do_pretrain, "do_pretrain",
 	    "Whether to pretrain with relevant parameters");
 
-	SG_ADD(&m_sigma, "m_sigma", "Initialization Sigma");
+	SG_ADD(&m_sigma, "sigma", "Initialization Sigma");
 }
