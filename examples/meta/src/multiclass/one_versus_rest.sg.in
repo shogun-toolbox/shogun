@@ -9,7 +9,7 @@ Labels labels_train = create_labels(f_labels_train)
 #![create_features]
 
 #![create_kernel]
-Kernel k = create_kernel("GaussianKernel", log_width=0.0)
+Kernel k = create_kernel("GaussianKernel", width=1.0)
 #![create_kernel]
 
 #![choose_strategy]

@@ -12,7 +12,7 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_kernel_and_mean_function]
-Kernel k = create_kernel("GaussianKernel", log_width=0.0)
+Kernel k = create_kernel("GaussianKernel", width=1.0)
 k.init(features_train, features_train)
 MeanFunction mean_function = create_gp_mean("ZeroMean")
 #![create_kernel_and_mean_function]

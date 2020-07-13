@@ -199,7 +199,7 @@ TEST(VarDTCInferenceMethod,get_marginal_likelihood_derivatives)
 	// get parameters to compute derivatives
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 	float64_t dnlZ_lik=gradient["log_sigma"][0];
-	float64_t dnlZ_width=gradient["log_width"][0];
+	float64_t dnlZ_width=gradient["width"][0];
 
 	// comparison of partial derivatives of negative log marginal likelihood
 	// result from varsgp package:

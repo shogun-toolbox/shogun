@@ -47,7 +47,7 @@ def quadratic_time_mmd_graphical():
 	print "kernel widths:", widths
 	combined=sg.create_kernel("CombinedKernel")
 	for i in range(len(sigmas)):
-		combined.add("kernel_array", sg.create_kernel("GaussianKernel", log_width=widths[i]))
+		combined.add("kernel_array", sg.create_kernel("GaussianKernel", width=widths[i]))
 
 	# create MMD instance, use biased statistic
 	mmd=QuadraticTimeMMD(combined,features, m)

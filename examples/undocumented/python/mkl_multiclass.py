@@ -21,7 +21,7 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 
 	subkfeats_train = sg.create_features(fm_train_real)
 	subkfeats_test = sg.create_features(fm_test_real)
-	subkernel = sg.create_kernel("GaussianKernel", log_width=width)
+	subkernel = sg.create_kernel("GaussianKernel", width=width)
 	feats_train.add("feature_array", subkfeats_train)
 	feats_test.add("feature_array", subkfeats_test)
 	kernel.add("kernel_array", subkernel)

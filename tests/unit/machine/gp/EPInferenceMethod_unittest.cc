@@ -244,7 +244,7 @@ TEST(EPInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
-	float64_t dnlZ_ell=gradient["log_width"][0];
+	float64_t dnlZ_ell=gradient["width"][0];
 	float64_t dnlZ_sf2=gradient["log_scale"][0];
 
 	// comparison of partial derivatives of negative marginal likelihood with

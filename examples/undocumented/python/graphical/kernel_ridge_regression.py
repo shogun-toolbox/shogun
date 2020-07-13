@@ -4,8 +4,6 @@ import util
 
 plt.figure('KernelRidgeRegression')
 
-width = 2
-
 # positive examples
 pos = util.get_realdata(True)
 plt.plot(pos[0, :], pos[1, :], 'r.')
@@ -17,7 +15,7 @@ plt.plot(neg[0, :], neg[1, :], 'b.')
 # train krr
 labels = util.get_labels()
 train = util.get_realfeatures(pos, neg)
-gk = sg.create_kernel('GaussianKernel', log_width=width)
+gk = sg.create_kernel('GaussianKernel', width=2.0)
 gk.init(train, train)
 krr = sg.create_machine('KernelRidgeRegression', labels=labels, kernel=gk, tau=1e-3)
 krr.train()

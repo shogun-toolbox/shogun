@@ -3,7 +3,7 @@ File f_labels_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels
 Features feats_train = create_features(f_feats_train)
 Labels labels_train = create_labels(f_labels_train)
 
-Kernel subkernel = create_kernel("GaussianKernel", log_width=1.7)
+Kernel subkernel = create_kernel("GaussianKernel", width=1.7)
 subkernel.init(feats_train, feats_train)
 
 Kernel auc = create_kernel("AUCKernel", subkernel=subkernel, labels=labels_train)

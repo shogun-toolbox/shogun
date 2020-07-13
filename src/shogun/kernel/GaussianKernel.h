@@ -31,6 +31,10 @@ namespace params {
  *
  * where \f$\tau\f$ is the kernel width.
  *
+ * If the kernel width is not provided it will be computed automatically using
+ * the median heuristics as described in 
+ * http://www.stats.ox.ac.uk/~sejdinov/talks/pdf/2016-09-07_RSSManchester.pdf,
+ * where \f$\tau=2\theta^2\f$ and \f$\theta = median(||{\bf x}-{\bf x'}||^2)\f$.
  */
 class GaussianKernel: public ShiftInvariantKernel
 {
@@ -120,29 +124,7 @@ public:
 	 */
 	float64_t get_width() const
 	{
-		return GaussianKernel::from_log_width(std::get<float64_t>(m_log_width));
-	}
-
-	/**
-	 * Converts width to log_width.
-	 *
-	 * @param log_width the kernel log width
-	 * @return the kernel width
-	 */
-	static float64_t from_log_width(float64_t log_width) noexcept
-	{
-		return std::exp(log_width * 2.0) * 2.0;
-	}
-
-	/**
-	 * Converts log_width to width.
-	 *
-	 * @param width the kernel width
-	 * @return the kernel log width
-	 */
-	static float64_t to_log_width(float64_t width) noexcept
-	{
-		return std::log(width / 2.0) / 2.0;
+		return std::get<float64_t>(m_width);
 	}
 
 	/** return derivative with respect to specified parameter
@@ -191,7 +173,7 @@ protected:
 
 protected:
 	/** width */
-	AutoValue<float64_t> m_log_width = AutoValueEmpty{};
+	AutoValue<float64_t> m_width = AutoValueEmpty{};
 };
 
 }

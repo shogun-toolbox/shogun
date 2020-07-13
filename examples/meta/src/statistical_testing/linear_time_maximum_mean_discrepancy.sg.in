@@ -7,7 +7,7 @@ mmd.set_p(features_p)
 mmd.set_q(features_q)
 mmd.set_num_samples_p(1000)
 mmd.set_num_samples_q(1000)
-Kernel k = create_kernel("GaussianKernel", log_width = 1.0)
+Kernel k = create_kernel("GaussianKernel", width = 1.0)
 mmd.set_kernel(k)
 real alpha = 0.05
 #![create_instance]
@@ -26,9 +26,9 @@ real p_value = mmd.compute_p_value(statistic)
 #![perform_test]
 
 #![add_kernels]
-Kernel kernel1 = create_kernel("GaussianKernel", log_width = -1.0)
-Kernel kernel2 = create_kernel("GaussianKernel", log_width = 0.0)
-Kernel kernel3 = create_kernel("GaussianKernel", log_width = 1.0)
+Kernel kernel1 = create_kernel("GaussianKernel", width = -1.0)
+Kernel kernel2 = create_kernel("GaussianKernel", width = 1.0)
+Kernel kernel3 = create_kernel("GaussianKernel", width = 2.71)
 mmd.add_kernel(kernel1)
 mmd.add_kernel(kernel2)
 mmd.add_kernel(kernel3)
@@ -43,7 +43,7 @@ mmd.set_train_test_ratio(1)
 mmd.set_kernel_selection_strategy(enum EKernelSelectionMethod.KSM_MAXIMIZE_POWER)
 mmd.select_kernel()
 Kernel learnt_kernel_single = as_kernel(mmd.get("kernel"))
-real width = learnt_kernel_single.get_real("log_width")
+real width = learnt_kernel_single.get_real("width")
 #![select_kernel_single]
 
 #![select_kernel_combined]

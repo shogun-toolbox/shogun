@@ -18,7 +18,7 @@ def kernel_combined (fm_train_real=traindat,fm_test_real=testdat,fm_train_dna=tr
 
 	subkfeats_train=sg.create_features(fm_train_real)
 	subkfeats_test=sg.create_features(fm_test_real)
-	subkernel=sg.create_kernel("GaussianKernel", log_width=1.1)
+	subkernel=sg.create_kernel("GaussianKernel", width=1.0)
 	feats_train.add("feature_array", subkfeats_train)
 	feats_test.add("feature_array", subkfeats_test)
 	kernel.add("kernel_array", subkernel)

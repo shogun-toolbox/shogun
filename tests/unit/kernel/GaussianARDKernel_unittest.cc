@@ -176,7 +176,7 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	auto params2 = kernel2->get_params();
 
 	auto width_param=params1.find("log_weights");
-	auto width_param2=params2.find("log_width");
+	auto width_param2=params2.find("width");
 
 	SGMatrix<float64_t> mat=kernel->get_parameter_gradient(*width_param);
 	SGMatrix<float64_t> mat2=kernel2->get_parameter_gradient(*width_param2);
@@ -702,7 +702,7 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	auto params2 = kernel2->get_params();
 
 	auto width_param=params1.find("log_weights");
-	auto width_param2=params2.find("log_width");
+	auto width_param2=params2.find("width");
 
 	SGVector<float64_t> vec=kernel->get_parameter_gradient_diagonal(*width_param);
 	SGVector<float64_t> vec2=kernel2->get_parameter_gradient_diagonal(*width_param2);

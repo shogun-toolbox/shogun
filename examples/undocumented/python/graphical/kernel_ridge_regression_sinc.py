@@ -5,11 +5,10 @@ import util
 plt.figure('KernelRidgeRegression on Sine')
 
 X, Y = util.get_sinedata()
-width = 1
 
 feat = sg.create_features(X)
 lab = sg.create_labels(Y.flatten())
-gk = sg.create_kernel('GaussianKernel', log_width=width)
+gk = sg.create_kernel('GaussianKernel', width=1.0)
 gk.init(feat, feat)
 krr = sg.create_machine('KernelRidgeRegression', labels=lab, kernel=gk, tau=1e-3)
 krr.train()

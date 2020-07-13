@@ -11,7 +11,7 @@ Labels labels_test=create_labels(f_labels_test)
 #![create_features]
 
 #![create_appropriate_kernel]
-Kernel k=create_kernel("GaussianKernel", log_width=1.0)
+Kernel k=create_kernel("GaussianKernel", width=1.0)
 #![create_appropriate_kernel]
 
 #![create_instance]

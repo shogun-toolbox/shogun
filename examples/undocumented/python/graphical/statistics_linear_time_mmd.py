@@ -46,7 +46,7 @@ def linear_time_mmd_graphical():
 	print "kernel widths:", widths
 	combined=sg.create_kernel("CombinedKernel")
 	for i in range(len(sigmas)):
-		combined.append_kernel(sg.create_kernel("GaussianKernel", log_width=widths[i]))
+		combined.append_kernel(sg.create_kernel("GaussianKernel", width=widths[i]))
 
 	# mmd instance using streaming features, blocksize of 10000
 	block_size=1000

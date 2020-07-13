@@ -7,7 +7,7 @@ Features feats_test = create_features(data_test)
 #![create_features]
 
 #![create_kernel]
-Kernel gaussiankernel = create_kernel("GaussianKernel", log_width=2.0)
+Kernel gaussiankernel = create_kernel("GaussianKernel", width=2.0)
 gaussiankernel.init(feats_train, feats_train)
 #![create_kernel]
 

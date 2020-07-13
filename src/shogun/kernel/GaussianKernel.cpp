@@ -24,7 +24,7 @@ GaussianKernel::GaussianKernel() : ShiftInvariantKernel()
 	m_distance=dist;
 
 	SG_ADD(
-	    &m_log_width, "log_width", "Kernel width in log domain",
+	    &m_width, "width", "Kernel width",
 	    ParameterProperties::AUTO | ParameterProperties::HYPER |
 	        ParameterProperties::GRADIENT,
 	    std::make_shared<params::GaussianWidthAutoInit>(*this, 1.0));
@@ -75,7 +75,7 @@ bool GaussianKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features>
 void GaussianKernel::set_width(float64_t w)
 {
 	require(w>0, "width ({}) must be positive",w);
-	m_log_width = GaussianKernel::to_log_width(w);
+	m_width = w;
 }
 
 SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(Parameters::const_reference param, index_t index)
@@ -83,7 +83,9 @@ SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(Parameters::const_ref
 	require(lhs, "Left hand side features must be set!");
 	require(rhs, "Rightt hand side features must be set!");
 
-	if (param.first == "log_width")
+	// this is not the actual derivative wrt to the kernel width
+	// but rather derivative wrt log_width = log(width /2 ) / 2
+	if (param.first == "width")
 	{
 		SGMatrix<float64_t> derivative=SGMatrix<float64_t>(num_lhs, num_rhs);
 		for (int k=0; k<num_rhs; k++)
@@ -91,7 +93,7 @@ SGMatrix<float64_t> GaussianKernel::get_parameter_gradient(Parameters::const_ref
 #pragma omp parallel for
 			for (int j=0; j<num_lhs; j++)
 			{
-				float64_t element=distance(j, k);
+				const float64_t element=distance(j, k);
 				derivative(j, k) = std::exp(-element) * element * 2.0;
 			}
 		}
