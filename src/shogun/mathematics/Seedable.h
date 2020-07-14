@@ -62,7 +62,7 @@ namespace shogun
 			random::seed(object, m_seed);
 		}
 
-		int32_t m_seed;
+		int64_t m_seed;
 	};
 
 	static inline void seed_callback(SGObject* obj, int32_t seed)

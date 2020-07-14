@@ -14,7 +14,7 @@
 #include <shogun/lib/observers/ObservedValueTemplated.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/mathematics/Statistics.h>
-#include <shogun/mathematics/UniformIntDistribution.h>
+#include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/View.h>
 
@@ -96,11 +96,7 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 
 	SGVector<float64_t> results(num_subsets);
 
-	std::vector<int32_t> seed_vector(num_subsets);
-	UniformIntDistribution<int32_t> seed_dist(std::numeric_limits<int32_t>::min(), 
-		std::numeric_limits<int32_t>::max());
-	std::generate(seed_vector.begin(), seed_vector.end(), 
-		[&](){return seed_dist(m_prng);});
+	const auto seed_vector = random::generate_array(m_prng, num_subsets);
 
 	#pragma omp parallel for shared(results)
 	for (auto i = 0; i<num_subsets; ++i)

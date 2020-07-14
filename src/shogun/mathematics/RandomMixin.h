@@ -23,7 +23,7 @@ namespace shogun
 		static inline void seed(T* object, PRNG&& prng)
 		{
 			if (object->has(kSeed))
-				object->put(kSeed, (int32_t)prng());
+				object->put(kSeed, (int64_t)prng());
 		}
 
 		template <

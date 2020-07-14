@@ -35,7 +35,7 @@ namespace shogun
 		/** Reorders a container of elements randomly
 		 *
 		 * @param container the container holding the elements
-		 * @prng pseudo number generator object
+		 * @param prng pseudo number generator object
 		 */
 		template <typename Container, typename PRNG>
 		static inline void shuffle(Container& container, PRNG&& prng)
@@ -50,8 +50,8 @@ namespace shogun
 		 *
 		 * @param first an iterator to the first element in the range
 		 * @param last an iterator to the last element in the range
-		 * @dist random number distribution
-		 * @prng pseudo number generator object
+		 * @param dist random number distribution
+		 * @param prng pseudo number generator object
 		 */
 		template <typename Iterator, typename Distribution, typename PRNG>
 		static inline void fill_array(
@@ -65,8 +65,8 @@ namespace shogun
 		 * distribution
 		 *
 		 * @param container the container to be filled
-		 * @dist random number distribution
-		 * @prng pseudo number generator object
+		 * @param dist random number distribution
+		 * @param prng pseudo number generator object
 		 */
 		template <typename Container, typename Distribution, typename PRNG>
 		static inline void
@@ -104,6 +104,25 @@ namespace shogun
 		fill_array(Container& container, T min, T max, PRNG&& prng)
 		{
 			fill_array(container.begin(), container.end(), min, max, prng);
+		}
+
+		/** Returns a vector of randomly generated numbers using the 
+		 * the provided pseudo random number generator.
+		 * @param prng pseudo number generator object
+		 * @param num_elements number of elements to generate
+		 */
+		template <typename PRNG, typename T>
+		std::vector<typename std::remove_reference_t<PRNG>::result_type> 
+		generate_array(PRNG&& prng, const T& num_elements) 
+		{
+			std::vector<typename std::remove_reference_t<PRNG>::result_type> result;
+			result.reserve(num_elements);
+			std::generate_n(std::back_inserter(result), num_elements, 
+				[prng = std::forward<PRNG>(prng)]() mutable { 
+					return prng(); 
+				});
+
+			return result;
 		}
 	} // namespace random
 } // namespace shogun
