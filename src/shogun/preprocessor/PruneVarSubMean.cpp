@@ -133,7 +133,6 @@ SGVector<float64_t> PruneVarSubMean::apply_to_feature_vector(SGVector<float64_t>
 
 void PruneVarSubMean::init()
 {
-	m_fitted = false;
 	m_divide_by_std = false;
 	m_num_idx = 0;
 	m_idx = SGVector<int32_t>();
