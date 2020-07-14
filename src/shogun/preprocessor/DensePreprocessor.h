@@ -62,7 +62,7 @@ template <class ST> class DensePreprocessor : public Preprocessor
 		/// return a type of preprocessor
 		EPreprocessorType get_type() const override;
 
-		void fit(std::shared_ptr<shogun::Features>) override;
+		void fit(std::shared_ptr<Features>) override;
 
 	protected:
 		/** Apply preprocessor on matrix. Subclasses should try to apply in
