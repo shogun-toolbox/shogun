@@ -130,8 +130,6 @@ class PCA : public DensePreprocessor<float64_t>
 		/** destructor */
 		~PCA() override;
 
-		void fit(std::shared_ptr<Features> features) override;
-
 		/** apply preprocessor to feature vector
 		 * @param vector feature vector
 		 * @return processed feature vector
@@ -190,6 +188,8 @@ class PCA : public DensePreprocessor<float64_t>
 		void init();
 
 		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t>) override;
+
+		void fit_impl(const SGMatrix<float64_t>& feature_matrix) override;
 
 	protected:
 

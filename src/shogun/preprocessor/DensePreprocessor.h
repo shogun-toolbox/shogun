@@ -62,6 +62,8 @@ template <class ST> class DensePreprocessor : public Preprocessor
 		/// return a type of preprocessor
 		EPreprocessorType get_type() const override;
 
+		void fit(std::shared_ptr<Features>) override;
+
 	protected:
 		/** Apply preprocessor on matrix. Subclasses should try to apply in
 		 * place to avoid copying.
@@ -76,6 +78,10 @@ template <class ST> class DensePreprocessor : public Preprocessor
 		 * @return the matrix after applying the preprocessor
 		 */
 		virtual SGMatrix<ST> inverse_apply_to_matrix(SGMatrix<ST> matrix);
+
+		virtual void fit_impl(const SGMatrix<ST>& feature_matrix)
+		{
+		}
 };
 
 }

@@ -35,8 +35,6 @@ class PruneVarSubMean : public DensePreprocessor<float64_t>
 		/** destructor */
 		~PruneVarSubMean() override;
 
-		/// Fit preprocessor into features
-		void fit(std::shared_ptr<Features> features) override;
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix
@@ -50,6 +48,8 @@ class PruneVarSubMean : public DensePreprocessor<float64_t>
 
 	protected:
 		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
+
+		void fit_impl(const SGMatrix<float64_t>& feature_matrix) override;
 
 	private:
 		void init();

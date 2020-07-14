@@ -33,14 +33,6 @@ namespace shogun
 		~RescaleFeatures() override;
 
 		/**
-		 * Fit preprocessor into features
-		 *
-		 * @param features the features to derive the min and max values
-		 * from.
-		 */
-		void fit(std::shared_ptr<Features> features) override;
-
-		/**
 		 * Apply preproc on a single feature vector
 		 */
 		SGVector<float64_t>
@@ -63,6 +55,8 @@ namespace shogun
 
 	protected:
 		SGMatrix<float64_t> apply_to_matrix(SGMatrix<float64_t> matrix) override;
+
+		void fit_impl(const SGMatrix<float64_t>& feature_matrix) override;
 
 		/** min */
 		SGVector<float64_t> m_min;

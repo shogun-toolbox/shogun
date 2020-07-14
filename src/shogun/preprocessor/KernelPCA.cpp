@@ -35,7 +35,6 @@ KernelPCA::KernelPCA(std::shared_ptr<Kernel> k) : Preprocessor()
 
 void KernelPCA::init()
 {
-	m_fitted = false;
 	m_init_features = NULL;
 	m_transformation_matrix = SGMatrix<float64_t>();
 	m_bias_vector = SGVector<float64_t>();
@@ -107,7 +106,7 @@ void KernelPCA::fit(std::shared_ptr<Features> features)
 	m_bias_vector = SGVector<float64_t>(m_target_dim);
 	linalg::matrix_prod(m_transformation_matrix, bias_tmp, m_bias_vector, true);
 
-	m_fitted = true;
+	m_fitted.store(true);
 	io::info("Done");
 }
 
