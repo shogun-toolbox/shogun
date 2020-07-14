@@ -128,7 +128,7 @@ void DensePreprocessor<ST>::fit(std::shared_ptr<Features> f)
 	auto feature_matrix = dense_features->get_feature_matrix();
 	fit_impl(feature_matrix);
 	
-	m_fitted = true;
+	m_fitted.store(true);
 }
 
 template <class ST>
