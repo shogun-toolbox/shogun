@@ -119,7 +119,7 @@ DensePreprocessor<ST>::inverse_transform(std::shared_ptr<Features> features, boo
 template <class ST>
 void DensePreprocessor<ST>::fit(std::shared_ptr<Features> f)
 {
-	require(f, "Features are not provided");
+	require(f, "No features provided");
 
 	auto dense_features = f->as<DenseFeatures<ST>>();
 	auto num_features = dense_features->get_num_features();
