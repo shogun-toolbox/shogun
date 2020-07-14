@@ -277,11 +277,6 @@ protected:
 	 * parameters */
 	float64_t m_sigma;
 
-#ifndef SWIG
-public:
-	static constexpr std::string_view kSigma = "sigma";
-#endif
-
 };
 }
 #endif
