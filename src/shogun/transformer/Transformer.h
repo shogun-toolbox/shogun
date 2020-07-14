@@ -12,6 +12,7 @@
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/common.h>
 
+
 namespace shogun
 {
 
@@ -106,7 +107,7 @@ namespace shogun
 		 */
 		void assert_fitted() const;
 
-		bool m_fitted;
+		std::atomic<bool> m_fitted{false};
 	};
 }
 #endif /* TRANSFORMER_H_ */

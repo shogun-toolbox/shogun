@@ -773,7 +773,16 @@ protected:
 			Any::register_visitor<T, ParameterPutInterface<ReturnType>>(
 				[](T* value, auto* visitor)
 				{
-					*value = visitor->m_value;	
+					*value = visitor->m_value;
+				}
+			);
+		}
+		else if constexpr (traits::is_atomic_v<T>)
+		{
+			Any::register_visitor<T, ParameterPutInterface<traits::atomic_type_t<T>>>(
+				[](T* value, auto* visitor)
+				{
+					value->store(visitor->m_value);
 				}
 			);
 		}
@@ -815,6 +824,15 @@ protected:
 					}
 					else
 						visitor->m_value = std::get<ReturnType>(*value);
+				}
+			);
+		}
+		else if constexpr (traits::is_atomic_v<T>)
+		{
+			Any::register_visitor<T, ParameterGetterInterface<traits::atomic_type_t<T>, T>>(
+				[](T* value, auto* visitor)
+				{
+					visitor->m_value = value->load();	
 				}
 			);
 		}

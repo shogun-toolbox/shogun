@@ -201,6 +201,14 @@ namespace shogun
 		virtual void exit_map(size_t* size) = 0;
 
 		template <typename T>
+		void on(std::atomic<T>* val)
+		{
+			T tmp = val->load();
+			on(std::addressof(tmp));
+			val->store(tmp);
+		}
+
+		template <typename T>
 		void on_matrix_row(index_t* rows, index_t* cols, SGMatrix<T>* _v)
 		{
 			enter_matrix_row(rows, cols);
@@ -587,6 +595,8 @@ namespace shogun
 			{
 				return T(value);
 			}
+			else if constexpr (traits::is_atomic_v<T>)
+				return T(value.load());
 			else
 			{
 				// we assert something that is false to see the type T
@@ -611,6 +621,10 @@ namespace shogun
 				    std::inserter(cloned, cloned.end()),
 				    [](auto o) { return clone_value(o); });
 				mutable_value_of<decltype(cloned)>(storage) = cloned;
+			}
+			else if constexpr (traits::is_atomic_v<T>)
+			{
+				mutable_value_of<T>(storage).store(value.load());
 			}
 			else
 			{
@@ -894,7 +908,10 @@ namespace shogun
 		 */
 		void set(void** storage, const void* v) const override
 		{
-			*(storage) = new T(value_of(typed_pointer<T>(v)));
+			if constexpr(traits::is_atomic_v<T>)
+				*(storage) = new T(typed_pointer<T>(v)->load());
+			else
+				*(storage) = new T(value_of(typed_pointer<T>(v)));
 		}
 
 		bool should_inherit_storage() const override
@@ -965,7 +982,10 @@ namespace shogun
 		 */
 		void set(void** storage, const void* v) const override
 		{
-			mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
+			if constexpr(traits::is_atomic_v<T>)
+				mutable_value_of<T>(storage).store(typed_pointer<T>(v)->load());
+			else
+				mutable_value_of<T>(storage) = value_of(typed_pointer<T>(v));
 		}
 
 		bool should_inherit_storage() const override
@@ -1243,7 +1263,7 @@ namespace shogun
 		}
 
 		template <class From, class To>
-		static void register_caster(std::function<To(From)> caster);
+		static void register_caster(std::function<To(const From&)> caster);
 
 		template <class Type, class State>
 		static void register_visitor(std::function<void(Type*, State*)> visitor);
@@ -1274,7 +1294,7 @@ namespace shogun
 	bool operator!=(const Any& lhs, const Any& rhs);
 
 	template <class From, class To>
-	void Any::register_caster(std::function<To(From)> caster)
+	void Any::register_caster(std::function<To(const From&)> caster)
 	{
 		const auto key = std::make_pair(
 		    std::type_index{typeid(From)}, std::type_index{typeid(To)});
@@ -1316,10 +1336,10 @@ namespace shogun
 		if constexpr (std::is_base_of_v<SGObject, Derived>)
 		{
 			Any::register_caster<T, SGObject*>(
-			    [](T value) { return dynamic_cast<SGObject*>(value); });
+			    [](const T& value) { return dynamic_cast<SGObject*>(value); });
 			if constexpr (!std::is_same_v<std::nullptr_t, base_type<Derived>>
 					&& !std::is_same_v<Derived, base_type<Derived>>)
-				Any::register_caster<T, base_type<Derived>*>([](T value) {
+				Any::register_caster<T, base_type<Derived>*>([](const T& value) {
 					return dynamic_cast<base_type<Derived>*>(value);
 				});
 		}
@@ -1329,10 +1349,10 @@ namespace shogun
 			if constexpr (std::is_base_of_v<SGObject, SharedType>)
 			{
 				Any::register_caster<T, std::shared_ptr<SGObject>>(
-						[](T value) { return std::dynamic_pointer_cast<SGObject>(value); });
+						[](const T& value) { return std::dynamic_pointer_cast<SGObject>(value); });
 				if constexpr (!std::is_same_v<std::nullptr_t, base_type<SharedType>>
 						&& !std::is_same_v<SharedType, base_type<SharedType>>)
-					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](T value) {
+					Any::register_caster<T, std::shared_ptr<base_type<SharedType>>>([](const T& value) {
 						return std::dynamic_pointer_cast<base_type<SharedType>>(value);
 					});
 			}
@@ -1340,23 +1360,23 @@ namespace shogun
 		if constexpr (std::is_arithmetic_v<T>)
 		{
 			Any::register_caster<T, float32_t>(
-			    [](T value) { return utils::safe_convert<float32_t>(value); });
+			    [](const T& value) { return utils::safe_convert<float32_t>(value); });
 			Any::register_caster<T, float64_t>(
-			    [](T value) { return utils::safe_convert<float64_t>(value); });
+			    [](const T& value) { return utils::safe_convert<float64_t>(value); });
 			Any::register_caster<T, int32_t>(
-			    [](T value) { return utils::safe_convert<int32_t>(value); });
+			    [](const T& value) { return utils::safe_convert<int32_t>(value); });
 			Any::register_caster<T, int64_t>(
-			    [](T value) { return utils::safe_convert<int64_t>(value); });
+			    [](const T& value) { return utils::safe_convert<int64_t>(value); });
 		}
 		if constexpr (traits::has_std_to_string<T>::value)
 		{
 			Any::register_caster<T, std::string>(
-			    [](T value) { return std::to_string(value); });
+			    [](const T& value) { return std::to_string(value); });
 		}
 		if constexpr (traits::has_to_string<T>::value)
 		{
 			Any::register_caster<T, std::string>(
-			    [](T value) { return value.to_string(); });
+			    [](const T& value) { return value.to_string(); });
 		}
 	}
 
