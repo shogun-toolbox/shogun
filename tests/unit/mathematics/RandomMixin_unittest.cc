@@ -105,14 +105,14 @@ TEST(RandomMixin, reproducibility_test)
 {
 	auto mock_random = std::make_unique<MockRandom>();
 	mock_random->put(random::kSeed, 123);
-	EXPECT_EQ(123, mock_random->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, mock_random->get<int64_t>(random::kSeed));
 
 	std::array<decltype(mock_random->sample()), 100> values1;
 	for(auto& val : values1)
 		val = mock_random->sample();
 
 	mock_random->put(random::kSeed, 345);
-	EXPECT_EQ(345, mock_random->get<int32_t>(random::kSeed));
+	EXPECT_EQ(345, mock_random->get<int64_t>(random::kSeed));
 
 	std::array<decltype(mock_random->sample()), 100> values2;
 	for(auto& val : values2)
@@ -132,9 +132,9 @@ TEST(RandomMixin, one_level_nesting_test)
 	auto obj = std::make_unique<OneLevelNested>();
 	obj->put(random::kSeed, 123);
 	
-	EXPECT_EQ(123, obj->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj3->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj3->get<int64_t>(random::kSeed));
 	
 	auto random_value = obj->sample();
 	EXPECT_EQ(random_value, obj->obj1->sample());
@@ -146,14 +146,14 @@ TEST(RandomMixin, two_level_nesting_test)
 	auto obj = std::make_unique<TwoLevelNested>();
 	obj->put(random::kSeed, 123);
 
-	EXPECT_EQ(123, obj->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj3->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj3->get<int64_t>(random::kSeed));
 
-	EXPECT_EQ(123, obj->obj1->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj1->obj1->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj1->obj3->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->obj1->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj1->obj3->get<int64_t>(random::kSeed));
 	
-	EXPECT_EQ(123, obj->obj2->obj1->get<int32_t>(random::kSeed));
-	EXPECT_EQ(123, obj->obj2->obj3->get<int32_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj2->obj1->get<int64_t>(random::kSeed));
+	EXPECT_EQ(123, obj->obj2->obj3->get<int64_t>(random::kSeed));
 }

@@ -796,6 +796,18 @@ protected:
 			);	
 		}
 
+		if constexpr (std::is_arithmetic_v<T> && !std::is_same_v<T, bool>)
+		{
+			Any::register_visitor<int32_t, ParameterPutInterface<T>>(
+			    [](int32_t* value, auto* visitor) { 
+					*value = utils::safe_convert<int32_t>(visitor->m_value); 
+				});
+			Any::register_visitor<int64_t, ParameterPutInterface<T>>(
+			    [](int64_t* value, auto* visitor) { 
+					*value = utils::safe_convert<int64_t>(visitor->m_value); 
+				});
+		}
+
 		if constexpr (traits::is_functional<T>::value)
 		{
 			if constexpr (!traits::returns_void<T>::value)
@@ -844,6 +856,13 @@ protected:
 					visitor->m_value = *value;	
 				}
 			);
+			if constexpr(std::is_arithmetic_v<T> && !std::is_same_v<T, bool>) 
+			{
+				Any::register_visitor<T, ParameterGetterInterface<int32_t, int32_t>>(
+					[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<int32_t>(*value);});
+				Any::register_visitor<T, ParameterGetterInterface<int64_t, int64_t>>(
+					[](T* value, auto* visitor) {visitor->m_value = utils::safe_convert<int64_t>(*value);});
+			}
 		}
 	}
 	/** Registers a class parameter which is identified by a tag.
