@@ -104,6 +104,14 @@ namespace shogun
 
 		/** Criterion for evaluation */
 		std::shared_ptr<Evaluation> m_evaluation_criterion;
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kMachine = "machine";
+		static constexpr std::string_view kFeatures = "features";
+		static constexpr std::string_view kLabels = "labels";
+		static constexpr std::string_view kSplittingStrategy = "splitting_strategy";
+		static constexpr std::string_view kEvaluationCriterion = "evaluation_criterion";
+	#endif
 	};
 
 } /* namespace shogun */

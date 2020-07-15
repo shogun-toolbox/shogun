@@ -276,6 +276,7 @@ protected:
 	/** Standard deviation of the gaussian used to initialize the
 	 * parameters */
 	float64_t m_sigma;
+
 };
 }
 #endif

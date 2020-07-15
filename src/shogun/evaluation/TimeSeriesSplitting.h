@@ -90,6 +90,11 @@ namespace shogun
 
 	private:
 		void init();
+
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kMinSubsetSize = "min_subset_size";
+	#endif
 	};
 }
 

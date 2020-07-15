@@ -28,19 +28,19 @@ void SigmoidCalibration::init()
 	m_epsilon = 1E-5;
 
 	SG_ADD(
-	    &m_sigmoid_as, "m_sigmoid_as",
+	    &m_sigmoid_as, kSigmoidAs,
 	    "Vector of paramter A of sigmoid for each class.");
 	SG_ADD(
-	    &m_sigmoid_bs, "m_sigmoid_bs",
+	    &m_sigmoid_bs, kSigmoidBs,
 	    "Vector of paramter B of sigmoid for each class.");
 	SG_ADD(
-	    &m_maxiter, "m_maxiter", "Maximum number of iteration for search.");
+	    &m_maxiter, kMaxiter, "Maximum number of iteration for search.");
 	SG_ADD(
-	    &m_minstep, "m_minstep", "Minimum step taken in line search.");
+	    &m_minstep, kMinstep, "Minimum step taken in line search.");
 	SG_ADD(
-	    &m_sigma, "m_sigma",
+	    &m_sigma, kSigma,
 	    "Positive parameter to ensure positive semi-definite Hessian.");
-	SG_ADD(&m_epsilon, "m_epsilon", "Stopping criteria.");
+	SG_ADD(&m_epsilon, kEpsilon, "Stopping criteria.");
 }
 
 void SigmoidCalibration::set_maxiter(index_t maxiter)

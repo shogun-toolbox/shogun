@@ -53,7 +53,7 @@ TimeSeriesSplitting::TimeSeriesSplitting(std::shared_ptr<Labels> labels, index_t
 void TimeSeriesSplitting::init()
 {
 	m_min_subset_size = 1;
-	SG_ADD(&m_min_subset_size, "min_subset_size",
+	SG_ADD(&m_min_subset_size, kMinSubsetSize,
 			"The minimum subset size for test set");
 }
 

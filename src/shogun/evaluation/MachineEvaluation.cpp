@@ -61,12 +61,12 @@ void MachineEvaluation::init()
 	m_cancel_computation = false;
 	m_pause_computation_flag = false;
 
-	SG_ADD(&m_machine, "machine", "Used learning machine");
-	SG_ADD(&m_features, "features", "Used features");
-	SG_ADD(&m_labels, "labels", "Used labels");
-	SG_ADD(&m_splitting_strategy, "splitting_strategy",
+	SG_ADD(&m_machine, kMachine, "Used learning machine");
+	SG_ADD(&m_features, kFeatures, "Used features");
+	SG_ADD(&m_labels, kLabels, "Used labels");
+	SG_ADD(&m_splitting_strategy, kSplittingStrategy,
 			"Used splitting strategy");
-	SG_ADD(&m_evaluation_criterion, "evaluation_criterion",
+	SG_ADD(&m_evaluation_criterion, kEvaluationCriterion,
 			"Used evaluation criterion");
 }
 
