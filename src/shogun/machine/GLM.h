@@ -117,6 +117,17 @@ public:
 
 	friend class GLM;
 
+	GLMCostFunction()
+	{
+
+	}
+
+	GLMCostFunction(const std::shared_ptr<GLM>&obj)
+	{
+		if(m_obj != obj)
+			m_obj=obj;
+	}
+
 	void set_target(const std::shared_ptr<GLM>&obj)
 	{
 		if(m_obj != obj)
@@ -142,40 +153,57 @@ public:
 
 	virtual SGVector<float64_t> get_gradient()
 	{
-		auto X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
-		auto y = m_obj->m_labels->get_values();
-		SGVector<float64_t> w_old(m_obj->m_w);
+		// std::cout<<"Entered get_gradient().\n";
+		auto X = m_obj->get_features()->get_computed_dot_feature_matrix();
+		auto y = regression_labels(m_obj->get_labels())->get_labels();
 
 		auto n_samples = y.vlen;
 	
 		auto z = compute_z(X, m_obj->m_w, m_obj->bias);
+		// z.display_vector("Z");
 		auto mu = non_linearity(z);
+		// mu.display_vector("mu");
 		auto grad_mu = gradient_non_linearity(z);
+		// grad_mu.display_vector("grad mu");
 
 		SGVector<float64_t> grad_w(m_obj->m_w.vlen);
 		SGVector<float64_t> a;
 		switch (m_obj->distribution)
 		{
 		case POISSON:
+			{
 			a = linalg::element_prod(y, grad_mu);
 			for(int i = 0; i<y.vlen; i++)
 				a[i] /= mu[i];
-			linalg::transpose_matrix(linalg::add(linalg::matrix_prod(SGMatrix(grad_mu), X, true, false), (linalg::matrix_prod(SGMatrix(a), X, true, false)), 1.0, -1.0));
+			// std::cout<<"Checkpoint 1\n";
+			auto prod1 = linalg::matrix_prod(SGMatrix(grad_mu), X, true, true);
+			// std::cout<<"Checkpoint 2\n";
+			auto prod2 = linalg::matrix_prod(SGMatrix(a), X, true, true);
+			// std::cout<<"Checkpoint 3\n";
+			grad_w = linalg::transpose_matrix(linalg::add(prod1, prod2, 1.0, -1.0));
+			
 			break;
-	
+			}
 		default:
 			error("Distribution type {} not implemented.", m_obj->distribution);
 			break;
 		}
 
-		grad_w = linalg::scale(grad_w, 1.0/n_samples);	
+		grad_w = linalg::scale(grad_w, 1.0/n_samples);
+		grad_w.display_vector("grad_beta");
+		if(m_obj->m_compute_bias)
+			grad_w = linalg::add(grad_w, m_obj->m_w, 1.0, m_obj->m_lambda * (1 - m_obj->m_alpha));
+		else
+			grad_w = linalg::add(grad_w, m_obj->m_w, 1.0, m_obj->m_lambda * (1 - m_obj->m_alpha));
+
 		return grad_w;
 	}
 
 	virtual float64_t get_gradient_bias()
 	{
+		// std::cout<<"Entered get_gradient_bias().\n";
 		auto X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
-		auto y = m_obj->m_labels->get_values();
+		auto y = regression_labels(m_obj->get_labels())->get_labels();
 
 		auto n_samples = y.vlen;
 		auto z = compute_z(X, m_obj->m_w, m_obj->bias);
@@ -208,17 +236,20 @@ private:
 
 	virtual const SGVector<float64_t> compute_z(const SGMatrix<float64_t> X, const SGVector<float64_t> w, const float64_t bias)
 	{
-		return linalg::matrix_prod(X, w, false);
+		auto prod = linalg::matrix_prod(X, w, true);
+		linalg::add_scalar(prod, bias);
+		return prod;
 	}
 
 	virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z)
 	{
+		// std::cout<<"Entered non_linearity().\n";
 		SGVector<float64_t> result;
 		float64_t l_bias = 0;
 		switch (m_obj->distribution)
 		{
 		case POISSON:
-			result = SGVector<float64_t>(z);
+			result = SGVector<float64_t>(z.vlen);
 
 			if(m_obj->m_compute_bias)
 				l_bias = (1 - m_obj->m_eta) * std::exp(m_obj->m_eta);
@@ -241,11 +272,12 @@ private:
 
 	virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z)
 	{
+		// std::cout<<"Entered gradient_non_linearity().\n";
 		SGVector<float64_t> result;
 		switch (m_obj->distribution)
 		{
 		case POISSON:
-			result = SGVector<float64_t>(z);
+			result = SGVector<float64_t>(z.vlen);
 			for (int i = 0; i < z.vlen; i++)
 			{
 				if(z[i]>m_obj->m_eta)
@@ -259,6 +291,7 @@ private:
 			error("Distribution type {} not implemented.", m_obj->distribution);
 			break;
 		}
+		// std::cout<<"Exiting gradient_non_linearity().\n";
 		return result;
 	}
 
