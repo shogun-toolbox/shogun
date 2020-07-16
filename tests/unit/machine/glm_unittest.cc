@@ -51,46 +51,31 @@ TEST(GLM, GLM_basic_test)
 	SGMatrix<float64_t> Xtrain(3,5);
 	SGVector<float64_t> ytrain(5);
 	generate_train_data(Xtrain, ytrain);
-	Xtrain.display_matrix("Xtrain");
-	ytrain.display_vector("ytrain");
 
 	SGMatrix<float64_t> Xtest(3,5);
 	SGVector<float64_t> ytest(5);
 	generate_test_data(Xtest, ytest);
-	Xtest.display_matrix("Xtest");
-	ytest.display_vector("ytrain");
 
 	auto features_train = std::make_shared<DenseFeatures<float64_t> >(Xtrain);
 	auto labels_train = std::make_shared<RegressionLabels>(ytrain);
 
 	auto features_test = std::make_shared<DenseFeatures<float64_t> >(Xtest);
 
-	std::cout<<"Making GLM instance.\n";
 	auto glm=std::make_shared<GLM>(POISSON, 0.5, 0.1, 2e-1, 1000, 1e-6, 2.0);
 
 	glm->set_bias(0.44101309);
 	glm->set_w(SGVector<float64_t>({0.1000393, 0.2446845, 0.5602233}));
 
-	std::cout<<"bais:\t"<<glm->get_bias()<<'\n';
-	glm->get_w().display_vector("Weights");
-
-	std::cout<<"Setting labels.\n";
-	std::cout<<"Size of labels is: "<<labels_train->get_labels().vlen<<'\n';
 	glm->set_labels(labels_train);
 
-	std::cout<<"Training GLM.\n";
 	glm->train(features_train);
 
-	std::cout<<"bais:\t"<<glm->get_bias();
-	glm->get_w().display_vector("Weights");
-
-	std::cout<<"Applying GLM.\n";
 	auto labels_predict = glm->apply_regression(features_test);
 
 	SGVector<float64_t> labels_pyglmnet({5.47606254, 5.62436215, 5.50835709, 5.75757967, 6.01670904});
 
 	float64_t epsilon=0.000001;
-	std::cout<<"Comparing results.";
+
 	for ( index_t i = 0; i < labels_predict->get_num_labels(); ++i )
 		EXPECT_NEAR(labels_predict->get_label(i), labels_pyglmnet[i], epsilon);
 }

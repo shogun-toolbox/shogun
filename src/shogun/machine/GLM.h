@@ -153,18 +153,14 @@ public:
 
 	virtual SGVector<float64_t> get_gradient()
 	{
-		// std::cout<<"Entered get_gradient().\n";
 		auto X = m_obj->get_features()->get_computed_dot_feature_matrix();
 		auto y = regression_labels(m_obj->get_labels())->get_labels();
 
 		auto n_samples = y.vlen;
 	
 		auto z = compute_z(X, m_obj->m_w, m_obj->bias);
-		// z.display_vector("Z");
 		auto mu = non_linearity(z);
-		// mu.display_vector("mu");
 		auto grad_mu = gradient_non_linearity(z);
-		// grad_mu.display_vector("grad mu");
 
 		SGVector<float64_t> grad_w(m_obj->m_w.vlen);
 		SGVector<float64_t> a;
@@ -175,11 +171,10 @@ public:
 			a = linalg::element_prod(y, grad_mu);
 			for(int i = 0; i<y.vlen; i++)
 				a[i] /= mu[i];
-			// std::cout<<"Checkpoint 1\n";
+
 			auto prod1 = linalg::matrix_prod(SGMatrix(grad_mu), X, true, true);
-			// std::cout<<"Checkpoint 2\n";
 			auto prod2 = linalg::matrix_prod(SGMatrix(a), X, true, true);
-			// std::cout<<"Checkpoint 3\n";
+
 			grad_w = linalg::transpose_matrix(linalg::add(prod1, prod2, 1.0, -1.0));
 			
 			break;
@@ -190,7 +185,7 @@ public:
 		}
 
 		grad_w = linalg::scale(grad_w, 1.0/n_samples);
-		grad_w.display_vector("grad_beta");
+
 		if(m_obj->m_compute_bias)
 			grad_w = linalg::add(grad_w, m_obj->m_w, 1.0, m_obj->m_lambda * (1 - m_obj->m_alpha));
 		else
@@ -201,7 +196,6 @@ public:
 
 	virtual float64_t get_gradient_bias()
 	{
-		// std::cout<<"Entered get_gradient_bias().\n";
 		auto X = m_obj->LinearMachine::features->get_computed_dot_feature_matrix();
 		auto y = regression_labels(m_obj->get_labels())->get_labels();
 
@@ -243,7 +237,6 @@ private:
 
 	virtual const SGVector<float64_t> non_linearity(const SGVector<float64_t> z)
 	{
-		// std::cout<<"Entered non_linearity().\n";
 		SGVector<float64_t> result;
 		float64_t l_bias = 0;
 		switch (m_obj->distribution)
@@ -272,7 +265,6 @@ private:
 
 	virtual const SGVector<float64_t> gradient_non_linearity(const SGVector<float64_t> z)
 	{
-		// std::cout<<"Entered gradient_non_linearity().\n";
 		SGVector<float64_t> result;
 		switch (m_obj->distribution)
 		{
@@ -291,7 +283,7 @@ private:
 			error("Distribution type {} not implemented.", m_obj->distribution);
 			break;
 		}
-		// std::cout<<"Exiting gradient_non_linearity().\n";
+
 		return result;
 	}
 
