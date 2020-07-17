@@ -1,0 +1,27 @@
+File f_feats_train = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/label_train_multiclass.dat")
+
+#![create_features]
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+#![create_features]
+
+#![choose_distance]
+int k = 3
+LMNN lmnn(features_train, labels_train, k)
+lmnn.train()
+Distance lmnn_distance = lmnn.get_distance()
+#![choose_distance]
+
+#![create_instance]
+Machine knn = create_machine("KNN", k=k,distance=lmnn_distance,labels=labels_train)
+#![create_instance]
+
+#![train_and_apply]
+knn.train()
+MulticlassLabels labels_predict = knn.apply(features_test)
+RealVector output = labels_predict.get_real_vector("labels")
+#![train_and_apply]
+
