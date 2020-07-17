@@ -21,7 +21,7 @@ Machine knn = create_machine("KNN", k=k,distance=lmnn_distance,labels=labels_tra
 
 #![train_and_apply]
 knn.train()
-MulticlassLabels labels_predict = knn.apply(features_test)
+Labels labels_predict = knn.apply(features_test)
 RealVector output = labels_predict.get_real_vector("labels")
 #![train_and_apply]
 
