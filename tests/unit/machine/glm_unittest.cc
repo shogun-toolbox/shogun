@@ -74,8 +74,32 @@ TEST(GLM, GLM_basic_test)
 
 	SGVector<float64_t> labels_pyglmnet({5.47606254, 5.62436215, 5.50835709, 5.75757967, 6.01670904});
 
-	float64_t epsilon=0.000001;
+	float64_t epsilon=1e-7;
 
 	for ( index_t i = 0; i < labels_predict->get_num_labels(); ++i )
 		EXPECT_NEAR(labels_predict->get_label(i), labels_pyglmnet[i], epsilon);
+}
+
+TEST(GLMCostFunction, GLM_gradient_test)
+{
+	SGMatrix<float64_t> Xtrain(3,5);
+	SGVector<float64_t> ytrain(5);
+	generate_train_data(Xtrain, ytrain);
+
+	auto glm_cost = std::make_shared<GLMCostFunction>();
+
+	float64_t bias = -0.347144;
+	SGVector<float64_t> w = SGVector<float64_t>({0.295102, 0.423805, -0.125878});
+
+	SGVector<float64_t> grad_w = glm_cost->get_gradient(Xtrain, ytrain, w, bias, 0.1, 0.5, true, 2.0, POISSON);
+	float64_t grad_bias = glm_cost->get_gradient_bias(Xtrain, ytrain, w, bias, true, 2.0, POISSON);
+
+	SGVector<float64_t> pyglmnet_grad_w = SGVector<float64_t>({-2.62183289, 1.87007061, -4.26700914});
+	float64_t pyglmnet_grad_bias = -6.31650804;
+	float64_t epsilon=1e-7;
+
+	for ( auto i : range(grad_w.vlen) )
+		EXPECT_NEAR(grad_w[i], pyglmnet_grad_w[i], epsilon);
+
+	EXPECT_NEAR(grad_bias, pyglmnet_grad_bias, epsilon);
 }
