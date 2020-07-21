@@ -42,9 +42,12 @@ GLM::GLM()
 	SG_ADD(
 	    &m_tolerance, "tolerance", "convergence threshold or stopping criteria",
 	    ParameterProperties::HYPER);
+	SG_ADD(
+	    &m_learning_rate, "learning_rate", "learning rate for gradient descent",
+	    ParameterProperties::HYPER);
 
 	m_gradient_updater = std::make_shared<GradientDescendUpdater>();
-	m_learning_rate = std::make_shared<ConstLearningRate>();
+	// m_learning_rate = std::make_shared<ConstLearningRate>();
 	m_penalty = std::make_shared<ElasticNetPenalty>();
 	m_cost_function = std::make_shared<GLMCostFunction>();
 }
@@ -58,11 +61,12 @@ GLM::GLM(
 	distribution = distr;
 	m_alpha = alpha;
 	m_lambda = lambda;
+	m_learning_rate = learning_rate;
 	m_max_iterations = max_iterations;
 	m_tolerance = tolerance;
 	m_eta = eta;
 
-	m_learning_rate->set_const_learning_rate(learning_rate);
+	// m_learning_rate->set_const_learning_rate(learning_rate);
 
 	m_penalty->set_l1_ratio(m_alpha);
 }
@@ -121,8 +125,8 @@ void GLM::init_model(const std::shared_ptr<Features> data)
 
 void GLM::iteration()
 {
-	auto learning_rate =
-	    m_learning_rate->get_learning_rate(m_current_iteration);
+	// auto learning_rate =
+	    // m_learning_rate->get_learning_rate(m_current_iteration);
 	SGVector<float64_t> w_old = m_w.clone();
 
 	auto X = get_features()->get_computed_dot_feature_matrix();
@@ -136,10 +140,10 @@ void GLM::iteration()
 
 	// Update
 	// m_gradient_updater->update_variable(m_w, gradient_w, learning_rate);
-	m_w = linalg::add(m_w, gradient_w, 1.0, -1 * learning_rate);
+	m_w = linalg::add(m_w, gradient_w, 1.0, -1 * m_learning_rate);
 
 	if (m_compute_bias)
-		bias -= learning_rate * gradient_bias;
+		bias -= m_learning_rate * gradient_bias;
 
 	// Apply proximal operator
 	// m_penalty->update_variable_for_proximity(m_w, m_lambda * m_alpha);

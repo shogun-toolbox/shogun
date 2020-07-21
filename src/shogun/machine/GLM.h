@@ -87,7 +87,12 @@ namespace shogun
 			}
 		}
 
-	protected:
+		virtual EProblemType get_machine_problem_type() const override
+		{
+			return PT_REGRESSION;
+		}
+
+		protected:
 		void init_model(const std::shared_ptr<Features> data);
 
 		void iteration() override;
@@ -112,11 +117,13 @@ namespace shogun
 		 */
 		float64_t m_tolerance = 1e-6;
 
+		float64_t m_learning_rate = 2e-1;
+
 		bool m_compute_bias = true;
 
 		std::shared_ptr<GradientDescendUpdater> m_gradient_updater;
 
-		std::shared_ptr<ConstLearningRate> m_learning_rate;
+		// std::shared_ptr<ConstLearningRate> m_learning_rate;
 
 		std::shared_ptr<ElasticNetPenalty> m_penalty;
 
