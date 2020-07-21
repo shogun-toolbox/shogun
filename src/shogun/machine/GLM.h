@@ -132,12 +132,6 @@ namespace shogun
 		{
 		}
 
-		virtual float64_t get_cost()
-		{
-			// TODO
-			return 0.0;
-		}
-
 		virtual SGVector<float64_t> get_gradient_weights(
 		    const SGMatrix<float64_t> X, const SGVector<float64_t> y,
 		    const SGVector<float64_t> w, const float64_t bias,
