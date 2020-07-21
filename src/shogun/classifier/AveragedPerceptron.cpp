@@ -40,7 +40,7 @@ void AveragedPerceptron::init()
 	    ParameterProperties::MODEL)
 }
 
-void AveragedPerceptron::init_model(const std::shared_ptr<Features>& data)
+void AveragedPerceptron::init_model(const std::shared_ptr<Features> data)
 {
 	ASSERT(m_labels)
 	if (data)

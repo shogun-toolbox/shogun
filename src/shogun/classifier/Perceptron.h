@@ -59,8 +59,8 @@ class Perceptron : public IterativeMachine<LinearMachine>
 		virtual const char* get_name() const { return "Perceptron"; }
 
 	protected:
-		virtual void init_model(const std::shared_ptr<Features>& data);
-		virtual void iteration();
+		void init_model(std::shared_ptr<Features> data) override;
+		void iteration() override;
 
 	protected:
 		/** learning rate */
