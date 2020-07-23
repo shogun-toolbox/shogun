@@ -39,8 +39,8 @@ class LinearMulticlassMachine : public MulticlassMachine
 		 * @param machine linear machine
 		 * @param labs labels
 		 */
-		LinearMulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Features> features, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs) :
-			MulticlassMachine(strategy, machine,labs)
+		LinearMulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Features> features, std::shared_ptr<Machine> machine ) :
+			MulticlassMachine(strategy, machine)
 		{
 			set_features(features->as<DotFeatures>());
 			SG_ADD(&m_features, "m_features", "Feature object.");
@@ -77,18 +77,18 @@ class LinearMulticlassMachine : public MulticlassMachine
 
 	protected:
 
-		bool train_machine(std::shared_ptr<Features> data) override
+		bool train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs) override
 		{
 			m_features = data->as<DotFeatures>();
 			require(m_multiclass_strategy, "Multiclass strategy not set");
-			int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
+			int32_t num_classes = labs->as<MulticlassLabels>()->get_num_classes();
    			m_multiclass_strategy->set_num_classes(num_classes);
 
 			m_machines.clear();
 			auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
 
 			m_multiclass_strategy->train_start(
-				multiclass_labels(m_labels), train_labels);
+				multiclass_labels(labs), train_labels);
 			while (m_multiclass_strategy->train_has_more())
 			{
 				SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();

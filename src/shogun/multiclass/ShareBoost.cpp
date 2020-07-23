@@ -24,7 +24,7 @@ ShareBoost::ShareBoost()
 }
 
 ShareBoost::ShareBoost(const std::shared_ptr<DenseFeatures<float64_t> >&features, const std::shared_ptr<MulticlassLabels >&labs, int32_t num_nonzero_feas)
-	:LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), features, NULL, labs), m_nonzero_feas(num_nonzero_feas)
+	:LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), features, NULL ), m_nonzero_feas(num_nonzero_feas)
 {
 	init_sb_params();
 }
@@ -40,7 +40,7 @@ SGVector<int32_t> ShareBoost::get_activeset()
 	return m_activeset;
 }
 
-bool ShareBoost::train_machine(std::shared_ptr<Features> data)
+bool ShareBoost::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	if (data)
 		set_features(data);
@@ -48,7 +48,7 @@ bool ShareBoost::train_machine(std::shared_ptr<Features> data)
 
 	if (m_features == NULL)
 		error("No features given for training");
-	if (m_labels == NULL)
+	if (labs == NULL)
 		error("No labels given for training");
 
 	init_strategy();
@@ -136,9 +136,9 @@ void ShareBoost::compute_pred(const float64_t *W)
 	compute_pred();
 }
 
-void ShareBoost::compute_rho()
+void ShareBoost::compute_rho( const std::shared_ptr<Labels>& labs)
 {
-	auto lab = multiclass_labels(m_labels);
+	auto lab = multiclass_labels(labs);
 
 	for (int32_t i=0; i < m_rho.num_rows; ++i)
 	{ // i loop classes
@@ -160,10 +160,10 @@ void ShareBoost::compute_rho()
 	}
 }
 
-int32_t ShareBoost::choose_feature()
+int32_t ShareBoost::choose_feature( const std::shared_ptr<Labels>& labs)
 {
 	SGVector<float64_t> l1norm(m_fea.num_rows);
-	auto lab = multiclass_labels(m_labels);
+	auto lab = multiclass_labels(labs);
 	for (int32_t j=0; j < m_fea.num_rows; ++j)
 	{
 		if (std::find(&m_activeset[0], &m_activeset[m_activeset.vlen], j) !=

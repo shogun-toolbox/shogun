@@ -24,7 +24,7 @@ MulticlassLibLinear::MulticlassLibLinear() :
 	init_defaults();
 }
 
-MulticlassLibLinear::MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs) :
+MulticlassLibLinear::MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features ) :
 	RandomMixin<LinearMulticlassMachine>(std::make_shared<MulticlassOneVsRestStrategy>(),std::move(features),nullptr,std::move(labs))
 {
 	register_parameters();
@@ -55,15 +55,15 @@ MulticlassLibLinear::~MulticlassLibLinear()
 	reset_train_state();
 }
 
-SGVector<int32_t> MulticlassLibLinear::get_support_vectors() const
+SGVector<int32_t> MulticlassLibLinear::get_support_vectors() , const std::shared_ptr<Labels>& labsconst
 {
 	if (!m_train_state)
 		error("Please enable save_train_state option and train machine.");
 
-	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS)
+	ASSERT(labs && labs->get_label_type() == LT_MULTICLASS)
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = multiclass_labels(m_labels)->get_num_classes();
+	int32_t num_classes = multiclass_labels(labs)->get_num_classes();
 
 	v_array<int32_t> nz_idxs;
 	nz_idxs.reserve(num_vectors);
@@ -89,18 +89,18 @@ SGMatrix<float64_t> MulticlassLibLinear::obtain_regularizer_matrix() const
 	return SGMatrix<float64_t>();
 }
 
-bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
+bool MulticlassLibLinear::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	if (data)
 		set_features(data->as<DotFeatures>());
 
 	ASSERT(m_features)
-	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
+	ASSERT(labs && labs->get_label_type()==LT_MULTICLASS)
 	ASSERT(m_multiclass_strategy)
 	init_strategy();
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = multiclass_labels(m_labels)->get_num_classes();
+	int32_t num_classes = multiclass_labels(labs)->get_num_classes();
 	int32_t bias_n = m_use_bias ? 1 : 0;
 
 	liblinear_problem mc_problem;
@@ -108,7 +108,7 @@ bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
 	mc_problem.n = m_features->get_dim_feature_space() + bias_n;
 	mc_problem.y = SG_MALLOC(float64_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
-		mc_problem.y[i] = multiclass_labels(m_labels)->get_int_label(i);
+		mc_problem.y[i] = multiclass_labels(labs)->get_int_label(i);
 
 	mc_problem.x = m_features;
 	mc_problem.use_bias = m_use_bias;

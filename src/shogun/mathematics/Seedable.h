@@ -35,7 +35,7 @@ namespace shogun
 	{
 	public:
 		template <typename... T>
-		Seedable(T... args) : Parent(args...)
+		Seedable(T... args) : Parent(...)
 		{
 			init();
 		}

@@ -19,14 +19,14 @@ MulticlassSVM::MulticlassSVM()
 }
 
 MulticlassSVM::MulticlassSVM(std::shared_ptr<MulticlassStrategy >strategy)
-	:KernelMulticlassMachine(std::move(strategy), NULL, std::make_shared<SVM>(0), NULL)
+	:KernelMulticlassMachine(std::move(strategy), NULL, std::make_shared<SVM>(0) )
 {
 	init();
 }
 
 MulticlassSVM::MulticlassSVM(
-	std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-	: KernelMulticlassMachine(std::move(strategy), k, std::make_shared<SVM>(C, k, lab), lab)
+	std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k )
+	: KernelMulticlassMachine(std::move(strategy), k, std::make_shared<SVM>(C, k, lab) )
 {
 	init();
 	m_C=C;

@@ -40,8 +40,8 @@ MulticlassOCAS::MulticlassOCAS() :
 	set_buf_size(5000);
 }
 
-MulticlassOCAS::MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& train_features, std::shared_ptr<Labels> train_labels) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), train_features->as<DotFeatures>(), NULL, std::move(train_labels)), m_C(C)
+MulticlassOCAS::MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& train_features ) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), train_features->as<DotFeatures>(), NULL ), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);
@@ -65,13 +65,13 @@ MulticlassOCAS::~MulticlassOCAS()
 {
 }
 
-bool MulticlassOCAS::train_machine(std::shared_ptr<Features> data)
+bool MulticlassOCAS::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	if (data)
 		set_features(data->as<DotFeatures>());
 
 	ASSERT(m_features)
-	ASSERT(m_labels)
+	ASSERT(labs)
 	ASSERT(m_multiclass_strategy)
 	init_strategy();
 
@@ -80,7 +80,7 @@ bool MulticlassOCAS::train_machine(std::shared_ptr<Features> data)
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
-	SGVector<float64_t> labels = multiclass_labels(m_labels)->get_labels();
+	SGVector<float64_t> labels = multiclass_labels(labs)->get_labels();
 	uint32_t nY = num_classes;
 	uint32_t nData = num_vectors;
 	float64_t TolRel = m_epsilon;

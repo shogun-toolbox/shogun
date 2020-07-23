@@ -36,7 +36,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 * @param machine machine
 		 * @param labels labels
 		 */
-		MulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels);
+		MulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Machine> machine );
 
 		/** destructor */
 		virtual ~MulticlassMachine();
@@ -155,13 +155,13 @@ class MulticlassMachine : public BaseMulticlassMachine
 
 	protected:
 		/** init strategy */
-		void init_strategy();
+		void init_strategy( const std::shared_ptr<Labels>& labs);
 
 		/** clear machines */
 		void clear_machines();
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		virtual bool train_machine(const std::shared_ptr<Features>&, const std::shared_ptr<Labels>& labs);
 
 		/** abstract init machine for training method */
 		virtual bool init_machine_for_train(std::shared_ptr<Features> data) = 0;

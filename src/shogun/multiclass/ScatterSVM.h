@@ -60,7 +60,7 @@ class ScatterSVM : public MulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		ScatterSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		ScatterSVM(float64_t C, std::shared_ptr<Kernel> k );
 
 		/** default destructor */
 		virtual ~ScatterSVM();
@@ -82,7 +82,7 @@ class ScatterSVM : public MulticlassSVM
 		 *
 		 * @return resulting labels
 		 */
-		virtual std::shared_ptr<Labels> classify_one_vs_rest();
+		virtual std::shared_ptr<Labels> classify_one_vs_rest( const std::shared_ptr<Labels>& labs);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "ScatterSVM"; }
@@ -96,15 +96,15 @@ class ScatterSVM : public MulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		virtual bool train_machine(const std::shared_ptr<Features>&, const std::shared_ptr<Labels>& labs);
 
 	private:
 		void compute_norm_wc();
-		virtual bool train_no_bias_libsvm();
+		virtual bool train_no_bias_libsvm( const std::shared_ptr<Labels>& labs);
 #ifdef USE_SVMLIGHT
-		virtual bool train_no_bias_svmlight();
+		virtual bool train_no_bias_svmlight( const std::shared_ptr<Labels>& labs);
 #endif //USE_SVMLIGHT
-		virtual bool train_testrule12();
+		virtual bool train_testrule12( const std::shared_ptr<Labels>& labs);
 
 		void register_params();
 

@@ -56,13 +56,13 @@ public:
 protected:
 
 	/** train machine */
-	virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+	virtual bool train_machine(const std::shared_ptr<Features>& data = NULL, const std::shared_ptr<Labels>& labs);
 
 private:
 	void init_sb_params(); ///< init machine parameters
 
-	void compute_rho(); ///< compute the rho matrix
-	int32_t choose_feature(); ///< choose next feature greedily
+	void compute_rho( const std::shared_ptr<Labels>& labs); ///< compute the rho matrix
+	int32_t choose_feature( const std::shared_ptr<Labels>& labs); ///< choose next feature greedily
 	void optimize_coefficients(); ///< optimize coefficients with gradient descent
 	void compute_pred(); ///< compute predictions on training data, according to W in m_machines
 	void compute_pred(const float64_t *W); ///< compute predictions on training data, according to given W

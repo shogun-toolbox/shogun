@@ -33,7 +33,7 @@ class GMNPSVM : public MulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		GMNPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		GMNPSVM(float64_t C, std::shared_ptr<Kernel> k );
 
 		/** default destructor */
 		virtual ~GMNPSVM();
@@ -67,7 +67,7 @@ class GMNPSVM : public MulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		virtual bool train_machine(const std::shared_ptr<Features>&, const std::shared_ptr<Labels>& labs);
 
 	protected:
 		/** required for MKLMulticlass

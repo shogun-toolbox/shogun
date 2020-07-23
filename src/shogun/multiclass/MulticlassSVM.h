@@ -44,7 +44,7 @@ class MulticlassSVM : public KernelMulticlassMachine
 		 * @param lab labels
 		 */
 		MulticlassSVM(
-			std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+			std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k );
 		virtual ~MulticlassSVM();
 
 		/** create multiclass SVM. Appends the appropriate number of svm pointer

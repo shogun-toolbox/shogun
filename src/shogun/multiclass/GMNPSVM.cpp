@@ -26,8 +26,8 @@ GMNPSVM::GMNPSVM()
 	init();
 }
 
-GMNPSVM::GMNPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab))
+GMNPSVM::GMNPSVM(float64_t C, std::shared_ptr<Kernel> k )
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k) )
 {
 	init();
 }
@@ -50,32 +50,32 @@ GMNPSVM::init()
 	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }
 
-bool GMNPSVM::train_machine(std::shared_ptr<Features> data)
+bool GMNPSVM::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	ASSERT(m_kernel)
-	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
+	ASSERT(labs && labs->get_num_labels())
+	ASSERT(labs->get_label_type() == LT_MULTICLASS)
 	init_strategy();
 
 	if (data)
 	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
+		if (labs->get_num_labels() != data->get_num_vectors())
 		{
 			error("{}::train_machine(): Number of training vectors ({}) does"
 					" not match number of labels ({})", get_name(),
-					data->get_num_vectors(), m_labels->get_num_labels());
+					data->get_num_vectors(), labs->get_num_labels());
 		}
 		m_kernel->init(data, data);
 	}
 
-	int32_t num_data = m_labels->get_num_labels();
+	int32_t num_data = labs->get_num_labels();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_virtual_data= num_data*(num_classes-1);
 
 	io::info("{} trainlabels, {} classes", num_data, num_classes);
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
-	auto mc = multiclass_labels(m_labels);
+	auto mc = multiclass_labels(labs);
 	for (int32_t i=0; i<num_data; i++)
 	{
 		vector_y[i] = mc->get_label(i)+1;

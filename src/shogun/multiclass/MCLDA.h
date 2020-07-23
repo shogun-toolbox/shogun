@@ -48,7 +48,7 @@ class MCLDA : public NativeMulticlassMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_cov whether to store the within class covariances
 		 */
-		MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance = 1e-4, bool store_cov = false);
+		MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t tolerance = 1e-4, bool store_cov = false);
 
 		virtual ~MCLDA();
 
@@ -131,7 +131,7 @@ class MCLDA : public NativeMulticlassMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		virtual bool train_machine(const std::shared_ptr<Features>& data = NULL, const std::shared_ptr<Labels>& labs);
 
 	private:
 		void init();

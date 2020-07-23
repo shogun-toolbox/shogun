@@ -42,7 +42,7 @@ public:
     * @param k kernel
     * @param lab labels
     */
-   MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+   MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k );
 
    /** Class default Destructor */
    virtual ~MKLMulticlass();
@@ -109,7 +109,7 @@ protected:
    /** inits the underlying Multiclass SVM
     *
     */
-   void initsvm();
+   void initsvm( const std::shared_ptr<Labels>& labs);
 
 
    /** checks MKL for convergence
@@ -136,7 +136,7 @@ protected:
     * it is
     * \f$ \sum_y b_y^2-\sum_i \sum_{ y | y \neq y_i} \alpha_{iy}(b_{y_i}-b_y-1) \f$
     */
-   float64_t getsumofsignfreealphas();
+   float64_t getsumofsignfreealphas( const std::shared_ptr<Labels>& labs);
 
    /** computes the second svm-dependent part used for generating MKL
     * constraints
@@ -145,7 +145,7 @@ protected:
     * to compute \f$ \|w \|^2  \f$
     */
    float64_t getsquarenormofprimalcoefficients(
-         const int32_t ind);
+         const int32_t ind, const std::shared_ptr<Labels>& labs);
 
    /** train Multiclass MKL classifier
     *
@@ -155,7 +155,7 @@ protected:
     *
     * @return whether training was successful
     */
-   virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+   virtual bool train_machine(const std::shared_ptr<Features>& data=NULL, const std::shared_ptr<Labels>& labs);
 
    /** @return object name */
     virtual const char* get_name() const { return "MKLMulticlass"; }
