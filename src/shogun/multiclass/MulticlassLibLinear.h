@@ -45,7 +45,7 @@ class MulticlassLibLinear : public RandomMixin<LinearMulticlassMachine>
 		 * @param features features
 		 * @param labs labels
 		 */
-		MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features );
+		MulticlassLibLinear(float64_t C);
 
 		/** destructor */
 		virtual ~MulticlassLibLinear();
@@ -138,12 +138,12 @@ class MulticlassLibLinear : public RandomMixin<LinearMulticlassMachine>
 		/** get support vector indices
 		 * @return support vector indices
 		 */
-		SGVector<int32_t> get_support_vectors() , const std::shared_ptr<Labels>& labsconst;
+		SGVector<int32_t> get_support_vectors() const;
 
 protected:
 
 		/** train machine */
-		virtual bool train_machine(const std::shared_ptr<Features>& data = NULL, const std::shared_ptr<Labels>& labs);
+		virtual bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs);
 
 		/** obtain regularizer (w0) matrix */
 		virtual SGMatrix<float64_t> obtain_regularizer_matrix() const;

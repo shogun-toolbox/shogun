@@ -21,11 +21,11 @@ Machine classifier = create_machine("LibSVM")
 #![create_classifier]
 
 #![create_machine]
-Machine multiclass_machine =  create_machine("KernelMulticlassMachine", multiclass_strategy=one_versus_rest, kernel=k, machine=classifier, labels=labels_train)
+Machine multiclass_machine =  create_machine("KernelMulticlassMachine", multiclass_strategy=one_versus_rest, kernel=k, machine=classifier)
 #![create_machine]
 
 #![train_and_apply]
-multiclass_machine.train(features_train)
+multiclass_machine.train(features_train, labels_train)
 Labels labels_predict = multiclass_machine.apply(features_test)
 #![train_and_apply]
 

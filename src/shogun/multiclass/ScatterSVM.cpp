@@ -73,7 +73,7 @@ bool ScatterSVM::train_machine(const std::shared_ptr<Features>& data, const std:
 {
 	ASSERT(labs && labs->get_num_labels())
 	ASSERT(labs->get_label_type() == LT_MULTICLASS)
-	init_strategy();
+	init_strategy(labs);
 
 	m_num_classes = m_multiclass_strategy->get_num_classes();
 	int32_t num_vectors = labs->get_num_labels();
@@ -110,12 +110,12 @@ bool ScatterSVM::train_machine(const std::shared_ptr<Features>& data, const std:
 
 	if (scatter_type==NO_BIAS_LIBSVM)
 	{
-		result=train_no_bias_libsvm();
+		result=train_no_bias_libsvm(labs);
 	}
 #ifdef USE_SVMLIGHT
 	else if (scatter_type==NO_BIAS_SVMLIGHT)
 	{
-		result=train_no_bias_svmlight();
+		result=train_no_bias_svmlight(labs);
 	}
 #endif //USE_SVMLIGHT
 	else if (scatter_type==TEST_RULE1 || scatter_type==TEST_RULE2)
@@ -128,7 +128,7 @@ bool ScatterSVM::train_machine(const std::shared_ptr<Features>& data, const std:
 		if (get_nu()<nu_min || get_nu()>nu_max)
 			error("nu out of valid range [{} ... {}]", nu_min, nu_max);
 
-		result=train_testrule12();
+		result=train_testrule12(labs);
 	}
 	else
 		error("Unknown Scatter type");

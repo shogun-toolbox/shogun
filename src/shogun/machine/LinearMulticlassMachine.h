@@ -30,20 +30,16 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** default constructor  */
 		LinearMulticlassMachine() : MulticlassMachine()
 		{
-			SG_ADD(&m_features, "m_features", "Feature object.");
+			
 		}
 
 		/** standard constructor
 		 * @param strategy multiclass strategy
-		 * @param features features
 		 * @param machine linear machine
-		 * @param labs labels
 		 */
-		LinearMulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Features> features, std::shared_ptr<Machine> machine ) :
+		LinearMulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Machine> machine ) :
 			MulticlassMachine(strategy, machine)
 		{
-			set_features(features->as<DotFeatures>());
-			SG_ADD(&m_features, "m_features", "Feature object.");
 		}
 
 		/** destructor */
@@ -57,36 +53,28 @@ class LinearMulticlassMachine : public MulticlassMachine
 			return "LinearMulticlassMachine";
 		}
 
-		/** set features
-		 *
-		 * @param f features
-		 */
-		void set_features(std::shared_ptr<DotFeatures> f)
-		{
-			m_features = f;
+		virtual int32_t get_num_classes() const {
+			return m_num_classes;
 		}
 
-		/** get features
-		 *
-		 * @return features
-		 */
-		std::shared_ptr<DotFeatures> get_features() const
-		{
-			return m_features;
+		virtual int32_t get_dim_feature_space() const{
+			return m_dim_feature_space;
 		}
 
 	protected:
 
-		bool train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs) override
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override
 		{
-			m_features = data->as<DotFeatures>();
+			m_num_vectors = data->get_num_vectors();
+			m_num_classes = multiclass_labels(labs)->get_num_classes();
+			m_dim_feature_space = data->as<DotFeatures>()->get_dim_feature_space();
+
 			require(m_multiclass_strategy, "Multiclass strategy not set");
 			int32_t num_classes = labs->as<MulticlassLabels>()->get_num_classes();
    			m_multiclass_strategy->set_num_classes(num_classes);
 
 			m_machines.clear();
 			auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
-
 			m_multiclass_strategy->train_start(
 				multiclass_labels(labs), train_labels);
 			while (m_multiclass_strategy->train_has_more())
@@ -95,16 +83,15 @@ class LinearMulticlassMachine : public MulticlassMachine
 				if (subset.vlen)
 				{
 					train_labels->add_subset(subset);
-					add_machine_subset(subset);
+					data->add_subset(subset);
 				}
-
 				m_machine->train(data, train_labels);
 				m_machines.push_back(get_machine_from_trained(m_machine));
 
 				if (subset.vlen)
 				{
 					train_labels->remove_subset();
-					remove_machine_subset();
+					data->remove_subset();
 				}
 			}
 
@@ -116,31 +103,21 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** init machine for train with setting features */
 		virtual bool init_machine_for_train(std::shared_ptr<Features> data)
 		{
-			if (!m_machine)
-				error("No machine given in Multiclass constructor");
-
-			if (data)
-				set_features(data->as<DotFeatures>());
-
+			require(m_machine, "No machine given in Multiclass constructor");
 			return true;
 		}
 
 		/** init machines for applying with setting features */
 		virtual bool init_machines_for_apply(std::shared_ptr<Features> data)
 		{
-			if (data)
-				set_features(data->as<DotFeatures>());
-
 			return true;
 		}
 
 		/** check features availability */
 		virtual bool is_ready()
 		{
-			if (m_features)
-				return true;
+			return true;
 
-			return false;
 		}
 
 		/** construct linear machine from given linear machine */
@@ -152,7 +129,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** get number of rhs feature vectors */
 		virtual int32_t get_num_rhs_vectors() const
 		{
-			return m_features->get_num_vectors();
+			return m_num_vectors;
 		}
 
 		/** set subset to the features of the machine, deletes old one
@@ -161,23 +138,19 @@ class LinearMulticlassMachine : public MulticlassMachine
 		 */
 		virtual void add_machine_subset(SGVector<index_t> subset)
 		{
-			/* changing the subset structure to use subset stacks. This might
-			 * have to be revised. Heiko Strathmann */
-			m_features->add_subset(subset);
+			
 		}
 
 		/** deletes any subset set to the features of the machine */
 		virtual void remove_machine_subset()
 		{
-			/* changing the subset structure to use subset stacks. This might
-			 * have to be revised. Heiko Strathmann */
-			m_features->remove_subset();
+		
 		}
 
 	protected:
-
-		/** features */
-		std::shared_ptr<DotFeatures> m_features;
+		int32_t m_num_vectors;
+		int32_t m_dim_feature_space;
+		int32_t m_num_classes;
 };
 }
 #endif

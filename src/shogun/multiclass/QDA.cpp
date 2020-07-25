@@ -41,7 +41,6 @@ QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat )
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 }
 
 QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t tolerance)
@@ -49,7 +48,6 @@ QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t t
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 	m_tolerance = tolerance;
 }
 
@@ -58,7 +56,6 @@ QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  bool store_
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 	m_store_covs = store_covs;
 }
 
@@ -69,7 +66,6 @@ QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t t
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 	m_tolerance = tolerance;
 	m_store_covs = store_covs;
 }

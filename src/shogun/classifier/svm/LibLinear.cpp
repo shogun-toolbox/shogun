@@ -68,6 +68,11 @@ LibLinear::~LibLinear()
 {
 }
 
+bool LibLinear::train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+{
+	return train_machine(data->as<DotFeatures>(), labs);
+}
+
 bool LibLinear::train_machine(
     const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {

@@ -74,6 +74,10 @@ bool Machine::train(std::shared_ptr<Features> data)
 bool Machine::train(
     const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
+	require(data->get_num_vectors() == labs->get_num_labels(),
+		    	"Number of training vectors ({}) does not match number of "
+		    	"labels ({})", 
+		   		 data->get_num_vectors(), labs->get_num_labels());
 	auto sub = connect_to_signal_handler();
 	bool result = false;
 

@@ -130,7 +130,7 @@ protected:
     * and
     * float64_t getsumofsignfreealphas();
     */
-   void addingweightsstep( const std::vector<float64_t> & curweights);
+   void addingweightsstep( const std::vector<float64_t> & curweights, const std::shared_ptr<Labels>& labs);
 
    /** computes the first svm-dependent part used for generating MKL constraints
     * it is
@@ -155,7 +155,7 @@ protected:
     *
     * @return whether training was successful
     */
-   virtual bool train_machine(const std::shared_ptr<Features>& data=NULL, const std::shared_ptr<Labels>& labs);
+   virtual bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs);
 
    /** @return object name */
     virtual const char* get_name() const { return "MKLMulticlass"; }

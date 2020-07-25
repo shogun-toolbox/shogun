@@ -40,8 +40,8 @@ MulticlassOCAS::MulticlassOCAS() :
 	set_buf_size(5000);
 }
 
-MulticlassOCAS::MulticlassOCAS(float64_t C, const std::shared_ptr<Features>& train_features ) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), train_features->as<DotFeatures>(), NULL ), m_C(C)
+MulticlassOCAS::MulticlassOCAS(float64_t C) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), NULL ), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);
@@ -67,17 +67,13 @@ MulticlassOCAS::~MulticlassOCAS()
 
 bool MulticlassOCAS::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
 
-	ASSERT(m_features)
-	ASSERT(labs)
-	ASSERT(m_multiclass_strategy)
-	init_strategy();
-
-	int32_t num_vectors = m_features->get_num_vectors();
+	require(m_multiclass_strategy, "Multiclass strategy not set");
+	init_strategy(labs);
+	auto feats = data->as<DotFeatures>();
+	int32_t num_vectors = feats->get_num_vectors();
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
-	int32_t num_features = m_features->get_dim_feature_space();
+	int32_t num_features = feats->get_dim_feature_space();
 
 	float64_t C = m_C;
 	SGVector<float64_t> labels = multiclass_labels(labs)->get_labels();
@@ -91,7 +87,7 @@ bool MulticlassOCAS::train_machine(const std::shared_ptr<Features>& data, const 
 	uint8_t Method = m_method;
 
 	mocas_data user_data;
-	user_data.features = m_features;
+	user_data.features = feats;
 	user_data.W = SG_CALLOC(float64_t, (int64_t)num_features*num_classes);
 	user_data.oldW = SG_CALLOC(float64_t, (int64_t)num_features*num_classes);
 	user_data.new_a = SG_CALLOC(float64_t, (int64_t)num_features*num_classes);

@@ -52,10 +52,10 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 
 	float64_t C=1.0;
 
-	auto mocas=std::make_shared<MulticlassLibLinear>(C, features, labels);
+	auto mocas=std::make_shared<MulticlassLibLinear>(C);
 	env()->set_num_threads(1);
 	mocas->set_epsilon(1e-5);
-	mocas->train(features);
+	mocas->train(features, labels);
 
 	auto pred=mocas->apply(features_test)->as<MulticlassLabels>();
 	for (int i=0; i<features_test->get_num_vectors(); ++i)

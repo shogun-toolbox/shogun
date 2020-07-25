@@ -13,7 +13,7 @@ namespace shogun
 #ifndef SWIG
 		static constexpr std::string_view kSetRandomSeed = "set_random_seed";
 		static constexpr std::string_view kSeed = "seed";
-#endif // SWIG		
+#endif // SWIG
 		/** Seeds an SGObject using a specific seed
 		 */
 		template <
@@ -35,7 +35,7 @@ namespace shogun
 	{
 	public:
 		template <typename... T>
-		Seedable(T... args) : Parent(...)
+		Seedable(T... args) : Parent(args...)
 		{
 			init();
 		}
@@ -50,7 +50,8 @@ namespace shogun
 		{
 			Parent::watch_param(random::kSeed, &m_seed);
 			Parent::add_callback_function(
-			    random::kSeed, std::bind(seed_callback, this, std::ref(m_seed)));
+			    random::kSeed,
+			    std::bind(seed_callback, this, std::ref(m_seed)));
 		}
 
 	protected:

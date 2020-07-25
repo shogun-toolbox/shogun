@@ -31,11 +31,11 @@ TEST(MCLDA, train_and_apply)
 	auto labels = std::make_shared<MulticlassLabels>(lab);
 	auto features = std::make_shared<DenseFeatures< float64_t >>(feat);
 
-	auto lda = std::make_shared<MCLDA>(features, labels);
+	auto lda = std::make_shared<MCLDA>();
 
-	lda->train();
+	lda->train(features, labels);
 
-	auto output = lda->apply()->as<MulticlassLabels>();
+	auto output = lda->apply(features)->as<MulticlassLabels>();
 	// Test
 	for ( index_t i = 0; i < CLASSES*NUM; ++i )
 		EXPECT_EQ(output->get_label(i), labels->get_label(i));

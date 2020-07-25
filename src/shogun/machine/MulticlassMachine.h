@@ -41,11 +41,6 @@ class MulticlassMachine : public BaseMulticlassMachine
 		/** destructor */
 		virtual ~MulticlassMachine();
 
-		/** set labels
-		 *
-		 * @param lab labels
-		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab);
 
 		/** set machine
 		 *
@@ -91,13 +86,13 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data);
 
 		/** classify all examples with multiple output
 		 *
 		 * @return resulting labels
 		 */
-		virtual std::shared_ptr<MultilabelLabels> apply_multilabel_output(std::shared_ptr<Features> data=NULL, int32_t n_outputs=5);
+		virtual std::shared_ptr<MultilabelLabels> apply_multilabel_output(std::shared_ptr<Features> data, int32_t n_outputs=5);
 
 		/** classify one example
 		 * @param vec_idx

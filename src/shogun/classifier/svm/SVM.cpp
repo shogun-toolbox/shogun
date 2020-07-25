@@ -34,6 +34,14 @@ SVM::SVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
 	set_kernel(std::move(k));
 }
 
+SVM::SVM(float64_t C, std::shared_ptr<Kernel> k)
+: KernelMachine()
+{
+	set_defaults();
+	set_C(C,C);
+	set_kernel(std::move(k));
+}
+
 SVM::~SVM()
 {
 

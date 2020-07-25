@@ -210,6 +210,8 @@ namespace shogun
 			return true;
 		}
 
+		bool train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
+		
 	protected:
 		/** train linear SVM classifier
 		 *

@@ -55,7 +55,7 @@ bool GMNPSVM::train_machine(const std::shared_ptr<Features>& data, const std::sh
 	ASSERT(m_kernel)
 	ASSERT(labs && labs->get_num_labels())
 	ASSERT(labs->get_label_type() == LT_MULTICLASS)
-	init_strategy();
+	init_strategy(labs);
 
 	if (data)
 	{

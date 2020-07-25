@@ -23,8 +23,8 @@ ShareBoost::ShareBoost()
 	init_sb_params();
 }
 
-ShareBoost::ShareBoost(const std::shared_ptr<DenseFeatures<float64_t> >&features, const std::shared_ptr<MulticlassLabels >&labs, int32_t num_nonzero_feas)
-	:LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), features, NULL ), m_nonzero_feas(num_nonzero_feas)
+ShareBoost::ShareBoost(const std::shared_ptr<MulticlassLabels >&labs, int32_t num_nonzero_feas)
+	:LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), NULL ), m_nonzero_feas(num_nonzero_feas)
 {
 	init_sb_params();
 }
@@ -42,16 +42,10 @@ SGVector<int32_t> ShareBoost::get_activeset()
 
 bool ShareBoost::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data);
-	auto fea = m_features->as<DenseFeatures<float64_t>>();
-
-	if (m_features == NULL)
-		error("No features given for training");
-	if (labs == NULL)
-		error("No labels given for training");
-
-	init_strategy();
+	m_share_boost_labels = labs;
+	auto fea = data->as<DenseFeatures<float64_t>>();
+	m_features = fea;
+	init_strategy(labs);
 
 	if (m_nonzero_feas <= 0)
 		error("Set a valid (> 0) number of non-zero features to seek before training");
@@ -78,13 +72,13 @@ bool ShareBoost::train_machine(const std::shared_ptr<Features>& data, const std:
 	for (auto t : SG_PROGRESS(range(m_nonzero_feas)))
 	{
 		timer->start();
-		compute_rho();
-		int32_t i_fea = choose_feature();
+		compute_rho(labs);
+		int32_t i_fea = choose_feature(labs);
 		m_activeset.vector[m_activeset.vlen] = i_fea;
 		m_activeset.vlen += 1;
 		float64_t t_choose_feature = timer->cur_time_diff();
 		timer->start();
-		optimize_coefficients();
+		optimize_coefficients(labs);
 		float64_t t_optimize = timer->cur_time_diff();
 
 		SG_DEBUG(" SB[round {:03d}]: ({:8.4f} + {:8.4f}) sec.", t,
@@ -108,8 +102,7 @@ bool ShareBoost::train_machine(const std::shared_ptr<Features>& data, const std:
 
 void ShareBoost::compute_pred()
 {
-	auto fea = m_features->as<DenseFeatures<float64_t>>();
-	auto subset_fea = std::make_shared<DenseSubsetFeatures<float64_t>>(fea, m_activeset);
+	auto subset_fea = std::make_shared<DenseSubsetFeatures<float64_t>>(m_features, m_activeset);
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
 		auto machine = m_machines.at(i)->as<LinearMachine>();
@@ -191,16 +184,10 @@ int32_t ShareBoost::choose_feature( const std::shared_ptr<Labels>& labs)
 	return Math::arg_max(l1norm.vector, 1, l1norm.vlen);
 }
 
-void ShareBoost::optimize_coefficients()
+void ShareBoost::optimize_coefficients(const std::shared_ptr<Labels>& labs)
 {
 	ShareBoostOptimizer optimizer(shared_from_this()->as<ShareBoost>(), false);
 	optimizer.optimize();
 }
 
-void ShareBoost::set_features(const std::shared_ptr<Features >&f)
-{
-	auto fea = f->as<DenseFeatures<float64_t>>();
-	if (fea == NULL)
-		error("Require DenseFeatures<float64_t>");
-	LinearMulticlassMachine::set_features(fea);
-}
+

@@ -211,7 +211,7 @@ bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 }
 
 void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
-		curweights)
+		curweights, const std::shared_ptr<Labels>& labs)
 {
 
 	if (weightshistory.size()>2)
@@ -233,7 +233,7 @@ void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
    svm->set_kernel(m_kernel);
 	svm->train();
 
-	float64_t sumofsignfreealphas=getsumofsignfreealphas();
+	float64_t sumofsignfreealphas=getsumofsignfreealphas(labs);
 	curalphaterm=sumofsignfreealphas;
 
 	int32_t numkernels=
@@ -243,7 +243,7 @@ void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 	normweightssquared.resize(numkernels);
 	for (int32_t ind=0; ind < numkernels; ++ind )
 	{
-		normweightssquared[ind]=getsquarenormofprimalcoefficients( ind );
+		normweightssquared[ind]=getsquarenormofprimalcoefficients(ind, labs);
 	}
 
 	lpw->addconstraint(normweightssquared,sumofsignfreealphas);
@@ -337,7 +337,7 @@ bool MKLMulticlass::train_machine(const std::shared_ptr<Features>& data, const s
    ASSERT(m_kernel)
    ASSERT(labs && labs->get_num_labels())
    ASSERT(labs->get_label_type() == LT_MULTICLASS)
-   init_strategy();
+   init_strategy(labs);
 
    int numcl=(std::static_pointer_cast<MulticlassLabels>(labs))->get_num_classes();
 
@@ -362,7 +362,7 @@ bool MKLMulticlass::train_machine(const std::shared_ptr<Features>& data, const s
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
 
-	addingweightsstep(curweights);
+	addingweightsstep(curweights, labs);
 
 	oldalphaterm=curalphaterm;
 	oldnormweightssquared=normweightssquared;
@@ -377,7 +377,7 @@ bool MKLMulticlass::train_machine(const std::shared_ptr<Features>& data, const s
 		lpw->computeweights(curweights);
 		weightshistory.push_back(curweights);
 
-		addingweightsstep(curweights);
+		addingweightsstep(curweights, labs);
 
 		//new weights new biasterm
 

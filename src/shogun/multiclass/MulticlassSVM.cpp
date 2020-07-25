@@ -25,8 +25,8 @@ MulticlassSVM::MulticlassSVM(std::shared_ptr<MulticlassStrategy >strategy)
 }
 
 MulticlassSVM::MulticlassSVM(
-	std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k )
-	: KernelMulticlassMachine(std::move(strategy), k, std::make_shared<SVM>(C, k, lab) )
+	std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k)
+	: KernelMulticlassMachine(std::move(strategy), k, std::make_shared<SVM>(C, k))
 {
 	init();
 	m_C=C;

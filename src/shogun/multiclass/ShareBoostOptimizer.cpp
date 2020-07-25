@@ -45,13 +45,13 @@ float64_t ShareBoostOptimizer::lbfgs_evaluate(void *userdata, const float64_t *W
 	ShareBoostOptimizer *optimizer = static_cast<ShareBoostOptimizer *>(userdata);
 
 	optimizer->m_sb->compute_pred(W);
-	optimizer->m_sb->compute_rho();
+	optimizer->m_sb->compute_rho(optimizer->m_sb->m_share_boost_labels);
 
 	int32_t m = optimizer->m_sb->m_activeset.vlen;
 	int32_t k = optimizer->m_sb->m_multiclass_strategy->get_num_classes();
 
 	SGMatrix<float64_t> fea = optimizer->m_sb->m_fea;
-	auto lab = multiclass_labels(optimizer->m_sb->m_labels);
+	auto lab = multiclass_labels(optimizer->m_sb->m_share_boost_labels);
 
 	// compute gradient
 	for (int32_t i=0; i < m; ++i)

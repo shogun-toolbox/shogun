@@ -40,7 +40,6 @@ MCLDA::MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64
 	m_store_cov=store_cov;
 
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 }
 
 MCLDA::~MCLDA()

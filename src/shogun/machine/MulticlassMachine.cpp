@@ -30,19 +30,12 @@ MulticlassMachine::MulticlassMachine(
 		std::shared_ptr<Machine> machine )
 : BaseMulticlassMachine(), m_multiclass_strategy(std::move(strategy))
 {
-	set_labels(std::move(labs));
-
 	m_machine = std::move(machine);
 	register_parameters();
 }
 
 MulticlassMachine::~MulticlassMachine()
 {
-}
-
-void MulticlassMachine::set_labels(std::shared_ptr<Labels> lab)
-{
-    Machine::set_labels(lab);
 }
 
 void MulticlassMachine::register_parameters()
@@ -76,7 +69,7 @@ std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::share
 	SG_TRACE("entering {}::apply_multiclass({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));
 
-	std::shared_ptr<MulticlassLabels> return_labels=NULL;
+	std::shared_ptr<MulticlassLabels> return_labels;
 
 	if (data)
 		init_machines_for_apply(data);

@@ -16,11 +16,11 @@ Kernel gauss_kernel = create_kernel("GaussianKernel", log_width=0.0)
 #![set_parameters]
 
 #![create_instance]
-Machine svm = create_machine("MulticlassLibSVM", C=C, kernel=gauss_kernel, labels=labels_train)
+Machine svm = create_machine("MulticlassLibSVM", C=C, kernel=gauss_kernel)
 #![create_instance]
 
 #![train_and_apply]
-svm.train(features_train)
+svm.train(features_train, labels_train)
 Labels labels_predict = svm.apply(features_test)
 #![train_and_apply]
 

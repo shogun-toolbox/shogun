@@ -48,7 +48,7 @@ bool MulticlassLibSVM::train_machine(const std::shared_ptr<Features>& data, cons
 
 	ASSERT(labs && labs->get_num_labels())
 	ASSERT(labs->get_label_type() == LT_MULTICLASS)
-	init_strategy();
+	init_strategy(labs);
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
 	problem.l=labs->get_num_labels();
 	io::info("{} trainlabels, {} classes", problem.l, num_classes);

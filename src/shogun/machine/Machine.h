@@ -269,11 +269,6 @@ class Machine : public StoppableSGObject
 		virtual bool train_machine(
 		    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 		{
-			require(data->get_num_vectors() == labs->get_num_labels(),
-		    	"Number of training vectors ({}) does not match number of "
-		    	"labels ({})",
-		   		 data->get_num_vectors(), labs->get_num_labels());
-
 			error("train_machine is not yet implemented for {}!", get_name());
 			return false;
 		}

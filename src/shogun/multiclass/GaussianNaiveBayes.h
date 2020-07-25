@@ -91,7 +91,7 @@ protected:
 	 * @param data train examples
 	 * @return true if successful
 	 */
-	virtual bool train_machine(const std::shared_ptr<Features>& data=NULL, const std::shared_ptr<Labels>& labs);
+	virtual bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs);
 
 private:
 	void init();
