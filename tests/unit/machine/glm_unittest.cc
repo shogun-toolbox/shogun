@@ -20,6 +20,20 @@
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
 
+// #include "utils/SGObjectIterator.h"
+#include "utils/Utils.h"
+#include <gtest/gtest.h>
+#include <iterator>
+#include <shogun/base/SGObject.h>
+#include <shogun/base/ShogunEnv.h>
+#include <shogun/base/class_list.h>
+#include <shogun/base/range.h>
+#include <shogun/io/fs/FileSystem.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/stream/FileInputStream.h>
+#include <shogun/io/serialization/Serializer.h>
+
 #include <random>
 
 using namespace shogun;
@@ -113,3 +127,77 @@ TEST(GLMCostFunction, GLM_POISSON_gradient_test)
 
 	EXPECT_NEAR(grad_bias, pyglmnet_grad_bias, epsilon);
 }
+
+// TEST(GLM, GLM_serialization_test)
+// {
+// 	const auto& [Xtrain, ytrain] = generate_train_data();
+// 	const auto& [Xtest, ytest] = generate_test_data();
+
+// 	auto features_train = std::make_shared<DenseFeatures<float64_t>>(Xtrain);
+// 	auto labels_train = std::make_shared<RegressionLabels>(ytrain);
+
+// 	auto features_test = std::make_shared<DenseFeatures<float64_t>>(Xtest);
+
+// 	auto glm = std::make_shared<GLM>(POISSON, 0.5, 0.1, 2e-1, 1000, 1e-6, 2.0);
+
+// 	// glm->set_bias(0.44101309);
+// 	// glm->set_w(SGVector<float64_t>({0.1000393, 0.2446845, 0.5602233}));
+
+// 	// glm->set_labels(labels_train);
+
+// 	// glm->train(features_train);
+
+// 	// auto labels_predict = glm->apply_regression(features_test);
+
+// 	// SGVector<float64_t> labels_pyglmnet(
+// 	//     {5.47606254, 5.62436215, 5.50835709, 5.75757967, 6.01670904});
+
+// 	// float64_t epsilon = 1e-7;
+
+// 	// for (index_t i = 0; i < labels_predict->get_num_labels(); ++i)
+// 	// 	EXPECT_NEAR(labels_predict->get_label(i), labels_pyglmnet[i], epsilon);
+
+// 	SCOPED_TRACE(glm->get_name());
+
+// 	std::string filename = "shogun-unittest-serialization-json-" +
+// 	                       std::string(glm->get_name()) + "_" + "PT_FLOAT64" +
+// 	                       ".XXXXXX";
+
+// 	generate_temp_filename(const_cast<char*>(filename.c_str()));
+
+// 	auto fs = env();
+// 	ASSERT_FALSE(fs->file_exists(filename));
+// 	std::unique_ptr<io::WritableFile> file;
+// 	ASSERT_FALSE(fs->new_writable_file(filename, &file));
+// 	auto fos = std::make_shared<io::FileOutputStream>(file.get());
+// 	auto serializer = std::make_unique<io::JsonSerializer>();
+// 	serializer->attach(fos);
+// 	// std::cout << "glm->get_name()\t" << glm->get_name()<<'\n';
+// 	// std::cout << "glm->get_generic()\t" << glm->get_generic()<<'\n';
+// 	// auto params = glm->get_params();
+
+// 	// for (const auto& p : params)
+// 	// {
+// 	// 	if (p.second->get_value().visitable() &&
+// 	// 	    p.second->get_value().cloneable())
+// 	// 	{
+// 	// 		std::cout<<p.first.c_str()<<'\t';
+// 	// 		// p.second->get_value().visit(visitor);
+// 	// 	}
+// 	// }
+
+// 	serializer->write(glm);
+
+// 	// std::unique_ptr<io::RandomAccessFile> raf;
+// 	// // ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
+// 	// auto fis = std::make_shared<io::FileInputStream>(raf.get());
+// 	// auto deserializer = std::make_unique<io::JsonDeserializer>();
+// 	// deserializer->attach(fis);
+// 	// auto loaded = deserializer->read_object();
+
+// 	// // set accuracy to tolerate lossy formats
+// 	// env()->set_global_fequals_epsilon(1e-14);
+// 	// // ASSERT_TRUE(glm->equals(loaded));
+// 	// env()->set_global_fequals_epsilon(0);
+// 	// // ASSERT_FALSE(fs->delete_file(filename));
+// }

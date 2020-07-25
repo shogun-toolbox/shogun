@@ -24,10 +24,15 @@ using namespace shogun;
 
 GLM::GLM()
 {
-	SG_ADD(
-	    &distribution, "distribution_type",
+	// SG_ADD(
+	//     &distribution, "distribution_type",
+	//     "variable to store name of distribution type",
+	//     ParameterProperties::HYPER);
+	SG_ADD_OPTIONS(
+	    (machine_int_t*)&distribution, "distribution_type",
 	    "variable to store name of distribution type",
-	    ParameterProperties::HYPER);
+	    ParameterProperties::NONE,
+	    SG_OPTIONS(POISSON));
 	SG_ADD(
 	    &m_eta, "eta",
 	    "threshold parameter that linearizes the exp() function above eta",
