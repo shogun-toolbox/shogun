@@ -24,10 +24,6 @@ using namespace shogun;
 
 GLM::GLM()
 {
-	// SG_ADD(
-	//     &distribution, "distribution_type",
-	//     "variable to store name of distribution type",
-	//     ParameterProperties::HYPER);
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&distribution, "distribution_type",
 	    "variable to store name of distribution type",
