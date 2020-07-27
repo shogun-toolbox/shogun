@@ -210,8 +210,8 @@ bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 	return false;
 }
 
-void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
-		curweights, const std::shared_ptr<Labels>& labs)
+void MKLMulticlass::addingweightsstep( const std::vector<float64_t> & curweights,
+			 const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 
 	if (weightshistory.size()>2)
@@ -231,7 +231,7 @@ void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 	initsvm(labs);
 
    svm->set_kernel(m_kernel);
-	svm->train();
+	svm->train(data, labs);
 
 	float64_t sumofsignfreealphas=getsumofsignfreealphas(labs);
 	curalphaterm=sumofsignfreealphas;
@@ -362,7 +362,7 @@ bool MKLMulticlass::train_machine(const std::shared_ptr<Features>& data, const s
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
 
-	addingweightsstep(curweights, labs);
+	addingweightsstep(curweights, data, labs);
 
 	oldalphaterm=curalphaterm;
 	oldnormweightssquared=normweightssquared;
@@ -377,7 +377,7 @@ bool MKLMulticlass::train_machine(const std::shared_ptr<Features>& data, const s
 		lpw->computeweights(curweights);
 		weightshistory.push_back(curweights);
 
-		addingweightsstep(curweights, labs);
+		addingweightsstep(curweights, data, labs);
 
 		//new weights new biasterm
 

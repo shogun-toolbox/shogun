@@ -130,7 +130,8 @@ protected:
     * and
     * float64_t getsumofsignfreealphas();
     */
-   void addingweightsstep( const std::vector<float64_t> & curweights, const std::shared_ptr<Labels>& labs);
+   void addingweightsstep( const std::vector<float64_t> & curweights,
+			 const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs);
 
    /** computes the first svm-dependent part used for generating MKL constraints
     * it is
