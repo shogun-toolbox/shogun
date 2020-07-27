@@ -54,8 +54,8 @@ def classifier_multiclass_ecoc (fm_train_real=traindat,fm_test_real=testdat,labe
 
 		strategy = sg.ECOCStrategy(encoder, decoder)
 		classifier = sg.create_machine("LinearMulticlassMachine", multiclass_strategy=strategy, 
-										machine=base_classifier, labels=gnd_train)
-		classifier.train(fea_train)
+										machine=base_classifier)
+		classifier.train(fea_train, gnd_train)
 		label_pred = classifier.apply(fea_test)
 		if gnd_test is not None:
 		    evaluator = sg.create_evaluation("MulticlassAccuracy")

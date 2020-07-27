@@ -44,14 +44,14 @@ def mkl_multiclass (fm_train_real, fm_test_real, label_train_multiclass,
 
 	labels = MulticlassLabels(label_train_multiclass)
 
-	mkl = sg.create_machine("MKLMulticlass", C=C, kernel=kernel, labels=labels,
+	mkl = sg.create_machine("MKLMulticlass", C=C, kernel=kernel,
 		  					mkl_eps=mkl_epsilon, mkl_norm=mkl_norm)
 
 	mkl.get("machine").put("epsilon", epsilon)
 
 	mkl.get_global_parallel().set_num_threads(num_threads)
 
-	mkl.train()
+	mkl.train(feats_train, labels)
 
 	kernel.init(feats_train, feats_test)
 
