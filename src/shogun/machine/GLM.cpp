@@ -27,8 +27,7 @@ GLM::GLM()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&distribution, "distribution_type",
 	    "variable to store name of distribution type",
-	    ParameterProperties::NONE,
-	    SG_OPTIONS(POISSON));
+	    ParameterProperties::HYPER, SG_OPTIONS(POISSON));
 	SG_ADD(
 	    &m_eta, "eta",
 	    "threshold parameter that linearizes the exp() function above eta",
@@ -48,7 +47,6 @@ GLM::GLM()
 	    ParameterProperties::HYPER);
 
 	m_gradient_updater = std::make_shared<GradientDescendUpdater>();
-	// m_learning_rate = std::make_shared<ConstLearningRate>();
 	m_penalty = std::make_shared<ElasticNetPenalty>();
 	m_cost_function = std::make_shared<GLMCostFunction>();
 }
@@ -67,24 +65,26 @@ GLM::GLM(
 	m_tolerance = tolerance;
 	m_eta = eta;
 
-	// m_learning_rate->set_const_learning_rate(learning_rate);
-
 	m_penalty->set_l1_ratio(m_alpha);
 }
 
 std::shared_ptr<RegressionLabels>
 GLM::apply_regression(std::shared_ptr<Features> data)
 {
-	LinearMachine::set_features(std::static_pointer_cast<DotFeatures>(data));
+	if (data)
+	{
+		if (!data->has_property(FP_DOT))
+			error("Specified features are not of type CDotFeatures");
+		set_features(std::static_pointer_cast<DotFeatures>(data));
+	}
 
-	if (!LinearMachine::features)
-		return std::make_shared<RegressionLabels>(SGVector<float64_t>());
+	require(features, "Features are not provided");
 
-	auto num = LinearMachine::features->get_num_vectors();
+	auto num = features->get_num_vectors();
 	ASSERT(num > 0)
 	ASSERT(m_w.vlen == features->get_dim_feature_space())
 	SGVector<float64_t> out(num);
-	LinearMachine::features->dense_dot_range(
+	features->dense_dot_range(
 	    out.vector, 0, num, NULL, m_w.vector, m_w.vlen, bias);
 	auto result = m_cost_function->non_linearity(
 	    out, m_compute_bias, m_eta, distribution);
@@ -99,13 +99,12 @@ void GLM::init_model(const std::shared_ptr<Features> data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		LinearMachine::set_features(
-		    std::static_pointer_cast<DotFeatures>(data));
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 	ASSERT(features)
 
 	NormalDistribution<float64_t> normal_dist;
-	auto n_features = LinearMachine::features->get_dim_feature_space();
+	const auto& n_features = features->get_dim_feature_space();
 
 	if (m_w.vlen == 0)
 	{
@@ -115,19 +114,17 @@ void GLM::init_model(const std::shared_ptr<Features> data)
 		if (n_features > 0)
 		{
 			m_w = SGVector<float64_t>(n_features);
-			for (auto i : range(n_features))
-			{
+
+			std::generate(m_w.begin(), m_w.end(), [&]() {
 				auto rand = normal_dist(m_prng);
-				m_w[i] = 1.0 / (n_features + 1) * rand;
-			}
+				return 1.0 / (n_features + 1) * rand;
+			});
 		}
 	}
 }
 
 void GLM::iteration()
 {
-	// auto learning_rate =
-	    // m_learning_rate->get_learning_rate(m_current_iteration);
 	SGVector<float64_t> w_old = m_w.clone();
 
 	auto X = get_features()->get_computed_dot_feature_matrix();
@@ -140,6 +137,7 @@ void GLM::iteration()
 	    X, y, m_w, bias, m_compute_bias, m_eta, distribution);
 
 	// Update
+	// TODO: Use gradient updater
 	// m_gradient_updater->update_variable(m_w, gradient_w, learning_rate);
 	m_w = linalg::add(m_w, gradient_w, 1.0, -1 * m_learning_rate);
 
@@ -147,17 +145,18 @@ void GLM::iteration()
 		bias -= m_learning_rate * gradient_bias;
 
 	// Apply proximal operator
+	// TODO: Use proximity updater.
 	// m_penalty->update_variable_for_proximity(m_w, m_lambda * m_alpha);
 	for (auto i : range(m_w.vlen))
 	{
-		if (abs(m_w[i]) < (m_lambda * m_alpha))
+		if (std::abs(m_w[i]) < (m_lambda * m_alpha))
 			m_w[i] = 0;
 		else
 		{
 			if (m_w[i] > 0)
-				m_w[i] = m_w[i] - (m_lambda * m_alpha);
+				m_w[i] -= (m_lambda * m_alpha);
 			else
-				m_w[i] = m_w[i] + (m_lambda * m_alpha);
+				m_w[i] += (m_lambda * m_alpha);
 		}
 	}
 
@@ -165,7 +164,7 @@ void GLM::iteration()
 	auto norm_update = linalg::norm(linalg::add(m_w, w_old, 1.0, -1.0));
 	float32_t checker = linalg::norm(m_w) == 0
 	                        ? norm_update
-	                        : abs(norm_update / linalg::norm(m_w));
+	                        : std::abs(norm_update / linalg::norm(m_w));
 	if (m_current_iteration > 0 && checker < m_tolerance)
 		m_complete = true;
 }

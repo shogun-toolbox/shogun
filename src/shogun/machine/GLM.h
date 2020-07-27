@@ -53,9 +53,7 @@ namespace shogun
 		    float64_t tolerance, float64_t eta);
 
 		/** destructor */
-		~GLM() override
-		{
-		}
+		~GLM() override = default;
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -76,7 +74,8 @@ namespace shogun
 			return "GLM";
 		}
 
-		static char* glm_enum_to_string(GLM_DISTRIBUTION distribution)
+		static constexpr std::string_view
+		glm_enum_to_string(GLM_DISTRIBUTION distribution)
 		{
 			switch (distribution)
 			{
@@ -87,13 +86,13 @@ namespace shogun
 			}
 		}
 
-		virtual EProblemType get_machine_problem_type() const override
+		EProblemType get_machine_problem_type() const override
 		{
 			return PT_REGRESSION;
 		}
 
-		protected:
-		void init_model(const std::shared_ptr<Features> data);
+	protected:
+		void init_model(const std::shared_ptr<Features> data) override;
 
 		void iteration() override;
 
@@ -123,8 +122,6 @@ namespace shogun
 
 		std::shared_ptr<GradientDescendUpdater> m_gradient_updater;
 
-		// std::shared_ptr<ConstLearningRate> m_learning_rate;
-
 		std::shared_ptr<ElasticNetPenalty> m_penalty;
 
 		std::shared_ptr<GLMCostFunction> m_cost_function;
@@ -135,13 +132,11 @@ namespace shogun
 	public:
 		friend class GLM;
 
-		GLMCostFunction()
-		{
-		}
+		GLMCostFunction() = default;
 
 		virtual SGVector<float64_t> get_gradient_weights(
-		    const SGMatrix<float64_t> X, const SGVector<float64_t> y,
-		    const SGVector<float64_t> w, const float64_t bias,
+		    const SGMatrix<float64_t>& X, const SGVector<float64_t>& y,
+		    const SGVector<float64_t>& w, const float64_t bias,
 		    const float64_t lambda, const float64_t alpha,
 		    const bool compute_bias, const float64_t eta,
 		    const GLM_DISTRIBUTION distribution)
@@ -184,8 +179,8 @@ namespace shogun
 		}
 
 		virtual float64_t get_gradient_bias(
-		    const SGMatrix<float64_t> X, const SGVector<float64_t> y,
-		    const SGVector<float64_t> w, const float64_t bias,
+		    const SGMatrix<float64_t>& X, const SGVector<float64_t>& y,
+		    const SGVector<float64_t>& w, const float64_t bias,
 		    const bool compute_bias, const float64_t eta,
 		    const GLM_DISTRIBUTION distribution)
 		{
@@ -221,8 +216,8 @@ namespace shogun
 		}
 
 	private:
-		virtual const SGVector<float64_t> compute_z(
-		    const SGMatrix<float64_t> X, const SGVector<float64_t> w,
+		const SGVector<float64_t> compute_z(
+		    const SGMatrix<float64_t>& X, const SGVector<float64_t>& w,
 		    const float64_t bias)
 		{
 			auto prod = linalg::matrix_prod(X, w, true);
@@ -231,7 +226,7 @@ namespace shogun
 		}
 
 		virtual const SGVector<float64_t> non_linearity(
-		    const SGVector<float64_t> z, const bool compute_bias,
+		    const SGVector<float64_t>& z, const bool compute_bias,
 		    const float64_t eta, const GLM_DISTRIBUTION distribution)
 		{
 			SGVector<float64_t> result;
@@ -263,7 +258,7 @@ namespace shogun
 		}
 
 		virtual const SGVector<float64_t> gradient_non_linearity(
-		    const SGVector<float64_t> z, const float64_t eta,
+		    const SGVector<float64_t>& z, const float64_t eta,
 		    const GLM_DISTRIBUTION distribution)
 		{
 			SGVector<float64_t> result;
@@ -289,8 +284,6 @@ namespace shogun
 
 			return result;
 		}
-
-		// std::shared_ptr<GLM>m_obj;
 	};
 } // namespace shogun
 // #endif

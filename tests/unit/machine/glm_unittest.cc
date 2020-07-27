@@ -35,9 +35,7 @@ std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> generate_train_data()
 	                         {2.1912712, 0.23820139, 1.07501177},
 	                         {-0.58427793, -0.61855905, 1.27687684}});
 
-	std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> train(
-	    features, labels);
-	return train;
+	return {features, labels};
 }
 
 std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> generate_test_data()
@@ -50,8 +48,8 @@ std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> generate_test_data()
 	                         {0.3967461, -1.6470009, 0.89995864},
 	                         {0.65379594, 1.08610417, -0.04911578},
 	                         {0.6573247, -0.1306287, -0.64715244}});
-	std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> test(features, labels);
-	return test;
+
+	return {features, labels};
 }
 
 TEST(GLM, GLM_basic_test)
