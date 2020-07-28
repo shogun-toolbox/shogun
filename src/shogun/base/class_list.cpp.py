@@ -69,7 +69,7 @@ class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix",
         "NumericalVGLikelihood", "SingleFITCInference", "VariationalGaussianLikelihood",
         "RationalApproximation", "FirstOrderStochasticMinimizer", "IndependenceTest",
         "TwoDistributionTest", "TwoSampleTest", "RealDistance", "BinaryClassEvaluation",
-        "MomentumCorrection", "OneDistributionTest", "DependenceMaximization"]
+        "MomentumCorrection", "OneDistributionTest", "DependenceMaximization", "EnsembelMachine"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"
 SHOGUN_BASIC_CLASS = "SHOGUN_BASIC_CLASS"
