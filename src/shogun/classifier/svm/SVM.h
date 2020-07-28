@@ -64,6 +64,8 @@ class SVM : public KernelMachine
 		 */
 		SVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
+		SVM(float64_t C, std::shared_ptr<Kernel> k);
+
 		~SVM() override;
 
 		/** set default values for members a SVM object
