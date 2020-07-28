@@ -59,7 +59,7 @@ void GaussianNaiveBayes::set_features(std::shared_ptr<Features> features)
 	m_features = features->as<DotFeatures>();
 }
 
-bool GaussianNaiveBayes::train_machine(std::shared_ptr<Features> data)
+bool GaussianNaiveBayes::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -70,9 +70,9 @@ bool GaussianNaiveBayes::train_machine(std::shared_ptr<Features> data)
 	}
 
 	// get int labels to train_labels and check length equality
-	ASSERT(m_labels)
+	ASSERT(labs)
 	SGVector<int32_t> train_labels =
-	    multiclass_labels(m_labels)->get_int_labels();
+	    multiclass_labels(labs)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// find minimal and maximal label

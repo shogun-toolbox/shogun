@@ -32,7 +32,7 @@ class KernelMulticlassMachine : public MulticlassMachine
 		 * @param machine kernel machine
 		 * @param labs labels
 		 */
-		KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs);
+		KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine );
 
 		/** destructor */
 		~KernelMulticlassMachine() override;

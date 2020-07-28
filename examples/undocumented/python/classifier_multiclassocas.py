@@ -28,8 +28,8 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 
 	labels=sg.create_labels(label_train)
 
-	classifier = sg.create_machine("MulticlassOCAS", labels=labels, C=C)
-	classifier.train(feats_train)
+	classifier = sg.create_machine("MulticlassOCAS", C=C)
+	classifier.train(feats_train, labels)
 
 	out = classifier.apply(feats_test).get("labels")
 	#print label_test

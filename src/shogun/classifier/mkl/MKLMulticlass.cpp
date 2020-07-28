@@ -26,8 +26,8 @@ MKLMulticlass::MKLMulticlass()
 	init();
 }
 
-MKLMulticlass::MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab))
+MKLMulticlass::MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k )
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k) )
 {
 	svm=NULL;
 	lpw=NULL;
@@ -72,9 +72,9 @@ MKLMulticlass MKLMulticlass::operator=( const MKLMulticlass & cm)
 }
 
 
-void MKLMulticlass::initsvm()
+void MKLMulticlass::initsvm( const std::shared_ptr<Labels>& labs)
 {
-   if (!m_labels)
+   if (!labs)
 	{
       error("MKLMulticlass::initsvm(): the set labels is NULL");
 	}
@@ -84,13 +84,13 @@ void MKLMulticlass::initsvm()
    svm->set_C(get_C());
    svm->set_epsilon(get_epsilon());
 
-   if (m_labels->get_num_labels()<=0)
+   if (labs->get_num_labels()<=0)
 	{
       error("MKLMulticlass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
 
-   svm->set_labels(m_labels);
+   svm->set_labels(labs);
 }
 
 void MKLMulticlass::initlpsolver()
@@ -210,8 +210,8 @@ bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 	return false;
 }
 
-void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
-		curweights)
+void MKLMulticlass::addingweightsstep( const std::vector<float64_t> & curweights,
+			 const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 
 	if (weightshistory.size()>2)
@@ -228,12 +228,12 @@ void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
    //delete[] weights;
    //weights=NULL;
 
-	initsvm();
+	initsvm(labs);
 
    svm->set_kernel(m_kernel);
-	svm->train();
+	svm->train(data, labs);
 
-	float64_t sumofsignfreealphas=getsumofsignfreealphas();
+	float64_t sumofsignfreealphas=getsumofsignfreealphas(labs);
 	curalphaterm=sumofsignfreealphas;
 
 	int32_t numkernels=
@@ -243,23 +243,23 @@ void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 	normweightssquared.resize(numkernels);
 	for (int32_t ind=0; ind < numkernels; ++ind )
 	{
-		normweightssquared[ind]=getsquarenormofprimalcoefficients( ind );
+		normweightssquared[ind]=getsquarenormofprimalcoefficients(ind, labs);
 	}
 
 	lpw->addconstraint(normweightssquared,sumofsignfreealphas);
 }
 
-float64_t MKLMulticlass::getsumofsignfreealphas()
+float64_t MKLMulticlass::getsumofsignfreealphas( const std::shared_ptr<Labels>& labs)
 {
 
-   std::vector<int> trainlabels2(m_labels->get_num_labels());
-   SGVector<int32_t> lab=(std::static_pointer_cast<MulticlassLabels>(m_labels))->get_int_labels();
+   std::vector<int> trainlabels2(labs->get_num_labels());
+   SGVector<int32_t> lab=(std::static_pointer_cast<MulticlassLabels>(labs))->get_int_labels();
    std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
 
 	ASSERT (trainlabels2.size()>0)
 	float64_t sum=0;
 
-   for (int32_t nc=0; nc< (std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();++nc)
+   for (int32_t nc=0; nc< (std::static_pointer_cast<MulticlassLabels>(labs))->get_num_classes();++nc)
 	{
 		auto sm=svm->get_svm(nc);
 
@@ -275,7 +275,7 @@ float64_t MKLMulticlass::getsumofsignfreealphas()
 
 	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
-      for (int32_t nc=0; nc< (std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();++nc)
+      for (int32_t nc=0; nc< (std::static_pointer_cast<MulticlassLabels>(labs))->get_num_classes();++nc)
 		{
 			auto sm=svm->get_svm(nc);
 
@@ -297,13 +297,13 @@ float64_t MKLMulticlass::getsumofsignfreealphas()
 }
 
 float64_t MKLMulticlass::getsquarenormofprimalcoefficients(
-		const int32_t ind)
+		const int32_t ind, const std::shared_ptr<Labels>& labs)
 {
    auto ker=std::dynamic_pointer_cast<CombinedKernel>(m_kernel)->get_kernel(ind);
 
 	float64_t tmp=0;
 
-   for (int32_t classindex=0; classindex< (std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();
+   for (int32_t classindex=0; classindex< (std::static_pointer_cast<MulticlassLabels>(labs))->get_num_classes();
 			++classindex)
 	{
 		auto sm=svm->get_svm(classindex);
@@ -332,22 +332,22 @@ float64_t MKLMulticlass::getsquarenormofprimalcoefficients(
 }
 
 
-bool MKLMulticlass::train_machine(std::shared_ptr<Features> data)
+bool MKLMulticlass::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
    ASSERT(m_kernel)
-   ASSERT(m_labels && m_labels->get_num_labels())
-   ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-   init_strategy();
+   ASSERT(labs && labs->get_num_labels())
+   ASSERT(labs->get_label_type() == LT_MULTICLASS)
+   init_strategy(labs);
 
-   int numcl=(std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();
+   int numcl=(std::static_pointer_cast<MulticlassLabels>(labs))->get_num_classes();
 
 	if (data)
 	{
-      if (m_labels->get_num_labels() != data->get_num_vectors())
+      if (labs->get_num_labels() != data->get_num_vectors())
       {
          error("{}::train_machine(): Number of training vectors ({}) does"
                " not match number of labels ({})\n", get_name(),
-               data->get_num_vectors(), m_labels->get_num_labels());
+               data->get_num_vectors(), labs->get_num_labels());
       }
       m_kernel->init(data, data);
 	}
@@ -362,7 +362,7 @@ bool MKLMulticlass::train_machine(std::shared_ptr<Features> data)
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
 
-	addingweightsstep(curweights);
+	addingweightsstep(curweights, data, labs);
 
 	oldalphaterm=curalphaterm;
 	oldnormweightssquared=normweightssquared;
@@ -377,7 +377,7 @@ bool MKLMulticlass::train_machine(std::shared_ptr<Features> data)
 		lpw->computeweights(curweights);
 		weightshistory.push_back(curweights);
 
-		addingweightsstep(curweights);
+		addingweightsstep(curweights, data, labs);
 
 		//new weights new biasterm
 

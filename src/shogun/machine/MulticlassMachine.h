@@ -36,16 +36,10 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 * @param machine machine
 		 * @param labels labels
 		 */
-		MulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels);
+		MulticlassMachine(std::shared_ptr<MulticlassStrategy> strategy, std::shared_ptr<Machine> machine );
 
 		/** destructor */
 		~MulticlassMachine() override;
-
-		/** set labels
-		 *
-		 * @param lab labels
-		 */
-		void set_labels(std::shared_ptr<Labels> lab) override;
 
 		/** set machine
 		 *
@@ -91,13 +85,13 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 *
 		 * @return resulting labels
 		 */
-		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data) override;
 
 		/** classify all examples with multiple output
 		 *
 		 * @return resulting labels
 		 */
-		virtual std::shared_ptr<MultilabelLabels> apply_multilabel_output(std::shared_ptr<Features> data=NULL, int32_t n_outputs=5);
+		virtual std::shared_ptr<MultilabelLabels> apply_multilabel_output(std::shared_ptr<Features> data, int32_t n_outputs=5);
 
 		/** classify one example
 		 * @param vec_idx
@@ -155,13 +149,13 @@ class MulticlassMachine : public BaseMulticlassMachine
 
 	protected:
 		/** init strategy */
-		void init_strategy();
+		void init_strategy( const std::shared_ptr<Labels>& labs);
 
 		/** clear machines */
 		void clear_machines();
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data = NULL) override;
+		bool train_machine(const std::shared_ptr<Features>&, const std::shared_ptr<Labels>& labs) override;
 
 		/** abstract init machine for training method */
 		virtual bool init_machine_for_train(std::shared_ptr<Features> data) = 0;

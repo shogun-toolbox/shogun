@@ -11,11 +11,11 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine qda = create_machine("QDA", labels=labels_train, m_tolerance=0.0001, m_store_covs=True)
+Machine qda = create_machine("QDA", m_tolerance=0.0001, m_store_covs=True)
 #![create_instance]
 
 #![train_and_apply]
-qda.train(features_train)
+qda.train(features_train, labels_train)
 MulticlassLabels labels_predict = qda.apply_multiclass(features_test)
 #![train_and_apply]
 

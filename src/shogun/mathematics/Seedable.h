@@ -13,7 +13,7 @@ namespace shogun
 #ifndef SWIG
 		static constexpr std::string_view kSetRandomSeed = "set_random_seed";
 		static constexpr std::string_view kSeed = "seed";
-#endif // SWIG		
+#endif // SWIG
 		/** Seeds an SGObject using a specific seed
 		 */
 		template <
@@ -46,7 +46,6 @@ namespace shogun
 		{
 			return "Seedable";
 		}
-
 	protected:
 		/** Seeds an SGObject using the current object seed
 		 * This is intended to seed non-parameter SGObjects created inside

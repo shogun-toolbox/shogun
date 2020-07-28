@@ -36,40 +36,36 @@ QDA::QDA(float64_t tolerance, bool store_covs)
 	m_store_covs = store_covs;
 }
 
-QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat )
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 }
 
-QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t tolerance)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 	m_tolerance = tolerance;
 }
 
-QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, bool store_covs)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  bool store_covs)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 	m_store_covs = store_covs;
 }
 
 
 
-QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs)
+QDA::QDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t tolerance, bool store_covs)
 : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 	m_tolerance = tolerance;
 	m_store_covs = store_covs;
 }
@@ -170,9 +166,9 @@ std::shared_ptr<MulticlassLabels> QDA::apply_multiclass(std::shared_ptr<Features
 	return out;
 }
 
-bool QDA::train_machine(std::shared_ptr<Features> data)
+bool QDA::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (!m_labels)
+	if (!labs)
 		error("No labels allocated in QDA training");
 
 	if ( data )
@@ -186,14 +182,14 @@ bool QDA::train_machine(std::shared_ptr<Features> data)
 	if (!m_features)
 		error("No features allocated in QDA training");
 
-	SGVector< int32_t > train_labels = multiclass_labels(m_labels)->get_int_labels();
+	SGVector< int32_t > train_labels = multiclass_labels(labs)->get_int_labels();
 
 	if (!train_labels.vector)
 		error("No train_labels allocated in QDA training");
 
 	cleanup();
 
-	m_num_classes = multiclass_labels(m_labels)->get_num_classes();
+	m_num_classes = multiclass_labels(labs)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 

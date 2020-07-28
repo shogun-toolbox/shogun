@@ -21,10 +21,10 @@ TEST(MulticlassOCASTest,train)
   auto test_feats = mockData->get_features_test();
   auto ground_truth =
 	  std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
-  auto mocas = std::make_shared<MulticlassOCAS>(C, train_feats, ground_truth);
+  auto mocas = std::make_shared<MulticlassOCAS>(C);
   env()->set_num_threads(1);
   mocas->set_epsilon(1e-5);
-  mocas->train();
+  mocas->train(train_feats, ground_truth);
 
   auto pred = mocas->apply(test_feats)->as<MulticlassLabels>();
 

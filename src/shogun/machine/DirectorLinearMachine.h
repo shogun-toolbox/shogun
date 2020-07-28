@@ -74,24 +74,6 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 			return LinearMachine::apply_one(features, vec_idx);
 		}
 
-		/** set labels
-		 *
-		 * @param lab labels
-		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab)
-		{
-			LinearMachine::set_labels(lab);
-		}
-
-		/** get labels
-		 *
-		 * @return labels
-		 */
-		virtual std::shared_ptr<Labels> get_labels()
-		{
-			return LinearMachine::get_labels();
-		}
-
 		/** get classifier type
 		 *
 		 * @return classifier type NONE

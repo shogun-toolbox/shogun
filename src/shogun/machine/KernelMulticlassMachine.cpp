@@ -84,8 +84,8 @@ KernelMulticlassMachine::KernelMulticlassMachine() : MulticlassMachine(), m_kern
  * @param machine kernel machine
  * @param labs labels
  */
-KernelMulticlassMachine::KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs) :
-	MulticlassMachine(std::move(strategy),std::move(machine),std::move(labs)), m_kernel(NULL)
+KernelMulticlassMachine::KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine ) :
+	MulticlassMachine(std::move(strategy),std::move(machine)), m_kernel(NULL)
 {
 	set_kernel(std::move(kernel));
 	SG_ADD(&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);

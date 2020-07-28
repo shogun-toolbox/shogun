@@ -9,11 +9,11 @@ Labels labels_train = create_labels(label_train_multiclass)
 #![create_features]
 
 #![create_machine]
-Machine classifier = create_machine("MulticlassLibLinear", C=1.0, labels = labels_train)
+Machine classifier = create_machine("MulticlassLibLinear", C=1.0)
 #![create_machine]
 
 #![train_and_apply]
-classifier.train(feats_train)
+classifier.train(feats_train, labels_train)
 Labels labels_train_predict = classifier.apply(feats_train)
 Labels labels_test_predict = classifier.apply(feats_test)
 #![train_and_apply]

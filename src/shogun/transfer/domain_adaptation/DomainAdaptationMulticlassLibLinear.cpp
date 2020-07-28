@@ -20,9 +20,8 @@ DomainAdaptationMulticlassLibLinear::DomainAdaptationMulticlassLibLinear() :
 }
 
 DomainAdaptationMulticlassLibLinear::DomainAdaptationMulticlassLibLinear(
-		float64_t target_C, std::shared_ptr<DotFeatures> target_features, std::shared_ptr<Labels> target_labels,
-		std::shared_ptr<LinearMulticlassMachine> source_machine) :
-	MulticlassLibLinear(target_C,std::move(target_features),std::move(target_labels))
+		float64_t target_C, std::shared_ptr<LinearMulticlassMachine> source_machine) :
+	MulticlassLibLinear(target_C)
 {
 	init_defaults();
 
@@ -88,8 +87,8 @@ DomainAdaptationMulticlassLibLinear::~DomainAdaptationMulticlassLibLinear()
 SGMatrix<float64_t> DomainAdaptationMulticlassLibLinear::obtain_regularizer_matrix() const
 {
 	ASSERT(get_use_bias()==false)
-	int32_t n_classes = m_source_machine->get_labels()->as<MulticlassLabels>()->get_num_classes();
-	int32_t n_features = m_source_machine->get_features()->as<DotFeatures>()->get_dim_feature_space();
+	int32_t n_classes = m_source_machine->get_num_classes();
+	int32_t n_features = m_source_machine->get_dim_feature_space();
 	SGMatrix<float64_t> w0(n_classes,n_features);
 
 	for (int32_t i=0; i<n_classes; i++)

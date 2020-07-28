@@ -27,11 +27,9 @@ MulticlassMachine::MulticlassMachine()
 
 MulticlassMachine::MulticlassMachine(
 		std::shared_ptr<MulticlassStrategy >strategy,
-		std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs)
+		std::shared_ptr<Machine> machine )
 : BaseMulticlassMachine(), m_multiclass_strategy(std::move(strategy))
 {
-	set_labels(std::move(labs));
-
 	m_machine = std::move(machine);
 	register_parameters();
 }
@@ -40,20 +38,15 @@ MulticlassMachine::~MulticlassMachine()
 {
 }
 
-void MulticlassMachine::set_labels(std::shared_ptr<Labels> lab)
-{
-    Machine::set_labels(lab);
-}
-
 void MulticlassMachine::register_parameters()
 {
 	SG_ADD(&m_multiclass_strategy,"multiclass_strategy", "Multiclass strategy");
 	SG_ADD(&m_machine, "machine", "The base machine");
 }
 
-void MulticlassMachine::init_strategy()
+void MulticlassMachine::init_strategy( const std::shared_ptr<Labels>& labs)
 {
-    int32_t num_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
+    int32_t num_classes = labs->as<MulticlassLabels>()->get_num_classes();
     m_multiclass_strategy->set_num_classes(num_classes);
 }
 
@@ -76,7 +69,7 @@ std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::share
 	SG_TRACE("entering {}::apply_multiclass({} at {})",
 			get_name(), data ? data->get_name() : "NULL", fmt::ptr(data.get()));
 
-	std::shared_ptr<MulticlassLabels> return_labels=NULL;
+	std::shared_ptr<MulticlassLabels> return_labels;
 
 	if (data)
 		init_machines_for_apply(data);
@@ -209,10 +202,10 @@ std::shared_ptr<MultilabelLabels> MulticlassMachine::apply_multilabel_output(std
 	return return_labels;
 }
 
-bool MulticlassMachine::train_machine(std::shared_ptr<Features> data)
+bool MulticlassMachine::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	ASSERT(m_multiclass_strategy)
-	init_strategy();
+	init_strategy(labs);
 
 	if ( !data && !is_ready() )
 		error("Please provide training data.");
@@ -225,7 +218,7 @@ bool MulticlassMachine::train_machine(std::shared_ptr<Features> data)
 	m_machine->set_labels(train_labels);
 
 	m_multiclass_strategy->train_start(
-	    multiclass_labels(m_labels), train_labels);
+	    multiclass_labels(labs), train_labels);
 	while (m_multiclass_strategy->train_has_more())
 	{
 		SGVector<index_t> subset=m_multiclass_strategy->train_prepare_next();

@@ -32,8 +32,8 @@ ScatterSVM::ScatterSVM(SCATTER_TYPE type)
 {
 }
 
-ScatterSVM::ScatterSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab)), scatter_type(NO_BIAS_LIBSVM),
+ScatterSVM::ScatterSVM(float64_t C, std::shared_ptr<Kernel> k )
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k) ), scatter_type(NO_BIAS_LIBSVM),
 	norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 }
@@ -69,18 +69,18 @@ void ScatterSVM::register_params()
 #endif // USE_SVMLIGHT
 }
 
-bool ScatterSVM::train_machine(std::shared_ptr<Features> data)
+bool ScatterSVM::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-	init_strategy();
+	ASSERT(labs && labs->get_num_labels())
+	ASSERT(labs->get_label_type() == LT_MULTICLASS)
+	init_strategy(labs);
 
 	m_num_classes = m_multiclass_strategy->get_num_classes();
-	int32_t num_vectors = m_labels->get_num_labels();
+	int32_t num_vectors = labs->get_num_labels();
 
 	if (data)
 	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
+		if (labs->get_num_labels() != data->get_num_vectors())
 			error("Number of training vectors does not match number of labels");
 		m_kernel->init(data, data);
 	}
@@ -88,7 +88,7 @@ bool ScatterSVM::train_machine(std::shared_ptr<Features> data)
 	int32_t* numc=SG_MALLOC(int32_t, m_num_classes);
 	SGVector<int32_t>::fill_vector(numc, m_num_classes, 0);
 
-	auto mc = multiclass_labels(m_labels);
+	auto mc = multiclass_labels(labs);
 	for (int32_t i=0; i<num_vectors; i++)
 		numc[(int32_t) mc->get_int_label(i)]++;
 
@@ -110,12 +110,12 @@ bool ScatterSVM::train_machine(std::shared_ptr<Features> data)
 
 	if (scatter_type==NO_BIAS_LIBSVM)
 	{
-		result=train_no_bias_libsvm();
+		result=train_no_bias_libsvm(labs);
 	}
 #ifdef USE_SVMLIGHT
 	else if (scatter_type==NO_BIAS_SVMLIGHT)
 	{
-		result=train_no_bias_svmlight();
+		result=train_no_bias_svmlight(labs);
 	}
 #endif //USE_SVMLIGHT
 	else if (scatter_type==TEST_RULE1 || scatter_type==TEST_RULE2)
@@ -128,7 +128,7 @@ bool ScatterSVM::train_machine(std::shared_ptr<Features> data)
 		if (get_nu()<nu_min || get_nu()>nu_max)
 			error("nu out of valid range [{} ... {}]", nu_min, nu_max);
 
-		result=train_testrule12();
+		result=train_testrule12(labs);
 	}
 	else
 		error("Unknown Scatter type");
@@ -136,7 +136,7 @@ bool ScatterSVM::train_machine(std::shared_ptr<Features> data)
 	return result;
 }
 
-bool ScatterSVM::train_no_bias_libsvm()
+bool ScatterSVM::train_no_bias_libsvm( const std::shared_ptr<Labels>& labs)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -144,7 +144,7 @@ bool ScatterSVM::train_no_bias_libsvm()
 
 	struct svm_node* x_space;
 
-	problem.l=m_labels->get_num_labels();
+	problem.l=labs->get_num_labels();
 	io::info("{} trainlabels", problem.l);
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
@@ -173,7 +173,7 @@ bool ScatterSVM::train_no_bias_libsvm()
 	param.nu = get_nu(); // Nu
 	auto prev_normalizer=m_kernel->get_normalizer();
 	m_kernel->set_normalizer(std::make_shared<ScatterKernelNormalizer>(
-				m_num_classes-1, -1, m_labels, prev_normalizer));
+				m_num_classes-1, -1, labs, prev_normalizer));
 	param.kernel=m_kernel.get();
 	param.cache_size = m_kernel->get_cache_size();
 	param.C = 0;
@@ -246,11 +246,11 @@ bool ScatterSVM::train_no_bias_libsvm()
 }
 
 #ifdef USE_SVMLIGHT
-bool ScatterSVM::train_no_bias_svmlight()
+bool ScatterSVM::train_no_bias_svmlight( const std::shared_ptr<Labels>& labs)
 {
 	auto prev_normalizer=m_kernel->get_normalizer();
 	auto n=std::make_shared<ScatterKernelNormalizer>(
-				 m_num_classes-1, -1, m_labels, prev_normalizer);
+				 m_num_classes-1, -1, labs, prev_normalizer);
 	m_kernel->set_normalizer(n);
 	m_kernel->init_normalizer();
 
@@ -276,21 +276,21 @@ bool ScatterSVM::train_no_bias_svmlight()
 }
 #endif //USE_SVMLIGHT
 
-bool ScatterSVM::train_testrule12()
+bool ScatterSVM::train_testrule12( const std::shared_ptr<Labels>& labs)
 {
 	svm_problem problem;
 	svm_parameter param;
 	struct svm_model* model = nullptr;
 
 	struct svm_node* x_space;
-	problem.l=m_labels->get_num_labels();
+	problem.l=labs->get_num_labels();
 	io::info("{} trainlabels", problem.l);
 
 	problem.y=SG_MALLOC(float64_t, problem.l);
 	problem.x=SG_MALLOC(struct svm_node*, problem.l);
 	x_space=SG_MALLOC(struct svm_node, 2*problem.l);
 
-	auto mc = multiclass_labels(m_labels);
+	auto mc = multiclass_labels(labs);
 	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.y[i]=mc->get_label(i);
@@ -406,7 +406,7 @@ void ScatterSVM::compute_norm_wc()
 		norm_wc[i] = std::sqrt(norm_wc[i]);
 }
 
-std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
+std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest( const std::shared_ptr<Labels>& labs)
 {
 	if (!m_kernel)
 	{
@@ -434,7 +434,7 @@ std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 		float64_t* outputs=SG_MALLOC(float64_t, num_vectors*m_num_classes);
 		SGVector<float64_t>::fill_vector(outputs,num_vectors*m_num_classes,0.0);
 
-		auto mc = multiclass_labels(m_labels);
+		auto mc = multiclass_labels(labs);
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			for (int32_t j=0; j<svm_proto()->get_num_support_vectors(); j++)
@@ -483,7 +483,7 @@ std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 			auto svm = get_svm(i);
 			ASSERT(svm)
 			svm->set_kernel(m_kernel);
-			svm->set_labels(m_labels);
+			svm->set_labels(labs);
 			outputs[i]=svm->apply();
 
 		}

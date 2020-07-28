@@ -28,9 +28,7 @@ class DomainAdaptationMulticlassLibLinear : public MulticlassLibLinear
 		 * @param target_labels target domain labels
 		 * @param source_machine source domain machine to regularize against
 		 */
-		DomainAdaptationMulticlassLibLinear(float64_t target_C,
-				std::shared_ptr<DotFeatures> target_features, std::shared_ptr<Labels> target_labels,
-				std::shared_ptr<LinearMulticlassMachine> source_machine);
+		DomainAdaptationMulticlassLibLinear(float64_t target_C, std::shared_ptr<LinearMulticlassMachine> source_machine);
 
 		/** destructor */
 		~DomainAdaptationMulticlassLibLinear() override;
