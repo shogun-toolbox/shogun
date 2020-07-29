@@ -117,18 +117,13 @@ namespace shogun
 			require(m_combination_rule, "Combination Rule not set");
 			SGMatrix<float64_t> outputs(
 			    data->get_num_vectors(), m_machines.size());
-			auto iter = m_machines.begin();
-			for (auto i = 0; i < outputs.num_cols && iter != m_machines.end();
-			     i++)
+			int col_index = 0;
+			for(auto&& machine: m_machines)
 			{
-				auto res = (*iter)->apply(data);
-				auto col = outputs.get_column_vector(i);
-				auto vec = res->as<DenseLabels>()->get_labels();
-				for (int j = 0; j < outputs.num_rows; j++)
-				{
-					col[j] = vec[j];
-				}
-				iter++;
+				auto vec = machine->apply(data)
+							->as<DenseLabels>()->get_labels();
+				auto col_begin = outputs.get_column_vector(col_index++);
+				std::copy(vec.begin(), vec.end(), col_begin);
 			}
 			return m_combination_rule->combine(outputs);
 		}
