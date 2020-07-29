@@ -115,8 +115,8 @@ class LinearMachine : public Machine
 		apply_regression(std::shared_ptr<Features> data) override;
 
 		/** applies to one vector */
-		float64_t apply_one(
-		    const std::shared_ptr<DotFeatures>& features, int32_t vec_idx) override;
+		virtual float64_t apply_one(
+		    const std::shared_ptr<DotFeatures>& features, int32_t vec_idx);
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.

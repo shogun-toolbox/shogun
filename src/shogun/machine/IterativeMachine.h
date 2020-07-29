@@ -45,10 +45,7 @@ namespace shogun
 			SG_ADD(
 			    &m_continue_features, "continue_features", "Continue Features");
 		}
-		~IterativeMachine() override
-		{
-
-		}
+		~IterativeMachine() override = default;
 
 		/** Returns convergence status */
 		bool is_complete()
@@ -56,9 +53,9 @@ namespace shogun
 			return m_complete;
 		}
 
-		bool continue_train(
+		virtual bool continue_train(
 		    const std::shared_ptr<DotFeatures>& data,
-		    const std::shared_ptr<Labels>& labs) override
+		    const std::shared_ptr<Labels>& labs)
 		{
 			this->reset_computation_variables();
 			//this->put("features", m_continue_features);
