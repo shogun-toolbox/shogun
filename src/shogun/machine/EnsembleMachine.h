@@ -56,20 +56,29 @@ namespace shogun
 			if (num_threads > 1)
 			{
 				std::vector<std::thread> threads;
-				int32_t i = 0, num_machine = m_machines.size();
-				for (i = 0; i < std::min(num_threads, num_machine); i++)
+				int32_t num_machine = m_machines.size();
+				int32_t machine_per_thread = num_machine / num_threads;
+				if (machine_per_thread < 1)
 				{
-					const auto& machine = m_machines[i];
-					threads.emplace_back([&]() {
-						machine->set_labels(labs);
-						machine->train(data);
-					});
+					machine_per_thread = 1;
+				}
+				for (int t = 0; t < std::min(num_threads, num_machine); t++)
+				{
+					threads.emplace_back(
+					    [&](int32_t start, int32_t end) {
+						    for (auto i = start; i < end; i++)
+						    {
+							    m_machines[i]->set_labels(labs);
+							    m_machines[i]->train(data);
+						    }
+					    },
+					    t, t + machine_per_thread);
 				}
 				for (auto&& thread : threads)
 				{
 					thread.join();
 				}
-				for (; i < m_machines.size(); i++)
+				for (int i = machine_per_thread * num_threads; i < num_machine; i++)
 				{
 					m_machines[i]->set_labels(labs);
 					m_machines[i]->train(data);
@@ -100,19 +109,6 @@ namespace shogun
 		apply_multiclass(const std::shared_ptr<Features>& data)
 		{
 			return std::make_shared<MulticlassLabels>(apply_vector(data));
-		}
-
-		std::shared_ptr<SGObject>
-		clone(ParameterProperties pp = ParameterProperties::ALL) const override
-		{
-			auto res = Machine::clone()->as<EnsembleMachine>();
-			for (auto&& machine : m_machines)
-			{
-				res->m_machines.emplace_back(
-				    machine->clone(pp)
-				        ->as<std::remove_reference_t<decltype(
-				            machine)>::element_type>());
-			}
 		}
 
 	private:

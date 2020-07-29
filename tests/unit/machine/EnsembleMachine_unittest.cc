@@ -36,7 +36,7 @@ TEST(EnsembleMachine, train)
 	auto pred = ensemble->apply_multiclass(test_feats)->as<MulticlassLabels>();
 	MulticlassAccuracy evaluate;
 	float64_t result = evaluate.evaluate(pred, ground_truth);
-	EXPECT_GE(result, 0.99);
+	EXPECT_NEAR(result, 1.0,  std::numeric_limits<float64_t>::epsilon());
 }
 
 TEST(Composite, train)
@@ -59,5 +59,5 @@ TEST(Composite, train)
 
 	MulticlassAccuracy evaluate;
 	float64_t result = evaluate.evaluate(pred, ground_truth);
-	EXPECT_GE(result, 0.99);
+	EXPECT_NEAR(result, 1.0, std::numeric_limits<float64_t>::epsilon());
 }
