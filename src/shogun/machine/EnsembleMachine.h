@@ -14,8 +14,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/util/traits.h>
 #include <shogun/util/zip_iterator.h>
-#include <shogun/mathematics/linalg/LinalgNamespace.h>
-
+#include <thread>
 #include <vector>
 namespace shogun
 {
@@ -37,7 +36,7 @@ namespace shogun
 		}
 
 		~EnsembleMachine() = default;
-		
+
 		void
 		set_combination_rule(std::shared_ptr<CombinationRule> combination_rule)
 		{
@@ -53,10 +52,36 @@ namespace shogun
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs)
 		{
-			for (auto&& machine : m_machines)
+			const int32_t& num_threads = env()->get_num_threads();
+			if (num_threads > 1)
 			{
-				machine->set_labels(labs);
-				machine->train(data);
+				std::vector<std::thread> threads;
+				int32_t i = 0, num_machine = m_machines.size();
+				for (i = 0; i < std::min(num_threads, num_machine); i++)
+				{
+					const auto& machine = m_machines[i];
+					threads.emplace_back([&]() {
+						machine->set_labels(labs);
+						machine->train(data);
+					});
+				}
+				for (auto&& thread : threads)
+				{
+					thread.join();
+				}
+				for (; i < m_machines.size(); i++)
+				{
+					m_machines[i]->set_labels(labs);
+					m_machines[i]->train(data);
+				}
+			}
+			else
+			{
+				for (auto&& machine : m_machines)
+				{
+					machine->set_labels(labs);
+					machine->train(data);
+				}
 			}
 		}
 
@@ -73,28 +98,41 @@ namespace shogun
 
 		std::shared_ptr<Labels>
 		apply_multiclass(const std::shared_ptr<Features>& data)
-		{	
+		{
 			return std::make_shared<MulticlassLabels>(apply_vector(data));
 		}
 
-	private:
+		std::shared_ptr<SGObject>
+		clone(ParameterProperties pp = ParameterProperties::ALL) const override
+		{
+			auto res = Machine::clone()->as<EnsembleMachine>();
+			for (auto&& machine : m_machines)
+			{
+				res->m_machines.emplace_back(
+				    machine->clone(pp)
+				        ->as<std::remove_reference_t<decltype(
+				            machine)>::element_type>());
+			}
+		}
 
-        SGVector<float64_t> apply_vector(const std::shared_ptr<Features>& data)
+	private:
+		SGVector<float64_t> apply_vector(const std::shared_ptr<Features>& data)
 		{
 			require(m_combination_rule, "Combination Rule not set");
 			SGMatrix<float64_t> outputs(
 			    data->get_num_vectors(), m_machines.size());
 			auto iter = m_machines.begin();
-			for(auto i = 0; i<outputs.num_cols && iter != m_machines.end(); i++)
+			for (auto i = 0; i < outputs.num_cols && iter != m_machines.end();
+			     i++)
 			{
 				auto res = (*iter)->apply(data);
 				auto col = outputs.get_column_vector(i);
-				auto vec = res-> as<DenseLabels>()->get_labels();
-				for(int j = 0; j<outputs.num_rows; j ++)
+				auto vec = res->as<DenseLabels>()->get_labels();
+				for (int j = 0; j < outputs.num_rows; j++)
 				{
 					col[j] = vec[j];
 				}
-				iter ++;
+				iter++;
 			}
 			return m_combination_rule->combine(outputs);
 		}

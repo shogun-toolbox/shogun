@@ -26,8 +26,9 @@ TEST(EnsembleMachine, train)
 	    std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
 
 	std::vector<std::shared_ptr<Machine>> lists{
-	    std::make_shared<MulticlassOCAS>(),
-	    std::make_shared<MulticlassLibLinear>()};
+		std::make_shared<MulticlassLibLinear>(),
+	    std::make_shared<MulticlassOCAS>()
+	};
 	auto ensemble = std::make_shared<EnsembleMachine>(lists);
 	ensemble->set_combination_rule(std::make_shared<MeanRule>());
 	ensemble->train(train_feats, train_labels);
