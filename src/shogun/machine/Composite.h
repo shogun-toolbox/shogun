@@ -10,7 +10,7 @@
 #include <shogun/machine/Machine.h>
 #include <shogun/transformer/Transformer.h>
 #include <shogun/ensemble/CombinationRule.h>
-#include <shogun/machine/BaggingMachine.h>
+#include <shogun/machine/EnsembleMachine.h>
 #include <vector>
 #include <memory>
 
@@ -19,19 +19,27 @@ class Composite : public Machine {
 public:
     Composite() = default;
 
-    Composite(std::vector<std::shared_ptr<Transformer>>&& trans ) :m_trans(std::move(trans)){}
-
     ~Composite() = default;
-    std::shared_ptr<Composite> with(std::shared_ptr<Machine>);
-    std::shared_ptr<Composite> then(std::shared_ptr<CombinationRule>);
-    std::shared_ptr<BaggingMachine> fit(std::shared_ptr<Features>, std::shared_ptr<Labels>);
-private:
-    /** Transformer to transform data*/
-    std::vector<std::shared_ptr<Transformer>> m_trans;
-    /** machine to be trained in BaggingMachine*/
-    std::vector<std::shared_ptr<Machine>> m_machines;
+    std::shared_ptr<Composite> with(const std::shared_ptr<Machine>& machine){
+        m_ensemble_machine->add_machine(machine);
+        return shared_from_this()->as<Composite>(); 
+    }
+
+    std::shared_ptr<Composite> then(const std::shared_ptr<CombinationRule>& rule){
+        m_ensemble_machine->set_combination_rule(rule);
+        return shared_from_this()->as<Composite>();
+    }
+
+    std::shared_ptr<EnsembleMachine> train(const std::shared_ptr<Features>& data, 
+        const std::shared_ptr<Labels>& labs)
+    {
+        m_ensemble_machine->train(data, labs);
+        return m_ensemble_machine;
+    }
     
-    std::shared_ptr<CombinationRule> m_rule;
+private:
+    std::shared_ptr<EnsembleMachine> m_ensemble_machine 
+            = std::make_shared<EnsembleMachine>();
 };
 } //nampsapce 
 #endif

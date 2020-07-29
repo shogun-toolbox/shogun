@@ -1,59 +1,62 @@
 
+#include "environments/MultiLabelTestEnvironment.h"
 #include <gtest/gtest.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/machine/EnsembleMachine.h>
-#include <shogun/ensemble/MajorityVote.h>
+#include <shogun/ensemble/MeanRule.h>
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/features/DataGenerator.h>
+#include <shogun/features/DenseFeatures.h>
+#include <shogun/machine/Composite.h>
+#include <shogun/machine/EnsembleMachine.h>
 #include <shogun/mathematics/NormalDistribution.h>
 #include <shogun/multiclass/MulticlassLibLinear.h>
 #include <shogun/multiclass/MulticlassOCAS.h>
+
 using namespace shogun;
+extern MultiLabelTestEnvironment* multilabel_test_env;
 
 TEST(EnsembleMachine, train)
 {
-	int32_t seed = 100;
-	index_t num_vec = 10;
-	index_t num_feat = 3;
-	index_t num_class = num_feat; // to make data easy
-	float64_t distance = 15;
+	std::shared_ptr<GaussianCheckerboard> mockData =
+	    multilabel_test_env->getMulticlassFixture();
 
-	// create some linearly seperable data
-	SGMatrix<float64_t> matrix(num_class, num_vec);
-	SGMatrix<float64_t> matrix_test(num_class, num_vec);
-	auto labels = std::make_shared<MulticlassLabels>(num_vec);
-	auto labels_test = std::make_shared<MulticlassLabels>(num_vec);
-	std::mt19937_64 prng(seed);
-	NormalDistribution<float64_t> normal_dist;
-	for (index_t i = 0; i < num_vec; ++i)
-	{
-		index_t label = i % num_class;
-		for (index_t j = 0; j < num_feat; ++j)
-		{
-			matrix(j, i) = normal_dist(prng);
-			matrix_test(j, i) = normal_dist(prng);
-			labels->set_label(i, label);
-			labels_test->set_label(i, label);
-		}
-
-		/* make sure data is linearly seperable per class */
-		matrix(label, i) += distance;
-		matrix_test(label, i) += distance;
-	}
-	auto features = std::make_shared<DenseFeatures<float64_t>>(matrix);
-	auto features_test =
-	    std::make_shared<DenseFeatures<float64_t>>(matrix_test);
+	auto train_feats = mockData->get_features_train();
+	auto test_feats = mockData->get_features_test();
+	auto train_labels = mockData->get_labels_train();
+	auto ground_truth =
+	    std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
 
 	std::vector<std::shared_ptr<Machine>> lists{
-	    std::make_shared<MulticlassLibLinear>(),
-	    std::make_shared<MulticlassOCAS>()};
+	    std::make_shared<MulticlassOCAS>(),
+	    std::make_shared<MulticlassLibLinear>()};
 	auto ensemble = std::make_shared<EnsembleMachine>(lists);
-	ensemble->set_combination_rule(std::make_shared<MajorityVote>());
-	ensemble->train(features, labels);
+	ensemble->set_combination_rule(std::make_shared<MeanRule>());
+	ensemble->train(train_feats, train_labels);
 
-	auto pred =
-	    ensemble->apply_multiclass(features_test)->as<MulticlassLabels>();
+	auto pred = ensemble->apply_multiclass(test_feats)->as<MulticlassLabels>();
 	MulticlassAccuracy evaluate;
-	float64_t result = evaluate.evaluate(pred, labels_test);
-	EXPECT_GE(result, 0.4);
+	float64_t result = evaluate.evaluate(pred, ground_truth);
+	EXPECT_GE(result, 0.99);
+}
+
+TEST(Composite, train)
+{
+	std::shared_ptr<GaussianCheckerboard> mockData =
+	    multilabel_test_env->getMulticlassFixture();
+
+	auto train_feats = mockData->get_features_train();
+	auto test_feats = mockData->get_features_test();
+	auto train_labels = mockData->get_labels_train();
+	auto ground_truth =
+	    std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
+
+	auto composite = std::make_shared<Composite>();
+	auto pred = composite->with(std::make_shared<MulticlassLibLinear>())
+	                ->with(std::make_shared<MulticlassOCAS>())
+	                ->then(std::make_shared<MeanRule>())
+	                ->train(train_feats, train_labels)
+	                ->apply_multiclass(test_feats);
+
+	MulticlassAccuracy evaluate;
+	float64_t result = evaluate.evaluate(pred, ground_truth);
+	EXPECT_GE(result, 0.99);
 }
