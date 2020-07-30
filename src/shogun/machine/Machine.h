@@ -156,11 +156,7 @@ class Machine : public StoppableSGObject
 
 		/** train machine
 		 *
-<<<<<<< HEAD
 		 * @param data training data
-=======
-		 * @param data training data 
->>>>>>> Add NonParametricMachine class (#5055)
 		 * @param lab training label
 		 *
 		 * @return whether training was successful
