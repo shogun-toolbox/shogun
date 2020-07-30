@@ -8,6 +8,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <random>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
 #include <shogun/lib/SGMatrix.h>
@@ -19,35 +20,34 @@
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/preprocessor/NormOne.h>
 #include <shogun/preprocessor/PruneVarSubMean.h>
-#include <random>
 
 using namespace shogun;
 
 // Generate the Data that N is greater than D
 std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> generate_train_data()
 {
-	SGVector<float64_t> labels = SGVector<float64_t>(
-	    {7.23514031, 7.23514031, 7.23514031, 7.23514031, 7.23514031});
-	SGMatrix<float64_t> features =
-	    SGMatrix<float64_t>({{0.71307143, -0.67054885, -0.24406853},
-	                         {-0.79774475, -1.65627891, 0.95675428},
-	                         {0.96709333, 1.81672959, 0.20911922},
-	                         {2.1912712, 0.23820139, 1.07501177},
-	                         {-0.58427793, -0.61855905, 1.27687684}});
+	SGVector<float64_t> labels = SGVector<float64_t>({11, 4, 9, 7, 8});
+	SGMatrix<float64_t> features = SGMatrix<float64_t>({
+	    {0.40015721, 0.97873798, 2.2408932},
+	    {1.86755799, -0.97727788, 0.95008842},
+	    {-0.15135721, -0.10321885, 0.4105985},
+	    {0.14404357, 1.45427351, 0.76103773},
+	    {0.12167502, 0.44386323, 0.33367433},
+	});
 
 	return {features, labels};
 }
 
 std::tuple<SGMatrix<float64_t>, SGVector<float64_t>> generate_test_data()
 {
-	SGVector<float64_t> labels = SGVector<float64_t>(
-	    {7.23514031, 7.23514031, 7.23514031, 7.23514031, 7.23514031});
-	SGMatrix<float64_t> features =
-	    SGMatrix<float64_t>({{1.26465769, 0.05451801, -0.21206714},
-	                         {-0.3447881, -0.81339926, 1.636931},
-	                         {0.3967461, -1.6470009, 0.89995864},
-	                         {0.65379594, 1.08610417, -0.04911578},
-	                         {0.6573247, -0.1306287, -0.64715244}});
+	SGVector<float64_t> labels = SGVector<float64_t>({2, 3, 7, 7, 4});
+	SGMatrix<float64_t> features = SGMatrix<float64_t>({
+	    {1.49407907, -0.20515826, 0.3130677},
+	    {-0.85409574, -2.55298982, 0.6536186},
+	    {0.8644362, -0.74216502, 2.26975462},
+	    {-1.45436567, 0.04575852, -0.18718385},
+	    {1.53277921, 1.46935877, 0.15494743},
+	});
 
 	return {features, labels};
 }
@@ -73,8 +73,11 @@ TEST(GLM, GLM_basic_test)
 
 	auto labels_predict = glm->apply_regression(features_test);
 
+	/** Labels calculated here:
+	 * https://gist.github.com/Hephaestus12/8f303604045308202ae06b4845cf315c */
+
 	SGVector<float64_t> labels_pyglmnet(
-	    {5.47606254, 5.62436215, 5.50835709, 5.75757967, 6.01670904});
+	    {1.89767309, 9.21466271, 3.21613202, 11.89327037, 1.83352229});
 
 	float64_t epsilon = 1e-7;
 
@@ -97,12 +100,12 @@ TEST(GLMCostFunction, GLM_POISSON_gradient_test)
 	float64_t grad_bias = glm_cost->get_gradient_bias(
 	    Xtrain, ytrain, w, bias, true, 2.0, POISSON);
 
-	/* gradient calculated here:
+	/** gradient calculated here:
 	 * https://gist.github.com/Hephaestus12/84ace46a18deed6157dca0a3e3640bfe */
 
 	SGVector<float64_t> pyglmnet_grad_w =
-	    SGVector<float64_t>({-2.62183289, 1.87007061, -4.26700914});
-	float64_t pyglmnet_grad_bias = -6.31650804;
+	    SGVector<float64_t>({-2.10448752, -3.4498384, -7.19517773});
+	float64_t pyglmnet_grad_bias = -6.933939890424355;
 	float64_t epsilon = 1e-7;
 
 	for (auto i : range(grad_w.vlen))
