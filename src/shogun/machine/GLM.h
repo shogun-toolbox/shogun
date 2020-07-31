@@ -43,7 +43,7 @@ namespace shogun
 	class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 	{
 	public:
-		friend class GLMCostFunction;
+		// friend class GLMCostFunction;
 
 		/** default constructor */
 		GLM();
@@ -130,7 +130,7 @@ namespace shogun
 	class GLMCostFunction
 	{
 	public:
-		friend class GLM;
+		// friend class GLM;
 
 		GLMCostFunction() = default;
 
@@ -210,21 +210,6 @@ namespace shogun
 			return grad_bias;
 		}
 
-		const char* get_name() const
-		{
-			return "GLMCostFunction";
-		}
-
-	private:
-		const SGVector<float64_t> compute_z(
-		    const SGMatrix<float64_t>& X, const SGVector<float64_t>& w,
-		    const float64_t bias)
-		{
-			auto prod = linalg::matrix_prod(X, w, true);
-			linalg::add_scalar(prod, bias);
-			return prod;
-		}
-
 		virtual const SGVector<float64_t> non_linearity(
 		    const SGVector<float64_t>& z, const bool compute_bias,
 		    const float64_t eta, const GLM_DISTRIBUTION distribution)
@@ -256,6 +241,23 @@ namespace shogun
 			}
 			return result;
 		}
+
+		const char* get_name() const
+		{
+			return "GLMCostFunction";
+		}
+
+	private:
+		const SGVector<float64_t> compute_z(
+		    const SGMatrix<float64_t>& X, const SGVector<float64_t>& w,
+		    const float64_t bias)
+		{
+			auto prod = linalg::matrix_prod(X, w, true);
+			linalg::add_scalar(prod, bias);
+			return prod;
+		}
+
+		
 
 		virtual const SGVector<float64_t> gradient_non_linearity(
 		    const SGVector<float64_t>& z, const float64_t eta,
