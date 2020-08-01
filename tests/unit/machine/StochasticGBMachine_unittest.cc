@@ -125,7 +125,6 @@ TEST_F(StochasticGBMachineTest, sinusoid_curve_fitting)
 	SGVector<bool> ft(1);
 	ft[0]=false;
 	auto tree=std::make_shared<CARTree>(ft);
-	tree->set_machine_problem_type(PT_REGRESSION);
 	tree->set_max_depth(2);
 	auto sq=std::make_shared<SquaredLoss>();
 	auto sgbm = std::make_shared<StochasticGBMachine>(tree, sq, 100, 0.1, 1.0);
@@ -156,7 +155,6 @@ TEST_F(StochasticGBMachineTest, sinusoid_curve_fitting_subset_fraction)
 	SGVector<bool> ft(1);
 	ft[0] = false;
 	auto tree = std::make_shared<CARTree>(ft);
-	tree->set_machine_problem_type(PT_REGRESSION);
 	tree->set_max_depth(2);
 	auto sq = std::make_shared<SquaredLoss>();
 

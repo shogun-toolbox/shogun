@@ -424,6 +424,16 @@ protected:
 
 	/** initializes members of class */
 	void init();
+
+	void set_machine_problem_type(const std::shared_ptr<Labels>& labs)
+	{
+		if (labs->get_label_type()==LT_MULTICLASS)
+			set_machine_problem_type(PT_MULTICLASS);
+		else if (labs->get_label_type()==LT_REGRESSION)
+			set_machine_problem_type(PT_REGRESSION);
+		else
+			error("label type supplied is not supported");
+	}
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
 	static const float64_t MISSING;

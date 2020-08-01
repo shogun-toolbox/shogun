@@ -248,7 +248,7 @@ bool CARTree::train_machine(const std::shared_ptr<Features>& data, const std::sh
 {
 	require(data,"Data required for training");
 	require(data->get_feature_class()==C_DENSE,"Dense data required for training");
-
+	set_machine_problem_type(labs);
 	auto dense_features = data->as<DenseFeatures<float64_t>>();
 	auto num_features = dense_features->get_num_features();
 	auto num_vectors = dense_features->get_num_vectors();
