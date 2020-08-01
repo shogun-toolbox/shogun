@@ -237,8 +237,7 @@ std::shared_ptr<Machine> StochasticGBMachine::fit_model(const std::shared_ptr<De
 	// clone base machine
 	auto c=m_machine->clone()->as<Machine>();
 	// train cloned machine
-	c->set_labels(labels);
-	c->train(feats);
+	c->train(feats, labels);
 
 	return c;
 }
