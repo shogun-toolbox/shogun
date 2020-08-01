@@ -75,17 +75,6 @@ CARTree::~CARTree()
 {
 }
 
-void CARTree::set_labels(std::shared_ptr<Labels> lab)
-{
-	if (lab->get_label_type()==LT_MULTICLASS)
-		set_machine_problem_type(PT_MULTICLASS);
-	else if (lab->get_label_type()==LT_REGRESSION)
-		set_machine_problem_type(PT_REGRESSION);
-	else
-		error("label type supplied is not supported");
-
-	m_labels=lab;
-}
 
 void CARTree::set_machine_problem_type(EProblemType mode)
 {
@@ -255,7 +244,7 @@ bool CARTree::weights_set()
 	return m_weights.size() != 0;
 }
 
-bool CARTree::train_machine(std::shared_ptr<Features> data)
+bool CARTree::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(data,"Data required for training");
 	require(data->get_feature_class()==C_DENSE,"Dense data required for training");
@@ -292,12 +281,12 @@ bool CARTree::train_machine(std::shared_ptr<Features> data)
 		linalg::set_const(m_nominal, false);
 	}
 
-	auto dense_labels = m_labels->as<DenseLabels>();
+	auto dense_labels = labs->as<DenseLabels>();
 	set_root(CARTtrain(dense_features,m_weights,dense_labels,0));
 
 	if (m_apply_cv_pruning)
 	{
-		prune_by_cross_validation(dense_features,m_folds);
+		prune_by_cross_validation(dense_features, labs, m_folds);
 	}
 	// compute feature importances and normalize it
 	if (m_root)
@@ -1223,7 +1212,7 @@ std::shared_ptr<Labels> CARTree::apply_from_current_node(const std::shared_ptr<D
 	return NULL;
 }
 
-void CARTree::prune_by_cross_validation(const std::shared_ptr<DenseFeatures<float64_t>>& data, int32_t folds)
+void CARTree::prune_by_cross_validation(const std::shared_ptr<DenseFeatures<float64_t>>& data, const std::shared_ptr<Labels>& labs, int32_t folds)
 {
 	auto num_vecs=data->get_num_vectors();
 
@@ -1254,7 +1243,7 @@ void CARTree::prune_by_cross_validation(const std::shared_ptr<DenseFeatures<floa
 		}
 
 		SGVector<int32_t> subset(train_indices.data(),train_indices.size(),false);
-		auto dense_labels = m_labels->as<DenseLabels>();
+		auto dense_labels = labs->as<DenseLabels>();
 		auto feats_train = view(data, subset);
 		auto labels_train = view(dense_labels, subset);
 		SGVector<float64_t> subset_weights(train_indices.size());

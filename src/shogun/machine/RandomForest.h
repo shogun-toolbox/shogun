@@ -60,20 +60,11 @@ public:
 	 *
 	 * @param features training features
 	 * @param labels training labels
-	 * @param num_bags number of trees in forest
-	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees
-	 */
-	RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, int32_t num_bags=10, int32_t num_rand_feats=0);
-
-	/** constructor
-	 *
-	 * @param features training features
-	 * @param labels training labels
 	 * @param weights weights of training feature vectors
 	 * @param num_bags number of trees in forest
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees
 	 */
-	RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
+	RandomForest(SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** destructor */
 	~RandomForest() override;
@@ -146,7 +137,7 @@ public:
 
 protected:
 
-	bool train_machine(std::shared_ptr<Features> data=NULL) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 	/** sets parameters of CARTree - sets machine labels and weights here
 	 *
 	 * @param m machine
@@ -159,6 +150,7 @@ private:
 	void init();
 
 private:
+	int32_t m_num_features;
 	/** weights */
 	SGVector<float64_t> m_weights;
 

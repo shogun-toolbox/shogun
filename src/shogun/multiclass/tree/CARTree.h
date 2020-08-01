@@ -105,11 +105,6 @@ public:
 	/** destructor */
 	~CARTree() override;
 
-	/** set labels - automagically switch machine problem type based on type of labels supplied
-	 * @param lab labels
-	 */
-	void set_labels(std::shared_ptr<Labels> lab) override;
-
 	/** get name
 	 * @return class name CARTree
 	 */
@@ -248,7 +243,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	bool train_machine(std::shared_ptr<Features> data=NULL) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 	/** CARTtrain - recursive CART training method
 	 *
@@ -387,7 +382,7 @@ protected:
 	 * @param data training data
 	 * @param folds the integer V for V-fold cross validation
 	 */
-	void prune_by_cross_validation(const std::shared_ptr<DenseFeatures<float64_t>>& data, int32_t folds);
+	void prune_by_cross_validation(const std::shared_ptr<DenseFeatures<float64_t>>& data, const std::shared_ptr<Labels>& labs, int32_t folds);
 
 	/** computes error in classification/regression
 	 * for classification it eveluates weight_missclassified/total_weight

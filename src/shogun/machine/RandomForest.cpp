@@ -53,26 +53,12 @@ RandomForest::RandomForest(int32_t rand_numfeats, int32_t num_bags)
 		m_machine->as<RandomCARTree>()->set_feature_subset_size(rand_numfeats);
 }
 
-RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, int32_t num_bags, int32_t rand_numfeats)
-: BaggingMachine()
-{
-	init();
-	m_features=std::move(features);
-	set_labels(std::move(labels));
 
-	set_num_bags(num_bags);
-
-	if (rand_numfeats>0)
-		m_machine->as<RandomCARTree>()->set_feature_subset_size(rand_numfeats);
-}
-
-RandomForest::RandomForest(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels, SGVector<float64_t> weights, int32_t num_bags, int32_t rand_numfeats)
+RandomForest::RandomForest(SGVector<float64_t> weights, int32_t num_bags, int32_t rand_numfeats)
 : BaggingMachine()
 {
 	init();
 
-	m_features=std::move(features);
-	set_labels(std::move(labels));
 	m_weights=weights;
 
 	set_num_bags(num_bags);
@@ -163,24 +149,17 @@ void RandomForest::set_machine_parameters(std::shared_ptr<Machine> m, SGVector<i
 	tree->set_machine_problem_type(m_machine->as<RandomCARTree>()->get_machine_problem_type());
 }
 
-bool RandomForest::train_machine(std::shared_ptr<Features> data)
+bool RandomForest::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-	{
-		m_features = data;
-	}
-	
-	require(m_features, "Training features not set!");
 
-	m_machine->as<RandomCARTree>()->pre_sort_features(m_features, m_sorted_transposed_feats, m_sorted_indices);
-
-	return BaggingMachine::train_machine();
+	m_machine->as<RandomCARTree>()->pre_sort_features(data, m_sorted_transposed_feats, m_sorted_indices);
+	m_num_features = data->as<DenseFeatures<float64_t>>()->get_num_features();
+	return BaggingMachine::train_machine(data, labs);
 }
 
 SGVector<float64_t> RandomForest::get_feature_importances() const
 {
-	auto num_feats =
-	    m_features->as<DenseFeatures<float64_t>>()->get_num_features();
+	const auto& num_feats = m_num_features;
 	SGVector<float64_t> feat_importances(num_feats);
 	feat_importances.zero();
 	for (size_t i = 0; i < m_bags.size(); i++)

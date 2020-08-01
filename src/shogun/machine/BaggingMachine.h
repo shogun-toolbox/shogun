@@ -30,19 +30,11 @@ namespace shogun
 		/** default ctor */
 		BaggingMachine();
 
-		/**
-		 * constructor
-		 *
-		 * @param features training features
-		 * @param labels training labels
-		 */
-		BaggingMachine(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels);
-
 		~BaggingMachine() override = default;
 
-		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
-		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
-		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data) override;
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data) override;
+		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data) override;
 
 		/**
 		 * Set number of bags/machine to create
@@ -118,8 +110,10 @@ namespace shogun
 		 * @param eval Evaluation method to use for calculating the error
 		 * @return out-of-bag error.
 		 */
-		float64_t get_oob_error() const;
-
+		float64_t get_oob_error() const
+		{
+			return get_oob_error_lambda();
+		}
 		/** name **/
 		const char* get_name() const override
 		{
@@ -127,7 +121,7 @@ namespace shogun
 		}
 
 	protected:
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<Features>&, const std::shared_ptr<Labels>& labs) override;
 
 		/**
 		 * sets parameters of Machine - useful in Random Forest
@@ -170,12 +164,10 @@ namespace shogun
 		std::vector<index_t>
 		get_oob_indices(const SGVector<index_t>& in_bag);
 
+		float64_t get_oob_error_impl(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) const;
 	protected:
 		/** bags array */
 		std::vector<std::shared_ptr<Machine>> m_bags;
-
-		/** features to train on */
-		std::shared_ptr<Features> m_features;
 
 		/** machine to use for bagging */
 		std::shared_ptr<Machine> m_machine;
@@ -198,9 +190,15 @@ namespace shogun
 		/** metric to calculate the oob error */
 		std::shared_ptr<Evaluation> m_oob_evaluation_metric;
 
+		int32_t m_num_classes;
+
+		int32_t m_num_vectors;
+
+		std::function<float64_t()> get_oob_error_lambda;
+
+
 #ifndef SWIG
 	public:
-		static constexpr std::string_view kFeatures = "features";
 		static constexpr std::string_view kNBags = "num_bags";
 		static constexpr std::string_view kBagSize = "bag_size";
 		static constexpr std::string_view kBags = "bags";
@@ -208,8 +206,8 @@ namespace shogun
 		static constexpr std::string_view kAllOobIdx = "all_oob_idx";
 		static constexpr std::string_view kOobIndices = "oob_indices";
 		static constexpr std::string_view kMachine = "machine";
-		static constexpr std::string_view kOobError = "oob_error";
-		static constexpr std::string_view kOobEvaluationMetric = "oob_evaluation_metric";
+ 		static constexpr std::string_view kOobEvaluationMetric = "oob_evaluation_metric";
+		static constexpr std::string_view KOobError = "oob_error";
 #endif	
 	};
 } // namespace shogun

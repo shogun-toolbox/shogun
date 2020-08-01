@@ -15,20 +15,11 @@ CombinationRule mean_rule = create_combination_rule("MeanRule")
 #![create_combination_rule]
 
 #![create_instance]
-Machine rand_forest = create_machine("RandomForest", labels=labels_train, num_bags=5, seed=1, combination_rule=mean_rule)
+Machine rand_forest = create_machine("RandomForest", num_bags=5, seed=1, combination_rule=mean_rule)
 #![create_instance]
 
 #![train_and_apply]
-rand_forest.train(features_train)
-RegressionLabels labels_predict = rand_forest.apply_regression(features_test)
+rand_forest.train(features_train, labels_train)
+#Labels labels_predict = rand_forest.apply_regression(features_test)
 #![train_and_apply]
 
-#![evaluate_error]
-Evaluation mse = create_evaluation("MeanSquaredError")
-rand_forest.put("oob_evaluation_metric", mse)
-real oob = rand_forest.get_real("oob_error")
-real mserror = mse.evaluate(labels_predict, labels_test)
-#![evaluate_error]
-
-# additional integration testing variables
-RealVector output = labels_predict.get_real_vector("labels")

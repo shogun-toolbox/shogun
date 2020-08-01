@@ -24,12 +24,6 @@ BaggingMachine::BaggingMachine() : RandomMixin<Machine>()
 	register_parameters();
 }
 
-BaggingMachine::BaggingMachine(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels)
-    : BaggingMachine()
-{
-	set_labels(std::move(labels));
-	m_features = std::move(features);
-}
 
 std::shared_ptr<BinaryLabels> BaggingMachine::apply_binary(std::shared_ptr<Features> data)
 {
@@ -48,21 +42,12 @@ std::shared_ptr<MulticlassLabels> BaggingMachine::apply_multiclass(std::shared_p
 {
 	SGMatrix<float64_t> bagged_outputs =
 	    apply_outputs_without_combination(data);
-
-	require(m_labels, "Labels not set.");
-	require(
-	    m_labels->get_label_type() == LT_MULTICLASS,
-	    "Labels ({}) are not compatible with multiclass.",
-	    m_labels->get_name());
-
-	auto labels_multiclass = std::dynamic_pointer_cast<MulticlassLabels>(m_labels);
 	auto num_samples = bagged_outputs.size() / m_num_bags;
-	auto num_classes = labels_multiclass->get_num_classes();
 
 	auto pred = std::make_shared<MulticlassLabels>(num_samples);
-	pred->allocate_confidences_for(num_classes);
+	pred->allocate_confidences_for(m_num_classes);
 
-	SGMatrix<float64_t> class_probabilities(num_classes, num_samples);
+	SGMatrix<float64_t> class_probabilities(m_num_classes, num_samples);
 	class_probabilities.zero();
 
 	for (auto i = 0; i < num_samples; ++i)
@@ -125,27 +110,24 @@ BaggingMachine::apply_outputs_without_combination(std::shared_ptr<Features> data
 	return output;
 }
 
-bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
+bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(m_machine != NULL, "Machine is not set!");
 	require(m_num_bags > 0, "Number of bag is not set!");
-
-	if (data)
+	m_num_vectors = data->get_num_vectors();
+	if(auto multiclass_labs = std::dynamic_pointer_cast<MulticlassLabels>(labs))
 	{
-		m_features = data;
-
-		ASSERT(m_features->get_num_vectors() == m_labels->get_num_labels());
+		m_num_classes = multiclass_labs->get_num_classes();
 	}
-
 	// if bag size is not provided, set it equal to number of training vectors
 	if (m_bag_size == 0)
-		m_bag_size = m_features->get_num_vectors();
+		m_bag_size = data->get_num_vectors();
 
 	// clear the array, if previously trained
 	m_bags.clear();
 
 	// reset the oob index vector
-	m_all_oob_idx = SGVector<bool>(m_features->get_num_vectors());
+	m_all_oob_idx = SGVector<bool>(data->get_num_vectors());
 	m_all_oob_idx.zero();
 
 
@@ -155,26 +137,25 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 	random::fill_array(rnd_indicies, 0, m_bag_size - 1, m_prng);
 
 	auto pb = SG_PROGRESS(range(m_num_bags));
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		auto c=std::dynamic_pointer_cast<Machine>(m_machine->clone());
 		ASSERT(c != NULL);
-		SGVector<index_t> idx(
-		    rnd_indicies.get_column_vector(i), m_bag_size, false);
+		SGVector<index_t> idx(rnd_indicies.get_column_vector(i), m_bag_size, false);
 
 		std::shared_ptr<Features> features;
 		std::shared_ptr<Labels> labels;
 
 		if (env()->get_num_threads() == 1)
 		{
-			features = m_features;
-			labels = m_labels;
+			features = data;
+			labels = labs;
 		}
 		else
 		{
-			features = m_features->shallow_subset_copy();
-			labels = m_labels->shallow_subset_copy();
+			features = data->shallow_subset_copy();
+			labels = labs->shallow_subset_copy();
 		}
 
 		labels->add_subset(idx);
@@ -196,12 +177,11 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 		*/
 		features->add_subset(idx);
 		set_machine_parameters(c, idx);
-		c->set_labels(labels);
-		c->train(features);
+		c->train(features, labels);
 		features->remove_subset();
 		labels->remove_subset();
 
-#pragma omp critical
+//#pragma omp critical
 		{
 		// get out of bag indexes
 		auto oob = get_oob_indices(idx);
@@ -214,7 +194,7 @@ bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 		pb.print_progress();
 	}
 	pb.complete();
-
+	get_oob_error_lambda = [&](){return get_oob_error_impl(data, labs);};
 	return true;
 }
 
@@ -224,7 +204,6 @@ void BaggingMachine::set_machine_parameters(std::shared_ptr<Machine> m, SGVector
 
 void BaggingMachine::register_parameters()
 {
-	SG_ADD(&m_features, kFeatures, "Train features for bagging");
 	SG_ADD(
 	    &m_num_bags, kNBags, "Number of bags", ParameterProperties::HYPER);
 	SG_ADD(
@@ -239,7 +218,7 @@ void BaggingMachine::register_parameters()
 	SG_ADD(&m_machine, kMachine, "machine to use for bagging");
 	SG_ADD(&m_oob_evaluation_metric, kOobEvaluationMetric,
 	    "metric to calculate the oob error");
-	watch_method(kOobError, &BaggingMachine::get_oob_error);
+	watch_method(KOobError, &BaggingMachine::get_oob_error);
 }
 
 void BaggingMachine::set_num_bags(int32_t num_bags)
@@ -275,9 +254,7 @@ void BaggingMachine::set_machine(std::shared_ptr<Machine> machine)
 void BaggingMachine::init()
 {
 	m_machine = nullptr;
-	m_features = nullptr;
 	m_combination_rule = nullptr;
-	m_labels = nullptr;
 	m_num_bags = 0;
 	m_bag_size = 0;
 	m_all_oob_idx = SGVector<bool>();
@@ -294,7 +271,7 @@ std::shared_ptr<CombinationRule> BaggingMachine::get_combination_rule() const
 	return m_combination_rule;
 }
 
-float64_t BaggingMachine::get_oob_error() const
+float64_t BaggingMachine::get_oob_error_impl(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) const
 {
 	require(
 	    m_oob_evaluation_metric, "Out of bag evaluation metric is not set!");
@@ -302,8 +279,8 @@ float64_t BaggingMachine::get_oob_error() const
 	require(m_bags.size() > 0, "BaggingMachine is not trained!");
 
 	SGMatrix<float64_t> output(
-	    m_features->get_num_vectors(), m_bags.size());
-	if (m_labels->get_label_type() == LT_REGRESSION)
+	   m_num_vectors, m_bags.size());
+	if (labs->get_label_type() == LT_REGRESSION)
 		output.zero();
 	else
 		output.set_const(NAN);
@@ -318,9 +295,9 @@ float64_t BaggingMachine::get_oob_error() const
 		auto current_oob = m_oob_indices[i];
 
 		SGVector<index_t> oob(current_oob.data(), current_oob.size(), false);
-		m_features->add_subset(oob);
+		data->add_subset(oob);
 
-		auto l = m->apply(m_features);
+		auto l = m->apply(data);
 		SGVector<float64_t> lv;
 		if (l!=NULL)
 			lv = std::dynamic_pointer_cast<DenseLabels>(l)->get_labels();
@@ -331,14 +308,14 @@ float64_t BaggingMachine::get_oob_error() const
 		for (index_t j = 0; j < oob.vlen; j++)
 			output(oob[j], i) = lv[j];
 
-		m_features->remove_subset();
+		data->remove_subset();
 
 
 
 	}
 
 	std::vector<index_t> idx;
-	for (index_t i = 0; i < m_features->get_num_vectors(); i++)
+	for (index_t i = 0; i < data->get_num_vectors(); i++)
 	{
 		if (m_all_oob_idx[i])
 			idx.push_back(i);
@@ -350,7 +327,7 @@ float64_t BaggingMachine::get_oob_error() const
 		lab[i] = combined[idx[i]];
 
 	std::shared_ptr<Labels> predicted = NULL;
-	switch (m_labels->get_label_type())
+	switch (labs->get_label_type())
 	{
 		case LT_BINARY:
 			predicted = std::make_shared<BinaryLabels>(lab);
@@ -369,16 +346,16 @@ float64_t BaggingMachine::get_oob_error() const
 	}
 
 
-	m_labels->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
-	float64_t res = m_oob_evaluation_metric->evaluate(predicted, m_labels);
-	m_labels->remove_subset();
+	labs->add_subset(SGVector<index_t>(idx.data(), idx.size(), false));
+	float64_t res = m_oob_evaluation_metric->evaluate(predicted, labs);
+	labs->remove_subset();
 
 	return res;
 }
 
 std::vector<index_t> BaggingMachine::get_oob_indices(const SGVector<index_t>& in_bag)
 {
-	SGVector<bool> out_of_bag(m_features->get_num_vectors());
+	SGVector<bool> out_of_bag(m_num_vectors);
 	out_of_bag.set_const(true);
 
 	// mark the ones that are in_bag

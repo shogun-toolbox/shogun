@@ -79,7 +79,7 @@ TEST_F(BaggingMachineTest, mock_train)
 
 	auto features = std::make_shared<NiceMock<MockFeatures>>();
 	auto labels = std::make_shared<NiceMock<MockLabels>>();
-	auto bm = std::make_shared<BaggingMachine>(features, labels);
+	auto bm = std::make_shared<BaggingMachine>();
 	auto mm = std::make_shared<NiceMock<MockMachine>>();
 	auto mv = std::make_shared<MajorityVote>();
 
@@ -90,7 +90,7 @@ TEST_F(BaggingMachineTest, mock_train)
 	bm->set_combination_rule(mv);
 	bm->put("seed", seed);
 
-	ON_CALL(*mm, train_machine(_))
+	ON_CALL(*mm, train_machine(_, _))
 		.WillByDefault(Return(true));
 
 	ON_CALL(*features, get_num_vectors())
@@ -103,13 +103,13 @@ TEST_F(BaggingMachineTest, mock_train)
 				.Times(1)
 				.WillRepeatedly(Return(mm));
 
-			EXPECT_CALL(*mm, train_machine(_))
+			EXPECT_CALL(*mm, train_machine(_, _))
 				.Times(1)
 				.WillRepeatedly(Return(true));
 		}
 	}
 
-	bm->train();
+	bm->train(features_train, labels_train);
 	EXPECT_TRUE(Mock::VerifyAndClearExpectations(mm.get()));
 }
 
@@ -120,7 +120,7 @@ TEST_F(BaggingMachineTest, classify_CART)
 	auto cv=std::make_shared<MajorityVote>();
 	cart->set_feature_types(ft);
 
-	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
+	auto c = std::make_shared<BaggingMachine>();
 
 	env()->set_num_threads(1);
 	c->set_machine(cart);
@@ -128,7 +128,7 @@ TEST_F(BaggingMachineTest, classify_CART)
 	c->set_num_bags(10);
 	c->set_combination_rule(cv);
 	c->put("seed", seed);
-	c->train(features_train);
+	c->train(features_train, labels_train);
 
 	auto result = c->apply_multiclass(features_test);
 	SGVector<float64_t> res_vector=result->get_labels();
@@ -141,7 +141,7 @@ TEST_F(BaggingMachineTest, classify_CART)
 
 	std::shared_ptr<Evaluation> eval = std::make_shared<MulticlassAccuracy>();
 	c->put(BaggingMachine::kOobEvaluationMetric, eval);
-	EXPECT_NEAR(0.642857,c->get<float64_t>(BaggingMachine::kOobError),1e-6);
+	EXPECT_NEAR(0.642857,c->get_oob_error(),1e-6);
 }
 
 TEST_F(BaggingMachineTest, output_binary)
@@ -151,14 +151,14 @@ TEST_F(BaggingMachineTest, output_binary)
 	auto cv = std::make_shared<MeanRule>();
 
 	cart->set_feature_types(ft);
-	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
+	auto c = std::make_shared<BaggingMachine>();
 	env()->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);
 	c->set_combination_rule(cv);
 	c->put("seed", seed);
-	c->train(features_train);
+	c->train(features_train, labels_train);
 
 	auto result = c->apply_binary(features_test);
 	SGVector<float64_t> res_vector = result->get_labels();
@@ -185,13 +185,13 @@ TEST_F(BaggingMachineTest, output_multiclass_probs_sum_to_one)
 	auto cv = std::make_shared<MajorityVote>();
 
 	cart->set_feature_types(ft);
-	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
+	auto c = std::make_shared<BaggingMachine>();
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);
 	c->set_combination_rule(cv);
 	c->put("seed", seed);
-	c->train(features_train);
+	c->train(features_train, labels_train);
 
 	auto result = c->apply_multiclass(features_test);
 
