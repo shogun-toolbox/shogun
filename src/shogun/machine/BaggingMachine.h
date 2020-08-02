@@ -207,7 +207,7 @@ namespace shogun
 		static constexpr std::string_view kOobIndices = "oob_indices";
 		static constexpr std::string_view kMachine = "machine";
  		static constexpr std::string_view kOobEvaluationMetric = "oob_evaluation_metric";
-		static constexpr std::string_view KOobError = "oob_error";
+		static constexpr std::string_view kOobError = "oob_error";
 #endif	
 	};
 } // namespace shogun

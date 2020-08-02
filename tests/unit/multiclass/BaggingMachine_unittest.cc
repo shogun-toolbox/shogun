@@ -141,7 +141,7 @@ TEST_F(BaggingMachineTest, classify_CART)
 
 	std::shared_ptr<Evaluation> eval = std::make_shared<MulticlassAccuracy>();
 	c->put(BaggingMachine::kOobEvaluationMetric, eval);
-	EXPECT_NEAR(0.642857,c->get_oob_error(),1e-6);
+	EXPECT_NEAR(0.642857,c->get<float64_t>(BaggingMachine::kOobError),1e-6);
 }
 
 TEST_F(BaggingMachineTest, output_binary)

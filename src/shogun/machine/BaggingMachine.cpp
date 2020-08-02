@@ -218,7 +218,7 @@ void BaggingMachine::register_parameters()
 	SG_ADD(&m_machine, kMachine, "machine to use for bagging");
 	SG_ADD(&m_oob_evaluation_metric, kOobEvaluationMetric,
 	    "metric to calculate the oob error");
-	watch_method(KOobError, &BaggingMachine::get_oob_error);
+	watch_method(kOobError, &BaggingMachine::get_oob_error);
 }
 
 void BaggingMachine::set_num_bags(int32_t num_bags)
