@@ -43,8 +43,6 @@ namespace shogun
 	class GLM : public RandomMixin<IterativeMachine<LinearMachine>>
 	{
 	public:
-		// friend class GLMCostFunction;
-
 		/** default constructor */
 		GLM();
 
@@ -130,8 +128,6 @@ namespace shogun
 	class GLMCostFunction
 	{
 	public:
-		// friend class GLM;
-
 		GLMCostFunction() = default;
 
 		virtual SGVector<float64_t> get_gradient_weights(
@@ -258,7 +254,6 @@ namespace shogun
 		}
 
 		
-
 		virtual const SGVector<float64_t> gradient_non_linearity(
 		    const SGVector<float64_t>& z, const float64_t eta,
 		    const GLM_DISTRIBUTION distribution)
