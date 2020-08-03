@@ -23,7 +23,10 @@ namespace shogun
 	{
 
 	public:
-		EnsembleMachine() = default;
+		EnsembleMachine() 
+		{
+			init();
+		};
 
 		template <
 		    typename T,
@@ -33,13 +36,14 @@ namespace shogun
 			std::copy(
 			    machines.begin(), machines.end(),
 			    std::back_inserter(m_machines));
+			init();
 		}
 
 		~EnsembleMachine() = default;
 
 		void init()
 		{
-			SG_ADD(&m_machines, "machine", "Array of machines.", ParameterProperties::HYPER);
+			SG_ADD(&m_machines, "machines", "Array of machines.", ParameterProperties::HYPER);
 			SG_ADD(&m_combination_rule, "combination_rule", "Combination rule", ParameterProperties::HYPER);
 		}
 
