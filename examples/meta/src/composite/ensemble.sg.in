@@ -1,0 +1,31 @@
+File f_feats_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_train.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_features_test.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_train.dat")
+File f_labels_test = read_csv("@SHOGUN_DATA@/classifier_binary_2d_linear_labels_test.dat")
+
+#![create_features]
+Features features_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+Labels labels_train = create_labels(f_labels_train)
+Labels labels_test = create_labels(f_labels_test)
+#![create_features]
+
+#![create machine]
+Machine ensemble = create_machine("EnsembleMachine", labels = labels_train)
+Machine submachine1 = create_machine("MulticlassOCAS")
+Machine submachine2 = create_machine("MulticlassLibLinear")
+ensemble.add("machine", submachine1)
+ensemble.add("machine", submachine2)
+CombinationRule c = create_combination_rule("MeanRule")
+ensemble.put("combination_rule", c)
+#![create machine]
+
+#![train_and_apply]
+ensemble.train(features_train)
+Labels labels_predict = ensemble.apply_multiclass(features_test)
+#![train_and_apply]
+
+#![evaluate_accuracy]
+Evaluation eval = create_evaluation("AccuracyMeasure")
+real accuracy = eval.evaluate(labels_predict, labels_test)
+#![evaluate_accuracy]

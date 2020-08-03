@@ -37,6 +37,12 @@ namespace shogun
 
 		~EnsembleMachine() = default;
 
+		void init()
+		{
+			SG_ADD(&m_machines, "machine", "Array of machines.", ParameterProperties::HYPER);
+			SG_ADD(&m_combination_rule, "combination_rule", "Combination rule", ParameterProperties::HYPER);
+		}
+
 		void
 		set_combination_rule(std::shared_ptr<CombinationRule> combination_rule)
 		{
@@ -48,6 +54,11 @@ namespace shogun
 			m_machines.push_back(machine);
 		}
 
+		bool train_machine(std::shared_ptr<Features> data) override{
+			require(m_labels, "Labels not set");
+			train(data, m_labels);
+			return true;
+		}
 		void train(
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs)
@@ -99,14 +110,14 @@ namespace shogun
 			return "EnsembleMachine";
 		}
 
-		std::shared_ptr<Labels>
-		apply_binary(const std::shared_ptr<Features>& data)
+		std::shared_ptr<BinaryLabels>
+		apply_binary(std::shared_ptr<Features> data) override
 		{
 			return std::make_shared<BinaryLabels>(apply_vector(data));
 		}
 
-		std::shared_ptr<Labels>
-		apply_multiclass(const std::shared_ptr<Features>& data)
+		std::shared_ptr<MulticlassLabels>
+		apply_multiclass(std::shared_ptr<Features> data) override
 		{
 			return std::make_shared<MulticlassLabels>(apply_vector(data));
 		}
