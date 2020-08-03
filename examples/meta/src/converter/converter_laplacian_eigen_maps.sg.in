@@ -1,0 +1,17 @@
+File f_feats_train = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+
+#![create_features]
+Features feats = create_features(f_feats_train)
+#![create_features]
+
+#![set_parameters]
+Transformer fa = create_transformer("LaplacianEigenmaps", target_dim=1, k=20, tau=20)
+#![set_parameters]
+
+#![apply_convert]
+Features converted = fa.transform(feats)
+#![apply_convert]
+
+#![extract]
+RealMatrix unmixed_signal = converted.get_real_matrix("feature_matrix")
+#![extract]
