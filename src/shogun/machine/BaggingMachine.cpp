@@ -194,7 +194,7 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 		pb.print_progress();
 	}
 	pb.complete();
-	get_oob_error_lambda = [&](){return get_oob_error_impl(data, labs);};
+	get_oob_error_lambda = [=](){return get_oob_error_impl(data, labs);};
 	return true;
 }
 
