@@ -48,7 +48,7 @@ NewtonSVM::~NewtonSVM()
 {
 }
 
-void NewtonSVM::init_model(std::shared_ptr<Features> data)
+void NewtonSVM::init_model(const std::shared_ptr<Features> data)
 {
 	if (data)
 	{

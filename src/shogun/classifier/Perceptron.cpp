@@ -34,7 +34,7 @@ Perceptron::~Perceptron()
 {
 }
 
-void Perceptron::init_model(std::shared_ptr<Features> data)
+void Perceptron::init_model(const std::shared_ptr<Features> data)
 {
 	if (data)
 	{

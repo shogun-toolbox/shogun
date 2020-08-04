@@ -113,7 +113,7 @@ namespace shogun
 
 		/** To be overloaded in subclasses to initialize the model for training
 		  */
-		virtual void init_model(std::shared_ptr<Features> data = NULL) = 0;
+		virtual void init_model(const std::shared_ptr<Features> data = NULL) = 0;
 
 		/** Can be overloaded in subclasses to show more information
 		  * and/or clean up states
