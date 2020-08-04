@@ -137,7 +137,7 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 	random::fill_array(rnd_indicies, 0, m_bag_size - 1, m_prng);
 
 	auto pb = SG_PROGRESS(range(m_num_bags));
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		auto c=std::dynamic_pointer_cast<Machine>(m_machine->clone());
@@ -157,8 +157,12 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 			features = data->shallow_subset_copy();
 			labels = labs->shallow_subset_copy();
 		}
-
-		labels->add_subset(idx);
+#pragma omp critical
+		{
+			labels->add_subset(idx);
+			features->add_subset(idx);
+		}
+		
 		/* TODO:
 		   if it's a binary labeling ensure that
 		   there's always samples of both classes
@@ -175,13 +179,17 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 		    }
 		}
 		*/
-		features->add_subset(idx);
+		
 		set_machine_parameters(c, idx);
 		c->train(features, labels);
-		features->remove_subset();
-		labels->remove_subset();
+		#pragma omp critical
+		{
+			features->remove_subset();
+			labels->remove_subset();
+		}
+		
 
-//#pragma omp critical
+#pragma omp critical
 		{
 		// get out of bag indexes
 		auto oob = get_oob_indices(idx);
