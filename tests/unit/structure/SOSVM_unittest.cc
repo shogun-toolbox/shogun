@@ -78,7 +78,7 @@ TEST(SOSVM, sgd_check_w_helper)
 	auto sgd = std::make_shared<StochasticSOSVM>(model, labels, false, false);
 	sgd->set_num_iter(1);
 	sgd->set_lambda(1.0);
-	sgd->train();
+	sgd->train(instances, labels);
 	w = sgd->get_w();
 
 	for (int32_t i = 0; i < w.vlen; i++)
@@ -161,7 +161,7 @@ TEST(SOSVM, fw_check_w_helper)
 	fw->set_num_iter(1);
 	fw->set_lambda(1.0);
 	fw->set_gap_threshold(0.0);
-	fw->train();
+	fw->train(instances, labels);
 	w = fw->get_w();
 
 	for (int32_t i = 0; i < w.vlen; i++)
