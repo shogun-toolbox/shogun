@@ -14,11 +14,11 @@ ft[0] = False
 #![set_attribute_types]
 
 #![create_machine]
-Machine cartree = create_machine("CARTree", labels=labels_train, nominal=ft, mode=enum EProblemType.PT_REGRESSION, folds=5, apply_cv_pruning=True, seed=1)
+Machine cartree = create_machine("CARTree", nominal=ft, mode=enum EProblemType.PT_REGRESSION, folds=5, apply_cv_pruning=True, seed=1)
 #![create_machine]
 
 #![train_and_apply]
-cartree.train(feats_train)
+cartree.train(feats_train, labels_train)
 Labels labels_predict = cartree.apply(feats_test)
 #![train_and_apply]
 

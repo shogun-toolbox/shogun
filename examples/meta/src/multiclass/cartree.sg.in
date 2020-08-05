@@ -19,11 +19,10 @@ ft[1] = False
 #![create_instance]
 Machine classifier = create_machine("CARTree", nominal = ft,mode = enum EProblemType.PT_MULTICLASS, folds=5, apply_cv_pruning=True, seed=1)
 
-classifier.set_labels(labels_train)
 #![create_instance]
 
 #![train_and_apply]
-classifier.train(features_train)
+classifier.train(features_train, labels_train)
 MulticlassLabels labels_predict = classifier.apply_multiclass(features_test)
 #![train_and_apply]
 

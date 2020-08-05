@@ -93,13 +93,13 @@ TEST_F(RandomForestTest, classify_nominal_test)
 {
 	int32_t seed = 2343;
 	auto c =
-	    std::make_shared<RandomForest>(weather_features_train, weather_labels_train, 100, 2);
+	    std::make_shared<RandomForest>(2, 100);
 	c->set_feature_types(weather_ft);
 	auto mv = std::make_shared<MajorityVote>();
 	c->set_combination_rule(mv);
 	env()->set_num_threads(1);
 	c->put("seed", seed);
-	c->train(weather_features_train);
+	c->train(weather_features_train, weather_labels_train);
 
 	auto result =
 	    c->apply(weather_features_test)->as<MulticlassLabels>();
@@ -126,13 +126,13 @@ TEST_F(RandomForestTest, classify_non_nominal_test)
 	weather_ft[3] = false;
 
 	auto c =
-	    std::make_shared<RandomForest>(weather_features_train, weather_labels_train, 100, 2);
+	    std::make_shared<RandomForest>(2, 100);
 	c->set_feature_types(weather_ft);
 	auto mv = std::make_shared<MajorityVote>();
 	c->set_combination_rule(mv);
 	env()->set_num_threads(1);
 	c->put("seed", seed);
-	c->train(weather_features_train);
+	c->train(weather_features_train, weather_labels_train);
 
 	auto result =
 	    c->apply(weather_features_test)->as<MulticlassLabels>();
@@ -147,7 +147,7 @@ TEST_F(RandomForestTest, classify_non_nominal_test)
 
 	std::shared_ptr<Evaluation> eval=std::make_shared<MulticlassAccuracy>();
 	c->put(RandomForest::kOobEvaluationMetric, eval);
-	EXPECT_NEAR(0.714285,c->get<float64_t>(RandomForest::kOobError),1e-6);
+	EXPECT_NEAR(0.7142857,c->get<float64_t>(RandomForest::kOobError),1e-6);
 }
 
 TEST_F(RandomForestTest, score_compare_sklearn_toydata)
@@ -166,7 +166,7 @@ TEST_F(RandomForestTest, score_compare_sklearn_toydata)
 	SGVector<float64_t> lab {0.0, 0.0, 1.0, 1.0};
 	auto labels_train = std::make_shared<MulticlassLabels>(lab);
 
-	auto c = std::make_shared<RandomForest>(features_train, labels_train, 10, 2);
+	auto c = std::make_shared<RandomForest>(2, 10);
 	SGVector<bool> ft = SGVector<bool>(2);
 	ft[0] = false;
 	ft[1] = false;
@@ -175,7 +175,7 @@ TEST_F(RandomForestTest, score_compare_sklearn_toydata)
 	auto mr = std::make_shared<MeanRule>();
 	c->set_combination_rule(mr);
 	c->put("seed", seed);
-	c->train(features_train);
+	c->train(features_train, labels_train);
 
 	auto result = c->apply_binary(features_train);
 	SGVector<float64_t> res_vector = result->get_labels();
@@ -226,7 +226,7 @@ TEST_F(RandomForestTest, score_consistent_with_binary_trivial_data)
 	    std::make_shared<DenseFeatures<float64_t>>(test_data);
 
 	auto c =
-	    std::make_shared<RandomForest>(features_train, labels_train, num_trees, 1);
+	    std::make_shared<RandomForest>(1, num_trees);
 	SGVector<bool> ft = SGVector<bool>(1);
 	ft[0] = false;
 	c->set_feature_types(ft);
@@ -234,7 +234,7 @@ TEST_F(RandomForestTest, score_consistent_with_binary_trivial_data)
 	auto mr = std::make_shared<MeanRule>();
 	c->set_combination_rule(mr);
 	c->put("seed", seed);
-	c->train(features_train);
+	c->train(features_train, labels_train);
 
 	auto result = c->apply_binary(features_test);
 	SGVector<float64_t> res_vector = result->get_labels();
