@@ -25,15 +25,12 @@ GaussianNaiveBayes::GaussianNaiveBayes() : NativeMulticlassMachine(), m_features
 	init();
 };
 
-GaussianNaiveBayes::GaussianNaiveBayes(const std::shared_ptr<Features>& train_examples,
-	const std::shared_ptr<Labels>& train_labels) : NativeMulticlassMachine(), m_features(NULL),
+GaussianNaiveBayes::GaussianNaiveBayes(const std::shared_ptr<Features>& train_examples)
+	: NativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
 	init();
-	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels())
-	set_labels(train_labels);
-
 	if (!train_examples->has_property(FP_DOT))
 		error("Specified features are not of type CDotFeatures");
 

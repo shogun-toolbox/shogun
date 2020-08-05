@@ -152,7 +152,7 @@ void CHAIDTree::set_dependent_vartype(int32_t var)
 	m_dependent_vartype=var;
 }
 
-bool CHAIDTree::train_machine(std::shared_ptr<Features> data)
+bool CHAIDTree::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(data, "Data required for training");
 
@@ -188,7 +188,7 @@ bool CHAIDTree::train_machine(std::shared_ptr<Features> data)
 		}
 	}
 
-	set_root(CHAIDtrain(data,m_weights,m_labels,0));
+	set_root(CHAIDtrain(data,m_weights,labs,0));
 
 	// restore feature types
 	if (updated)

@@ -147,6 +147,7 @@ TEST_F(RandomForestTest, classify_non_nominal_test)
 
 	std::shared_ptr<Evaluation> eval=std::make_shared<MulticlassAccuracy>();
 	c->put(RandomForest::kOobEvaluationMetric, eval);
+
 	EXPECT_NEAR(0.7142857,c->get<float64_t>(RandomForest::kOobError),1e-6);
 }
 

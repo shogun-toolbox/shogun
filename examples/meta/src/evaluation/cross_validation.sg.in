@@ -51,7 +51,7 @@ Labels reg_labels_test = create_labels(reg_lab_test)
 
 #![create_machine_REGRESSION]
 real tau = 0.001
-Machine lrr = create_machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
+Machine lrr = create_machine("LinearRidgeRegression", tau=tau)
 #![create_instance_REGRESSION]
 
 #![create_cross_validation_REGRESSION]

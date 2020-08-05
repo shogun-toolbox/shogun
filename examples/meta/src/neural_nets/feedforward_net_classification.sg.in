@@ -12,7 +12,7 @@ Labels labels_test = create_labels(f_labels_test)
 
 #![create_instance]
 int num_feats = features_train.get_int("num_features")
-Machine network = create_machine("NeuralNetwork", labels=labels_train, auto_quick_initialize=True, l2_coefficient=0.01, dropout_hidden=0.5, max_num_epochs=50, gd_mini_batch_size=num_feats, gd_learning_rate=0.1, gd_momentum=0.9)
+Machine network = create_machine("NeuralNetwork", auto_quick_initialize=True, l2_coefficient=0.01, dropout_hidden=0.5, max_num_epochs=50, gd_mini_batch_size=num_feats, gd_learning_rate=0.1, gd_momentum=0.9)
 #![create_instance]
 
 #![add_layers]
@@ -26,7 +26,7 @@ network.put("seed", 1)
 #![add_layers]
 
 #![train_and_apply]
-network.train(features_train)
+network.train(features_train, labels_train)
 Labels labels_predict = network.apply(features_test)
 #![train_and_apply]
 

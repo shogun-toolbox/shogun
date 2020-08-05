@@ -184,18 +184,6 @@ class Machine : public StoppableSGObject
 		/** apply machine to data in means of latent problem */
 		virtual std::shared_ptr<LatentLabels> apply_latent(std::shared_ptr<Features> data=NULL);
 
-		/** set labels
-		 *
-		 * @param lab labels
-		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab);
-
-		/** get labels
-		 *
-		 * @return labels
-		 */
-		virtual std::shared_ptr<Labels> get_labels();
-
 		/** set maximum training time
 		 *
 		 * @param t maximimum training time
@@ -346,7 +334,7 @@ class Machine : public StoppableSGObject
 		float64_t m_max_train_time;
 
 		/** labels */
-		std::shared_ptr<Labels> m_labels;
+		//std::shared_ptr<Labels> m_labels;
 
 		/** solver type */
 		ESolverType m_solver_type;

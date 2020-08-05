@@ -120,8 +120,34 @@ namespace shogun
 		EProblemType get_machine_problem_type() const override;
 
 	protected:
-		bool train_machine(std::shared_ptr<Features> data = NULL) override;
-
+		template<typename ... Args>
+		bool train_machine_impl(std::shared_ptr<Features> data, Args&& ... args)
+		{
+			require(data, "Data should not be NULL");
+			auto current_data = data;
+			for (auto&& stage : m_stages)
+			{
+				if (holds_alternative<std::shared_ptr<Transformer>>(stage.second))
+				{
+					auto transformer = shogun::get<std::shared_ptr<Transformer>>(stage.second);
+					transformer->train_require_labels()
+						? transformer->fit(current_data, args...)
+						: transformer->fit(current_data);
+					current_data = transformer->transform(current_data);
+					
+				}
+				else
+				{
+					auto machine = shogun::get<std::shared_ptr<Machine>>(stage.second);
+					machine->train(current_data, args...);
+					
+				}
+			}
+			return true;
+		}
+		bool train_machine(std::shared_ptr<Features> data) override;
+		bool train_machine(const std::shared_ptr<Features>& data,
+						   const std::shared_ptr<Labels>& labs) override;
 		std::vector<std::pair<std::string, variant<std::shared_ptr<Transformer>, std::shared_ptr<Machine>>>>
 		    m_stages;
 		bool train_require_labels() const override;

@@ -157,7 +157,7 @@ protected:
 	/** train machine - build C4.5 Tree from training data
 	 * @param data training data
 	 */
-	bool train_machine(std::shared_ptr<Features> data=NULL) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 private:
 

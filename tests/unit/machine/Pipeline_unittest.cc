@@ -50,7 +50,8 @@ TEST_F(PipelineTest, fit_predict)
 	                    ->then(machine);
 
 	// no labels given
-	EXPECT_THROW(pipeline->train(features), ShogunException);
+	//EXPECT_THROW(pipeline->train(features), ShogunException);
+	//pipeline->train(features, labels);
 
 	InSequence s;
 
@@ -60,10 +61,9 @@ TEST_F(PipelineTest, fit_predict)
 	EXPECT_CALL(*transformer2, fit(_)).Times(0);
 	EXPECT_CALL(*transformer2, fit(_, _));
 	EXPECT_CALL(*transformer2, transform(_, _));
-	EXPECT_CALL(*machine, train_machine(_));
+	EXPECT_CALL(*machine, train_machine(_,_));
 
-	pipeline->set_labels(labels);
-	pipeline->train(features);
+	pipeline->train(features, labels);
 
 	Mock::VerifyAndClearExpectations(transformer1.get());
 	Mock::VerifyAndClearExpectations(transformer2.get());

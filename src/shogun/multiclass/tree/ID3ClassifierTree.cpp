@@ -68,7 +68,7 @@ bool ID3ClassifierTree::prune_tree(std::shared_ptr<DenseFeatures<float64_t>> val
 	return true;
 }
 
-bool ID3ClassifierTree::train_machine(std::shared_ptr<Features> data)
+bool ID3ClassifierTree::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(data,"Data required for training");
 	require(data->get_feature_class()==C_DENSE, "Dense data required for training");
@@ -77,7 +77,7 @@ bool ID3ClassifierTree::train_machine(std::shared_ptr<Features> data)
 	SGVector<int32_t> feature_ids = SGVector<int32_t>(num_features);
 	feature_ids.range_fill();
 
-	set_root(id3train(data, multiclass_labels(m_labels), feature_ids, 0));
+	set_root(id3train(data, multiclass_labels(labs), feature_ids, 0));
 
 	if (m_root)
 	{

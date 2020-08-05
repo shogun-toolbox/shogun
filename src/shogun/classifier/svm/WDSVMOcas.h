@@ -46,7 +46,7 @@ class WDSVMOcas : public Machine
 		 */
 		WDSVMOcas(
 			float64_t C, int32_t d, int32_t from_d,
-			std::shared_ptr<StringFeatures<uint8_t>> traindat, std::shared_ptr<Labels> trainlab);
+			std::shared_ptr<StringFeatures<uint8_t>> traindat);
 		~WDSVMOcas() override;
 
 		/** get classifier type
@@ -311,7 +311,7 @@ class WDSVMOcas : public Machine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 	protected:
 		/** features */

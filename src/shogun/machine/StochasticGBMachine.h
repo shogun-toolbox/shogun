@@ -148,7 +148,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	bool train_machine(std::shared_ptr<Features> data=NULL) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 	/** compute gamma values
 	 *
@@ -185,7 +185,8 @@ protected:
 	 */
 	std::tuple<std::shared_ptr<DenseFeatures<float64_t>>, std::shared_ptr<RegressionLabels>,
 		       std::shared_ptr<Labels>>
-	get_subset(std::shared_ptr<DenseFeatures<float64_t>> f, std::shared_ptr<RegressionLabels> interf);
+	get_subset(std::shared_ptr<DenseFeatures<float64_t>> f, std::shared_ptr<RegressionLabels> interf,
+			std::shared_ptr<Labels> labs);
 
 	/** reset arrays of weak learners and gamma values */
 	void initialize_learners();

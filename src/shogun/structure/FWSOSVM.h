@@ -89,7 +89,7 @@ protected:
 	 * @param data training data
 	 * @return whether the training was successful
 	 */
-	bool train_machine(std::shared_ptr<Features> data = NULL) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 private:
 	/** register and initialize parameters */

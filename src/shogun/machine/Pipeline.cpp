@@ -115,39 +115,12 @@ namespace shogun
 
 	bool Pipeline::train_machine(std::shared_ptr<Features> data)
 	{
-		if (train_require_labels())
-		{
-			require(m_labels, "No labels given.");
-		}
-		auto current_data = data;
-		for (auto&& stage : m_stages)
-		{
-			if (holds_alternative<std::shared_ptr<Transformer>>(stage.second))
-			{
-				auto transformer = shogun::get<std::shared_ptr<Transformer>>(stage.second);
-				transformer->train_require_labels()
-				    ? transformer->fit(current_data, m_labels)
-				    : transformer->fit(current_data);
-
-				current_data = transformer->transform(current_data);
-			}
-			else
-			{
-				auto machine = shogun::get<std::shared_ptr<Machine>>(stage.second);
-				try
-				{
-					if (machine->train_require_labels())
-						machine->set_labels(m_labels);
-					machine->train(current_data);
-				}
-				catch(const std::exception& e)
-				{
-					machine->train(current_data, m_labels);
-				}
-				
-			}
-		}
-		return true;
+		return train_machine_impl(data);
+	}
+	bool Pipeline::train_machine(const std::shared_ptr<Features>& data,
+								 const std::shared_ptr<Labels>& labs)
+	{
+		return train_machine_impl(data, labs);
 	}
 
 	std::shared_ptr<Labels> Pipeline::apply(std::shared_ptr<Features> data)

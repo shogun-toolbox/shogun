@@ -14,8 +14,8 @@ svm_kernel.init(feats_train, feats_train)
 #![create_kernel]
 
 #![create_svm_and_train]
-Machine svm = create_machine("SVMLight", kernel=svm_kernel, labels=labels_train, C1=1.0, C2=1.0)
-svm.train()
+Machine svm = create_machine("SVMLight", kernel=svm_kernel, C1=1.0, C2=1.0)
+svm.train(feats_train, labels_train)
 #![create_svm_and_train]
 
 #![create_kernel]
@@ -24,11 +24,11 @@ svm_kernel2.init(feats_train, feats_train)
 #![create_kernel]
 
 #![obtain_dasvm_from_the_previous_svm]
-Machine dasvm = create_machine("DomainAdaptationSVM", C1=1.0, C2=1.0, kernel=svm_kernel2, labels=labels_train, presvm=as_svm(svm), B=1.0)
+Machine dasvm = create_machine("DomainAdaptationSVM", C1=1.0, C2=1.0, kernel=svm_kernel2, presvm=as_svm(svm), B=1.0)
 #![obtain_dasvm_from_the_previous_svm]
 
 #![train_and_apply]
-dasvm.train()
+dasvm.train(feats_train, labels_train)
 Labels labels_predict = dasvm.apply(feats_test)
 RealVector labels_vector = labels_predict.get_real_vector("labels")
 RealVector weights = svm.get_real_vector("m_alpha")

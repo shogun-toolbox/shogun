@@ -215,8 +215,6 @@ bool MulticlassMachine::train_machine(const std::shared_ptr<Features>& data, con
 	m_machines.clear();
 	auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
 
-	m_machine->set_labels(train_labels);
-
 	m_multiclass_strategy->train_start(
 	    multiclass_labels(labs), train_labels);
 	while (m_multiclass_strategy->train_has_more())
@@ -228,7 +226,7 @@ bool MulticlassMachine::train_machine(const std::shared_ptr<Features>& data, con
 			add_machine_subset(subset);
 		}
 
-		m_machine->train();
+		m_machine->train(data, train_labels);
 		m_machines.push_back(get_machine_from_trained(m_machine));
 
 		if (subset.vlen)

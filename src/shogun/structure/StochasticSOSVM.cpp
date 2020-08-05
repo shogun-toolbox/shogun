@@ -61,7 +61,8 @@ EMachineType StochasticSOSVM::get_classifier_type()
 	return CT_STOCHASTICSOSVM;
 }
 
-bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
+bool StochasticSOSVM::train_machine(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs)
 {
 	SG_TRACE("Entering CStochasticSOSVM::train_machine.");
 	if (data)
@@ -76,7 +77,7 @@ bool StochasticSOSVM::train_machine(std::shared_ptr<Features> data)
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
-	int32_t N = m_labels->as<StructuredLabels>()->get_num_labels();
+	int32_t N = labs->as<StructuredLabels>()->get_num_labels();
 
 	require(M > 0, "StochasticSOSVM underlying model has not been initialized properly."
 		"Expected number of dimensions to be greater than 0.");

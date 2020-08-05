@@ -11,7 +11,7 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine network = create_machine("NeuralNetwork", labels=labels_train, auto_quick_initialize=True, max_num_epochs=4, epsilon=0.0, optimization_method="NNOM_GRADIENT_DESCENT", gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5)
+Machine network = create_machine("NeuralNetwork", auto_quick_initialize=True, max_num_epochs=4, epsilon=0.0, optimization_method="NNOM_GRADIENT_DESCENT", gd_learning_rate=0.01, gd_mini_batch_size=3, max_norm=1.0, dropout_input=0.5)
 #![create_instance]
 
 #![add_layers]
@@ -27,7 +27,7 @@ network.put("seed", 10)
 #![add_layers]
 
 #![train_and_apply]
-network.train(features_train)
+network.train(features_train, labels_train)
 Labels labels_predict = network.apply(features_test)
 #![train_and_apply]
 

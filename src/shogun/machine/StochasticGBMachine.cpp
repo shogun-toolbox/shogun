@@ -161,12 +161,11 @@ std::shared_ptr<RegressionLabels> StochasticGBMachine::apply_regression(std::sha
 	return std::make_shared<RegressionLabels>(retlabs);
 }
 
-bool StochasticGBMachine::train_machine(std::shared_ptr<Features> data)
+bool StochasticGBMachine::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(data,"training data not supplied!");
 	require(m_machine,"machine not set!");
 	require(m_loss,"loss function not specified");
-	require(m_labels, "labels not specified");
 
 	auto feats=data->as<DenseFeatures<float64_t>>();
 
@@ -181,7 +180,7 @@ bool StochasticGBMachine::train_machine(std::shared_ptr<Features> data)
 
 	for (auto i : SG_PROGRESS(range(m_num_iter)))
 	{
-		const auto result = get_subset(feats, interf);
+		const auto result = get_subset(feats, interf, labs);
 		const auto& feats_iter = std::get<0>(result);
 		const auto& interf_iter = std::get<1>(result);
 		const auto& labels_iter = std::get<2>(result);
@@ -258,10 +257,10 @@ std::shared_ptr<RegressionLabels> StochasticGBMachine::compute_pseudo_residuals(
 std::tuple<std::shared_ptr<DenseFeatures<float64_t>>, std::shared_ptr<RegressionLabels>,
            std::shared_ptr<Labels>>
 StochasticGBMachine::get_subset(
-    std::shared_ptr<DenseFeatures<float64_t>> f, std::shared_ptr<RegressionLabels> interf)
+    std::shared_ptr<DenseFeatures<float64_t>> f, std::shared_ptr<RegressionLabels> interf, std::shared_ptr<Labels> labs)
 {
 	if (m_subset_frac == 1.0)
-		return std::make_tuple(f, interf, m_labels);
+		return std::make_tuple(f, interf, labs);
 
 	int32_t subset_size=m_subset_frac*(f->get_num_vectors());
 	SGVector<index_t> idx(f->get_num_vectors());
@@ -273,7 +272,7 @@ StochasticGBMachine::get_subset(
 
 	return std::make_tuple(
 	    view(f, subset), view(interf, subset),
-	    view(m_labels, subset));
+	    view(labs, subset));
 }
 
 void StochasticGBMachine::initialize_learners()

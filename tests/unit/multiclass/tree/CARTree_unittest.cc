@@ -338,7 +338,6 @@ TEST(CARTree, classify_non_nominal)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c=std::make_shared<CARTree>();
-	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats, labels);
 
@@ -441,7 +440,6 @@ TEST(CARTree, handle_missing_nominal)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c=std::make_shared<CARTree>();
-	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->train(feats, labels);
 

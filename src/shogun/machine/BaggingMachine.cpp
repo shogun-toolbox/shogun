@@ -137,7 +137,7 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 	random::fill_array(rnd_indicies, 0, m_bag_size - 1, m_prng);
 
 	auto pb = SG_PROGRESS(range(m_num_bags));
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
 		auto c=std::dynamic_pointer_cast<Machine>(m_machine->clone());
@@ -189,7 +189,7 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 		}
 		
 
-#pragma omp critical
+//#pragma omp critical
 		{
 		// get out of bag indexes
 		auto oob = get_oob_indices(idx);

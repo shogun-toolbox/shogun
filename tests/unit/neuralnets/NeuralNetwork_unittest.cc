@@ -284,8 +284,7 @@ TEST(NeuralNetwork, binary_classification)
 
 	network->set_epsilon(1e-8);
 
-	network->set_labels(labels);
-	network->train(features);
+	network->train(features, labels);
 
 	auto predictions = network->apply_binary(features);
 
@@ -339,8 +338,7 @@ TEST(NeuralNetwork, multiclass_classification)
 
 	network->set_epsilon(1e-8);
 
-	network->set_labels(labels);
-	network->train(features);
+	network->train(features, labels);
 
 	auto predictions = network->apply_multiclass(features);
 
@@ -386,8 +384,7 @@ TEST(NeuralNetwork, regression)
 
 	network->set_epsilon(1e-6);
 
-	network->set_labels(labels);
-	network->train(features);
+	network->train(features, labels);
 
 	auto predictions = network->apply_regression(features);
 
@@ -439,8 +436,7 @@ TEST(NeuralNetwork, gradient_descent)
 	network->set_epsilon(0.0);
 	network->set_max_num_epochs(1000);
 
-	network->set_labels(labels);
-	network->train(features);
+	network->train(features, labels);
 
 	auto predictions = network->apply_binary(features);
 

@@ -27,7 +27,6 @@ StructuredOutputMachine::StructuredOutputMachine(
 		const std::shared_ptr<StructuredLabels>& labs)
 : Machine(), m_model(std::move(model)), m_surrogate_loss(NULL)
 {
-	set_labels(labs);
 	register_parameters();
 }
 
@@ -54,13 +53,6 @@ void StructuredOutputMachine::register_parameters()
 
 	m_verbose = false;
 	m_helper = NULL;
-}
-
-void StructuredOutputMachine::set_labels(std::shared_ptr<Labels> lab)
-{
-	Machine::set_labels(lab);
-	require(m_model != NULL, "please call set_model() before set_labels()");
-	m_model->set_labels(lab->as<StructuredLabels>());
 }
 
 void StructuredOutputMachine::set_features(std::shared_ptr<Features> f)

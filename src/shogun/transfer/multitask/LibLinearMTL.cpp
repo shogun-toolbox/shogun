@@ -65,7 +65,7 @@ bool LibLinearMTL::train_machine(const std::shared_ptr<DotFeatures>& features, c
 						" of entries ({}) in linear term ", num_labels,
 						m_linear_term.vlen);
 	labs->ensure_valid();
-	int32_t num_train_labels=m_labels->get_num_labels();
+	int32_t num_train_labels=labs->get_num_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -448,7 +448,7 @@ return obj
 	}
 
 	// loss
-	auto bl = binary_labels(m_labels);
+	auto bl = binary_labels(labs);
 	for(int32_t i=0; i<num_vec; i++)
 	{
 		int32_t ti = task_indicator_lhs[i];
