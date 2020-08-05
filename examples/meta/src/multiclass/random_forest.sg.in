@@ -15,13 +15,13 @@ CombinationRule m_vote = create_combination_rule("MajorityVote")
 #![create_combination_rule]
 
 #![create_instance]
-Machine rand_forest = create_machine("RandomForest", labels=labels_train, num_bags=100, combination_rule=m_vote, seed=1)
+Machine rand_forest = create_machine("RandomForest", num_bags=100, combination_rule=m_vote, seed=1)
 Parallel p = rand_forest.get_global_parallel()
 p.set_num_threads(1)
 #![create_instance]
 
 #![train_and_apply]
-rand_forest.train(features_train)
+rand_forest.train(features_train, labels_train)
 MulticlassLabels labels_predict = rand_forest.apply_multiclass(features_test)
 #![train_and_apply]
 
