@@ -112,9 +112,9 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	model.add("factor_types", ftype[2])
 
 	# --- training with BMRM ---
-	bmrm = sg.create_machine("DualLibQPBMSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
+	bmrm = sg.create_machine("DualLibQPBMSOSVM", model=model, m_lambda=0.01)
 	#bmrm.set_verbose(True)
-	bmrm.train()
+	bmrm.train(tr_samples, tr_labels)
 	#print 'learned weights:'
 	#print bmrm.get_w()
 	#print 'ground truth weights:'
