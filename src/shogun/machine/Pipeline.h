@@ -133,14 +133,12 @@ namespace shogun
 					transformer->train_require_labels()
 						? transformer->fit(current_data, args...)
 						: transformer->fit(current_data);
-					current_data = transformer->transform(current_data);
-					
+					current_data = transformer->transform(current_data);	
 				}
 				else
 				{
 					auto machine = shogun::get<std::shared_ptr<Machine>>(stage.second);
-					machine->train(current_data, args...);
-					
+					machine->train(current_data, args...);		
 				}
 			}
 			return true;

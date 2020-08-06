@@ -36,6 +36,11 @@ namespace shogun
 		    const std::shared_ptr<Labels>& lab) override
 		{
 			m_labels = lab;
+			require(
+				data->get_num_vectors() == m_labels->get_num_labels(),
+				"Number of training vectors ({}) does not match number of "
+				"labels ({})", 
+				data->get_num_vectors(), m_labels->get_num_labels());
 			return Machine::train(data);
 		}
 
@@ -59,9 +64,6 @@ namespace shogun
 		}
 	protected:
 		std::shared_ptr<Features> m_features;
-
-		// TODO
-		// when all refactor is done, we should use this m_labels
 		std::shared_ptr<Labels> m_labels;
 	};
 } // namespace shogun

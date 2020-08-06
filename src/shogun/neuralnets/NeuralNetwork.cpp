@@ -690,8 +690,6 @@ SGMatrix<float64_t> NeuralNetwork::labels_to_matrix(const std::shared_ptr<Labels
 
 EProblemType NeuralNetwork::get_machine_problem_type() const
 {
-	// // problem type depends on the type of labels given to the network
-	// // if no labels are given yet, just return PT_MULTICLASS
 	return m_problem_type;
 }
 

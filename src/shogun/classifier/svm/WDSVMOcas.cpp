@@ -160,8 +160,11 @@ bool WDSVMOcas::train_machine(const std::shared_ptr<Features>& data, const std::
 {
 	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 
-	// require((data->get_feature_class() == C_STRING || data->get_feature_type() == F_BYTE)),
-	// 	 "Features not of class string type byte");
+	if (data->get_feature_class() != C_STRING ||
+				data->get_feature_type() != F_BYTE)
+	{
+		error("Features not of class string type byte");
+	}
 
 	ASSERT(get_features())
 	features = data->as<StringFeatures<uint8_t>>();
