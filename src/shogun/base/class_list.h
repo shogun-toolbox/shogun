@@ -28,15 +28,17 @@ namespace shogun {
 	 */
 	std::shared_ptr<SGObject> create(const char* sgserializable_name, EPrimitiveType generic);
 
+	/** Use Levenshtein distance to find the most similar name
+	 *
+	 */
+	std::string find_correct_name(const std::string& name);
+
 	/** Creates new shogun instance, typed.
 	 *
 	 * Throws an exception in case there is no such classname or
 	 * the requested type and the object's type do not match.
 	 *
 	 */
-
-	std::string find_correct_name(const std::string& name);
-
 	template <class T>
 	std::shared_ptr<T> create_object(
 	    const char* name,
