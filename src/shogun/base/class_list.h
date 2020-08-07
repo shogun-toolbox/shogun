@@ -17,6 +17,7 @@
 
 #include <set>
 #include <string>
+#include <queue>
 
 namespace shogun {
 	class SGObject;
@@ -33,6 +34,9 @@ namespace shogun {
 	 * the requested type and the object's type do not match.
 	 *
 	 */
+
+	std::string find_correct_name(const std::string& name);
+
 	template <class T>
 	std::shared_ptr<T> create_object(
 	    const char* name,
@@ -41,9 +45,9 @@ namespace shogun {
 		auto object = create(name, pt);
 		if (!object)
 		{
+			const auto& correct_name = find_correct_name(name);
 			error(
-			    "Class {} with primitive type {} does not exist.", name,
-			    ptype_name(pt).c_str());
+			    "Class {} does not exist. Did you mean {} ?", name, correct_name);
 		}
 		auto cast = std::dynamic_pointer_cast<T>(object);
 		if (cast == nullptr)
