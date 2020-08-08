@@ -22,6 +22,18 @@
 namespace shogun {
 	class SGObject;
 
+	template<typename classType>
+	std::string_view name_lookup()
+	{
+		if constexpr(std::is_same_v<classType, Machine>)
+		{
+			return "Machine";
+		}
+		else 
+		{
+			return "SGObject";
+		}
+	};
 	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
@@ -49,7 +61,7 @@ namespace shogun {
 		{
 			const auto& correct_name = find_correct_name(name);
 			error(
-			    "Class {} does not exist. Did you mean {} ?", name, correct_name);
+			    "{} {} does not exist. Did you mean {} ?", name_lookup<T>(), name, correct_name);
 		}
 		auto cast = std::dynamic_pointer_cast<T>(object);
 		if (cast == nullptr)

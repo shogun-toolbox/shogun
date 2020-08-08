@@ -75,11 +75,11 @@ std::string shogun::find_correct_name(const std::string& name)
 {
     using pair = std::pair<int32_t, std::string>;
     std::priority_queue<pair, std::vector<pair>, std::greater<pair>> names;
-    LevenshteinDistance levenshtein;
+    auto levenshtein = std::make_shared<LevenshteinDistance>();
     std::for_each(classes.begin(), classes.end(), 
     	[&](const auto& class_pair){
 			auto class_name = class_pair.first;
-			auto dis = levenshtein.distance(class_name, name);
+			auto dis = levenshtein->distance(class_name, name);
 			names.push(std::make_pair(dis, class_name));
     	});
     return names.top().second;
