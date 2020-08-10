@@ -57,6 +57,13 @@ namespace shogun
 		return build();
 	}
 
+	std::shared_ptr<Composite> PipelineBuilder::composite()
+	{
+		auto composite = std::make_shared<Composite>();
+		composite->add_stages(std::move(m_stages));
+		return composite;
+	}
+
 	std::shared_ptr<PipelineBuilder>
 	PipelineBuilder::add_stages(std::vector<std::shared_ptr<SGObject>> stages)
 	{
