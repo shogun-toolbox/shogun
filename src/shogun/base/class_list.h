@@ -22,18 +22,6 @@
 namespace shogun {
 	class SGObject;
 
-	template<typename classType>
-	std::string_view name_lookup()
-	{
-		if constexpr(std::is_same_v<classType, Machine>)
-		{
-			return "Machine";
-		}
-		else 
-		{
-			return "SGObject";
-		}
-	};
 	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
