@@ -89,8 +89,6 @@ void MKLMulticlass::initsvm( const std::shared_ptr<Labels>& labs)
       error("MKLMulticlass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
-
-   svm->set_labels(labs);
 }
 
 void MKLMulticlass::initlpsolver()

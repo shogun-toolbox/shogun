@@ -17,13 +17,12 @@ Kernel k = create_kernel("GaussianKernel")
 
 #![create_instance]
 RelaxedTree machine()
-machine.set_labels(labels_train)
 machine.set_machine_for_confusion_matrix(mll)
 machine.set_kernel(k)
 #![create_instance]
 
 #![train_and_apply]
-machine.train(features_train)
+machine.train(features_train, labels_train)
 MulticlassLabels labels_predict = machine.apply_multiclass(features_test)
 #![train_and_apply]
 

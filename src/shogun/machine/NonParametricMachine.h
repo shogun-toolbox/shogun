@@ -19,9 +19,8 @@ namespace shogun
 		{
 			// TODO : when all refactor is done, m_labels should be removed from
 			// Machine Class
-			// SG_ADD(
-			//     &m_labels, "labels", "labels used in train machine
-			//     algorithm", ParameterProperties::READONLY);
+			SG_ADD(
+			    &m_labels, "labels", "labels used in train machine algorithm");
 			SG_ADD(
 			    &m_features, "features_train",
 			    "Training features of nonparametric model",
@@ -37,19 +36,35 @@ namespace shogun
 		    const std::shared_ptr<Labels>& lab) override
 		{
 			m_labels = lab;
+			require(
+				data->get_num_vectors() == m_labels->get_num_labels(),
+				"Number of training vectors ({}) does not match number of "
+				"labels ({})", 
+				data->get_num_vectors(), m_labels->get_num_labels());
 			return Machine::train(data);
 		}
+
 		const char* get_name() const override
 		{
 			return "NonParametricMachine";
 		}
+		
+        virtual void set_labels(std::shared_ptr<Labels> lab)
+		{
+			m_labels = lab;
+		}
 
+        /** get labels
+         *
+         * @return labels
+         */
+        virtual std::shared_ptr<Labels> get_labels()
+		{
+			return m_labels;
+		}
 	protected:
 		std::shared_ptr<Features> m_features;
-
-		// TODO
-		// when all refactor is done, we should use this m_labels
-		// std::shared_ptr<Labels> m_labels;
+		std::shared_ptr<Labels> m_labels;
 	};
 } // namespace shogun
 #endif

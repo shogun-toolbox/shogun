@@ -28,8 +28,7 @@ def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types
 	# train
 	feats.add_subset(np.int32(p[0:int(num)]))
 	labels.add_subset(np.int32(p[0:int(num)]))
-	s.set_labels(labels)
-	s.train(feats)
+	s.train(feats, labels)
 	feats.remove_subset()
 	labels.remove_subset()
 

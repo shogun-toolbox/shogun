@@ -76,8 +76,7 @@ WDSVMOcas::WDSVMOcas(E_SVM_TYPE type)
 }
 
 WDSVMOcas::WDSVMOcas(
-	float64_t C, int32_t d, int32_t from_d, std::shared_ptr<StringFeatures<uint8_t>> traindat,
-	std::shared_ptr<Labels> trainlab)
+	float64_t C, int32_t d, int32_t from_d, std::shared_ptr<StringFeatures<uint8_t>> traindat)
 : Machine(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
 	degree(d), from_degree(from_d)
 {
@@ -85,7 +84,6 @@ WDSVMOcas::WDSVMOcas(
 	old_w=NULL;
 	method=SVM_OCAS;
 	features=std::move(traindat);
-	set_labels(std::move(trainlab));
 	wd_weights=NULL;
 	w_offsets=NULL;
 	normalization_const=1.0;
@@ -158,29 +156,24 @@ int32_t WDSVMOcas::set_wd_weights()
 	return w_dim_single_c;
 }
 
-bool WDSVMOcas::train_machine(std::shared_ptr<Features> data)
+bool WDSVMOcas::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	io::info("C={}, epsilon={}, bufsize={}", get_C1(), get_epsilon(), bufsize);
 
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
-	if (data)
-	{
-		if (data->get_feature_class() != C_STRING ||
+	if (data->get_feature_class() != C_STRING ||
 				data->get_feature_type() != F_BYTE)
-		{
-			error("Features not of class string type byte");
-		}
-		set_features(std::static_pointer_cast<StringFeatures<uint8_t>>(data));
+	{
+		error("Features not of class string type byte");
 	}
 
 	ASSERT(get_features())
-	auto alphabet=get_features()->get_alphabet();
+	features = data->as<StringFeatures<uint8_t>>();
+	auto alphabet=features->get_alphabet();
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA)
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
-	SGVector<float64_t> labvec=(std::static_pointer_cast<BinaryLabels>(m_labels))->get_labels();
+	SGVector<float64_t> labvec=(std::static_pointer_cast<BinaryLabels>(labs))->get_labels();
 	lab=labvec.vector;
 
 	w_dim_single_char=set_wd_weights();
@@ -188,7 +181,7 @@ bool WDSVMOcas::train_machine(std::shared_ptr<Features> data)
 	SG_DEBUG("w_dim_single_char={}", w_dim_single_char)
 	w_dim=string_length*w_dim_single_char;
 	SG_DEBUG("cutting plane has {} dims", w_dim)
-	num_vec=get_features()->get_max_vector_length();
+	num_vec=features->get_max_vector_length();
 
 	set_normalization_const();
 	io::info("num_vec: {} num_lab: {}", num_vec, labvec.vlen);

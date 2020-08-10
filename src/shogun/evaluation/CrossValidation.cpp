@@ -116,15 +116,7 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 
 		auto evaluation_criterion = make_clone(m_evaluation_criterion);
 
-		try
-		{
-			machine->train(features_train, labels_train);
-		}
-		catch(const std::exception& e){
-			machine->set_labels(labels_train);
-			machine->train(features_train);
-		}
-		
+		machine->train(features_train, labels_train);
 
 		auto result_labels = machine->apply(features_test);
 

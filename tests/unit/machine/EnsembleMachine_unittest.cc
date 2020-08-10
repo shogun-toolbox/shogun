@@ -55,11 +55,12 @@ TEST(Composite, train)
 	    std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
 
 	auto composite = std::make_shared<Composite>();
-	auto pred = composite->over(std::make_shared<MulticlassLibLinear>())
-	                ->over(std::make_shared<MulticlassOCAS>())
-	                ->then(std::make_shared<MeanRule>())
-	                ->train(train_feats, train_labels)
-	                ->apply_multiclass(test_feats);
+	composite->over(std::make_shared<MulticlassLibLinear>())
+                ->over(std::make_shared<MulticlassOCAS>())
+                ->then(std::make_shared<MeanRule>())
+                ->train(train_feats, train_labels);
+
+	auto pred = composite->apply_multiclass(test_feats);
 
 	MulticlassAccuracy evaluate;
 	float64_t result = evaluate.evaluate(pred, ground_truth);
@@ -77,13 +78,15 @@ TEST(combinate_composite_and_pipeline, train)
 	auto ground_truth =
 	    std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
 	auto pipeline = std::make_shared<PipelineBuilder>();
-	auto pred = pipeline ->over(std::make_shared<NormOne>())
-			 	        	->composite()
-				 	        	->over(std::make_shared<MulticlassLibLinear>())
-	            				->over(std::make_shared<MulticlassOCAS>())
-	                        	->then(std::make_shared<MeanRule>())
-	                	    		->train(train_feats, train_labels)
-	                		   		->apply_multiclass(test_feats);
+	auto machine = pipeline->over(std::make_shared<NormOne>())
+		 	        	->composite()
+			 	        	->over(std::make_shared<MulticlassLibLinear>())
+            				->over(std::make_shared<MulticlassOCAS>())
+                        	->then(std::make_shared<MeanRule>());
+	
+	machine->train(train_feats, train_labels);
+
+	auto pred = machine->apply_multiclass(test_feats);
 
 	MulticlassAccuracy evaluate;
 	float64_t result = evaluate.evaluate(pred, ground_truth);

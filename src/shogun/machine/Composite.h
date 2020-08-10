@@ -56,7 +56,7 @@ namespace shogun
 			m_stages = std::forward<T>(stages);
 		}
 
-		std::shared_ptr<Machine> train(
+		bool train(
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs)
 		{
@@ -78,7 +78,7 @@ namespace shogun
 				}, v.second);
 			}
 			m_ensemble_machine->train(current_data, labs);
-			return m_ensemble_machine;
+			return true;
 		}
 
 		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data) override

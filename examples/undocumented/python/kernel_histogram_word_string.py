@@ -17,8 +17,8 @@ def kernel_histogram_word_string (fm_train_dna=traindat,fm_test_dna=testdat,labe
 	feats_test=sg.create_string_features(charfeat, order-1, order, 0, False)
 
 	labels=sg.create_labels(label_train_dna)
-	pie=sg.create_machine("PluginEstimate", pos_pseudo=ppseudo_count, neg_pseudo=npseudo_count, labels=labels)
-	pie.train(feats_train)
+	pie=sg.create_machine("PluginEstimate", pos_pseudo=ppseudo_count, neg_pseudo=npseudo_count)
+	pie.train(feats_train, labels)
 
 	kernel=sg.create_kernel("HistogramWordStringKernel", estimate=pie)
 	kernel.init(feats_train, feats_train)

@@ -18,11 +18,10 @@ ft[1] = 2
 
 #![create_instance]
 CHAIDTree classifier(0, ft, 10)
-classifier.set_labels(labels_train)
 #![create_instance]
 
 #![train_and_apply]
-classifier.train(features_train)
+classifier.train(features_train, labels_train)
 MulticlassLabels labels_predict = classifier.apply_multiclass(features_test)
 #![train_and_apply]
 

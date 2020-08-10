@@ -29,8 +29,8 @@ def structure_discrete_hmsvm_bmrm (m_data_dict=data_dict):
 	model = sg.create_structured_model("HMSVMModel", features=features, labels=labels, 
 								state_model_type="SMT_TWO_STATE", num_obs=num_obs)
 
-	sosvm = sg.create_machine("DualLibQPBMSOSVM", model=model, labels=labels, m_lambda=5000.0)
-	sosvm.train()
+	sosvm = sg.create_machine("DualLibQPBMSOSVM", model=model, m_lambda=5000.0)
+	sosvm.train(features, labels)
 	#print sosvm.get_w()
 
 	predicted = sosvm.apply(features)

@@ -13,11 +13,10 @@
 using namespace shogun;
 
 Machine::Machine()
-    : StoppableSGObject(), m_max_train_time(0), m_labels(NULL),
+    : StoppableSGObject(), m_max_train_time(0),
       m_solver_type(ST_AUTO)
 {
 	SG_ADD(&m_max_train_time, "max_train_time", "Maximum training time.");
-	SG_ADD(&m_labels, "labels", "Labels to be used.");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_solver_type, "solver_type", "Type of solver.",
 	    ParameterProperties::NONE,
@@ -33,26 +32,11 @@ Machine::~Machine()
 
 bool Machine::train(std::shared_ptr<Features> data)
 {
-	if (train_require_labels())
-	{
-		if (m_labels == NULL)
-			error("{}@{}: No labels given", get_name(), fmt::ptr(this));
-
-		m_labels->ensure_valid(get_name());
-	}
-
 	auto sub = connect_to_signal_handler();
 	bool result = false;
 
 	if (support_feature_dispatching())
 	{
-		require(data != NULL, "Features not provided!");
-		require(
-		    data->get_num_vectors() == m_labels->get_num_labels(),
-		    "Number of training vectors ({}) does not match number of "
-		    "labels ({})",
-		    data->get_num_vectors(), m_labels->get_num_labels());
-
 		if (support_dense_dispatching() && data->get_feature_class() == C_DENSE)
 			result = train_dense(data);
 		else if (
@@ -74,10 +58,14 @@ bool Machine::train(std::shared_ptr<Features> data)
 bool Machine::train(
     const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	require(data->get_num_vectors() == labs->get_num_labels(),
+	if(data)
+	{
+		require(data->get_num_vectors() == labs->get_num_labels(),
 		    	"Number of training vectors ({}) does not match number of "
 		    	"labels ({})", 
 		   		 data->get_num_vectors(), labs->get_num_labels());
+	}
+	
 	auto sub = connect_to_signal_handler();
 	bool result = false;
 
@@ -101,21 +89,6 @@ bool Machine::train(
 	return result;
 }
 
-void Machine::set_labels(std::shared_ptr<Labels> lab)
-{
-    if (lab != NULL)
-    {
-        if (!is_label_valid(lab))
-            error("Invalid label for {}", get_name());
-
-	m_labels = lab;
-    }
-}
-
-std::shared_ptr<Labels> Machine::get_labels()
-{
-	return m_labels;
-}
 
 void Machine::set_max_train_time(float64_t t)
 {

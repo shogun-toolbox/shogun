@@ -49,7 +49,7 @@ class PluginEstimate: public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data) override;
 
 		/** set features
 		 *
@@ -206,7 +206,7 @@ class PluginEstimate: public Machine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 	protected:
 		/** pseudo count for positive class */

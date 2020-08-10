@@ -129,8 +129,7 @@ TEST_F(StochasticGBMachineTest, sinusoid_curve_fitting)
 	auto sq=std::make_shared<SquaredLoss>();
 	auto sgbm = std::make_shared<StochasticGBMachine>(tree, sq, 100, 0.1, 1.0);
 	sgbm->put("seed", seed);
-	sgbm->set_labels(train_labels);
-	sgbm->train(train_feats);
+	sgbm->train(train_feats, train_labels);
 
 	auto ret_labels = sgbm->apply_regression(test_feats);
 	SGVector<float64_t> ret=ret_labels->get_labels();
@@ -160,8 +159,7 @@ TEST_F(StochasticGBMachineTest, sinusoid_curve_fitting_subset_fraction)
 
 	auto sgbm = std::make_shared<StochasticGBMachine>(tree, sq, 100, 0.1, fraction);
 	sgbm->put("seed", seed);
-	sgbm->set_labels(train_labels);
-	sgbm->train(train_feats);
+	sgbm->train(train_feats, train_labels);
 
 	auto ret_labels = sgbm->apply_regression(test_feats);
 	SGVector<float64_t> ret = ret_labels->get_labels();

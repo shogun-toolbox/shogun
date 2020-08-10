@@ -182,7 +182,7 @@ bool BaggingMachine::train_machine(const std::shared_ptr<Features>& data, const 
 		
 		set_machine_parameters(c, idx);
 		c->train(features, labels);
-		#pragma omp critical
+#pragma omp critical
 		{
 			features->remove_subset();
 			labels->remove_subset();

@@ -110,7 +110,7 @@ def structure_hierarchical_multilabel_classification(train_file_name,
                                 features=train_features, 
                                 labels=train_labels,
                                 taxonomy=train_taxonomy)
-    sgd = sg.create_machine("StochasticSOSVM", model=model, labels=train_labels)
+    sgd = sg.create_machine("StochasticSOSVM", model=model)
     # t1 = time.time()
     # sgd.train()
     # print('>>> Took %f time for training' % (time.time() - t1))

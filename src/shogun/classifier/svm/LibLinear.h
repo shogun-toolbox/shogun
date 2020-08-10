@@ -263,6 +263,8 @@ namespace shogun
 
 		/** solver type */
 		LIBLINEAR_SOLVER_TYPE liblinear_solver_type;
+
+		int32_t m_num_labels;
 	};
 
 } /* namespace shogun  */

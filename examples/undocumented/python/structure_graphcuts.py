@@ -180,12 +180,12 @@ def graphcuts_sosvm(num_train_samples = 10, len_label = 5, len_feat = 20, num_te
     # the 3rd parameter is do_weighted_averaging, by turning this on,
     # a possibly faster convergence rate may be achieved.
     # the 4th parameter controls outputs of verbose training information
-    sgd = sg.create_machine("StochasticSOSVM", model=model, labels=labels_fg, do_weighted_averaging=True,
+    sgd = sg.create_machine("StochasticSOSVM", model=model, do_weighted_averaging=True,
                      num_iter=150, m_lambda=0.0001)
 
     # train
     t0 = time.time()
-    sgd.train()
+    sgd.train(feats_fg, labels_fg)
     t1 = time.time()
     w_sgd = sgd.get("w")
     #print "SGD took", t1 - t0, "seconds."

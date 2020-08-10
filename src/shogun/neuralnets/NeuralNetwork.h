@@ -180,12 +180,6 @@ public:
 	virtual std::shared_ptr<DenseFeatures<float64_t>> transform(
 		std::shared_ptr<DenseFeatures<float64_t>> data);
 
-	/** set labels
-	*
-	* @param lab labels
-	*/
-	void set_labels(std::shared_ptr<Labels> lab) override;
-
 	/** get classifier type
 	 *
 	 * @return classifier type CT_NEURALNETWORK
@@ -469,7 +463,7 @@ public:
 
 protected:
 	/** trains the network */
-	bool train_machine(std::shared_ptr<Features> data=NULL) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 	/** trains the network using gradient descent*/
 	virtual bool train_gradient_descent(SGMatrix<float64_t> inputs,
@@ -737,6 +731,8 @@ private:
 	 */
 	const SGMatrix<float64_t>* m_lbfgs_temp_inputs;
 	const SGMatrix<float64_t>* m_lbfgs_temp_targets;
+
+	EProblemType m_problem_type;
 };
 
 }

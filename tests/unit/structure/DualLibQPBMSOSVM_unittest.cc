@@ -102,7 +102,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	// sosvm->set_verbose(true);
 	sosvm->set_BufSize(8);
 
-	sosvm->train();
+	sosvm->train(features, labels);
 
 	BmrmStatistics res = sosvm->get_result();
 	//SG_PRINT("result = { Fp={}, Fd={}, nIter={}, nCP={}, nzA={}, exitflag={} }\n",

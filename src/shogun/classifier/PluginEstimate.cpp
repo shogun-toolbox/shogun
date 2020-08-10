@@ -39,10 +39,8 @@ PluginEstimate::~PluginEstimate()
 {
 }
 
-bool PluginEstimate::train_machine(std::shared_ptr<Features> data)
+bool PluginEstimate::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (data->get_feature_class() != C_STRING ||
@@ -55,21 +53,19 @@ bool PluginEstimate::train_machine(std::shared_ptr<Features> data)
 	}
 	ASSERT(features)
 
-
-
 	pos_model=std::make_shared<LinearHMM>(features);
 	neg_model=std::make_shared<LinearHMM>(features);
 
 	int32_t* pos_indizes=SG_MALLOC(int32_t, std::static_pointer_cast<StringFeatures<uint16_t>>(features)->get_num_vectors());
 	int32_t* neg_indizes=SG_MALLOC(int32_t, std::static_pointer_cast<StringFeatures<uint16_t>>(features)->get_num_vectors());
 
-	ASSERT(m_labels->get_num_labels() == features->get_num_vectors())
+	ASSERT(labs->get_num_labels() == features->get_num_vectors())
 
 	int32_t pos_idx = 0;
 	int32_t neg_idx = 0;
 
-	auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
-	for (int32_t i=0; i<m_labels->get_num_labels(); i++)
+	auto binary_labels = std::static_pointer_cast<BinaryLabels>(labs);
+	for (int32_t i=0; i<labs->get_num_labels(); i++)
 	{
 		if (binary_labels->get_label(i) > 0)
 			pos_indizes[pos_idx++]=i;

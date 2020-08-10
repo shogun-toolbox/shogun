@@ -90,9 +90,10 @@ namespace shogun
 		}
 
 	protected:
-		void init_model(const std::shared_ptr<Features> data) override;
+		void init_model(const std::shared_ptr<DotFeatures>& data) override;
 
-		void iteration() override;
+		void iteration(const std::shared_ptr<DotFeatures>& features, 
+			const std::shared_ptr<Labels>& labs) override;
 
 	private:
 		/** Distribution type */

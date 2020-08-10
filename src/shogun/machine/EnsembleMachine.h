@@ -61,14 +61,14 @@ namespace shogun
 			m_machines.push_back(machine);
 		}
 
-		bool train_machine(std::shared_ptr<Features> data) override{
-			require(m_labels, "Labels not set");
-			train(data, m_labels);
-			return true;
+		bool train_machine(
+			const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override {
+			return train(data, labs);
 		}
-		void train(
+
+		bool train(
 		    const std::shared_ptr<Features>& data,
-		    const std::shared_ptr<Labels>& labs)
+		    const std::shared_ptr<Labels>& labs) override
 		{
 			const int32_t& num_threads = env()->get_num_threads();
 			if (num_threads > 1)
@@ -86,8 +86,7 @@ namespace shogun
 					    [&](int32_t start, int32_t end) {
 						    for (auto i = start; i < end; i++)
 						    {
-							    m_machines[i]->set_labels(labs);
-							    m_machines[i]->train(data);
+							    m_machines[i]->train(data, labs);
 						    }
 					    },
 					    t, t + machine_per_thread);
@@ -98,18 +97,17 @@ namespace shogun
 				}
 				for (int i = machine_per_thread * num_threads; i < num_machine; i++)
 				{
-					m_machines[i]->set_labels(labs);
-					m_machines[i]->train(data);
+					m_machines[i]->train(data, labs);
 				}
 			}
 			else
 			{
 				for (auto&& machine : m_machines)
 				{
-					machine->set_labels(labs);
-					machine->train(data);
+					machine->train(data, labs);
 				}
 			}
+			return true;
 		}
 
 		const char* get_name() const override

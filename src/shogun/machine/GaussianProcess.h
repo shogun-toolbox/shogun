@@ -105,7 +105,7 @@ namespace shogun
 		 */
 		void set_labels(std::shared_ptr<Labels> lab) override
 		{
-			Machine::set_labels(lab);
+			NonParametricMachine::set_labels(lab);
 			m_method->set_labels(lab);
 		}
 

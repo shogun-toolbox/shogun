@@ -154,8 +154,7 @@ TEST(ID3ClassifierTree, classify_simple)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto id3=std::make_shared<ID3ClassifierTree>();
-	id3->set_labels(labels);
-	id3->train(feats);
+	id3->train(feats, labels);
 
 	SGMatrix<float64_t> test(4,5);
 	test(0,0)=overcast;
@@ -282,8 +281,7 @@ TEST(ID3ClassifierTree, tree_prune)
 
 
 	auto id3tree=std::make_shared<ID3ClassifierTree>();
-	id3tree->set_labels(train_lab);
-	id3tree->train(train_features);
+	id3tree->train(train_features, train_lab);
 	id3tree->prune_tree(train_features,validation_lab);
 
 	auto result=id3tree->apply(train_features)->as<MulticlassLabels>();

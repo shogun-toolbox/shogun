@@ -71,14 +71,13 @@ GLM::GLM(
 std::shared_ptr<RegressionLabels>
 GLM::apply_regression(std::shared_ptr<Features> data)
 {
+	std::shared_ptr<DotFeatures> features;
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
+		features = std::static_pointer_cast<DotFeatures>(data);
 	}
-
-	require(features, "Features are not provided");
 
 	auto num = features->get_num_vectors();
 	ASSERT(num > 0)
@@ -92,19 +91,10 @@ GLM::apply_regression(std::shared_ptr<Features> data)
 	return std::make_shared<RegressionLabels>(result);
 }
 
-void GLM::init_model(const std::shared_ptr<Features> data)
+void GLM::init_model(const std::shared_ptr<DotFeatures>& data)
 {
-	ASSERT(m_labels)
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-	ASSERT(features)
-
 	NormalDistribution<float64_t> normal_dist;
-	const auto& n_features = features->get_dim_feature_space();
+	const auto& n_features = data->get_dim_feature_space();
 
 	if (m_w.vlen == 0)
 	{
@@ -123,12 +113,13 @@ void GLM::init_model(const std::shared_ptr<Features> data)
 	}
 }
 
-void GLM::iteration()
+void GLM::iteration(const std::shared_ptr<DotFeatures>& features, 
+	const std::shared_ptr<Labels>& labs)
 {
 	SGVector<float64_t> w_old = m_w.clone();
 
-	auto X = get_features()->get_computed_dot_feature_matrix();
-	auto y = regression_labels(get_labels())->get_labels();
+	auto X = features->get_computed_dot_feature_matrix();
+	auto y = regression_labels(labs)->get_labels();
 
 	auto gradient_w = m_cost_function->get_gradient_weights(
 	    X, y, m_w, bias, m_lambda, m_alpha, m_compute_bias, m_eta,
