@@ -33,7 +33,7 @@ namespace shogun
 		 * @param machine the machine model to be trained
 		 * @return the current composite object
 		 */
-		std::shared_ptr<Composite> with(const std::shared_ptr<Machine>& machine)
+		std::shared_ptr<Composite> over(const std::shared_ptr<Machine>& machine)
 		{
 			m_ensemble_machine->add_machine(machine);
 			return shared_from_this()->as<Composite>();

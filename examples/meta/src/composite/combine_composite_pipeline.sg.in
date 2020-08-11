@@ -22,8 +22,8 @@ Composite com = builder.composite()
 Machine submachine1 = create_machine("MulticlassOCAS")
 Machine submachine2 = create_machine("MulticlassLibLinear")
 CombinationRule c = create_combination_rule("MeanRule")
-com.with(submachine1)
-com.with(submachine2)
+com.over(submachine1)
+com.over(submachine2)
 com.then(c)
 #![create machine]
 
