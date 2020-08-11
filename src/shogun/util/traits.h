@@ -6,6 +6,8 @@
 
 namespace shogun
 {
+	template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+	template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 	namespace traits
 	{
 		#ifndef DOXYGEN_SHOULD_SKIP_THIS

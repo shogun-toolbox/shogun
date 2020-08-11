@@ -12,40 +12,50 @@
 #include <shogun/machine/EnsembleMachine.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/transformer/Transformer.h>
+#include <shogun/base/variant.h>
+#include <shogun/util/traits.h>
 #include <vector>
 #include <variant>
-#include <shogun/base/variant.h>
-
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 namespace shogun
 {
+	/** Composite is a machine that chains multiple machines, it aims to be 
+	 * a wrapper of a EnsembleMachine with nice interfaces.
+	 */
 	class Composite : public Machine
 	{
 	public:
 		Composite() = default;
 
-		~Composite() = default;
+		~Composite() override = default;
+
+		/** Add a Machine to Composite. 
+		 * @param machine the machine model to be trained
+		 * @return the current composite object
+		 */
 		std::shared_ptr<Composite> with(const std::shared_ptr<Machine>& machine)
 		{
 			m_ensemble_machine->add_machine(machine);
 			return shared_from_this()->as<Composite>();
 		}
-
+		/** Add a CombinationRule to Composite. 
+		 * @param rule the CombinationRule which can combine the
+	 	 * classification or regression outputs of an ensemble of Machines.
+		 * @return the current composite object
+		 */
 		std::shared_ptr<Composite>
 		then(const std::shared_ptr<CombinationRule>& rule)
 		{
 			m_ensemble_machine->set_combination_rule(rule);
 			return shared_from_this()->as<Composite>();
 		}
-
+		
 		template<typename T>
 		void add_stages(T&& stages)
 		{
 			m_stages = std::forward<T>(stages);
 		}
-		
+
 		std::shared_ptr<EnsembleMachine> train(
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs)
@@ -71,6 +81,15 @@ namespace shogun
 			return m_ensemble_machine;
 		}
 
+		std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data) override
+		{
+			return m_ensemble_machine->apply_multiclass(data);
+		}
+
+		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data) override
+		{
+			return m_ensemble_machine->apply_binary(data);
+		}
 	private:
 		std::shared_ptr<EnsembleMachine> m_ensemble_machine =
 		    std::make_shared<EnsembleMachine>();

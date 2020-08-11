@@ -18,7 +18,10 @@
 #include <vector>
 namespace shogun
 {
-
+	/** EnsembleMachine is a machine that chains multiple machines. It
+	 * consists of a sequence of machines as intermediate stages of training
+	 * or testing and a CombinationRule as the final stage.
+	 */
 	class EnsembleMachine : public Machine
 	{
 
@@ -48,12 +51,12 @@ namespace shogun
 		}
 
 		void
-		set_combination_rule(std::shared_ptr<CombinationRule> combination_rule)
+		set_combination_rule(const std::shared_ptr<CombinationRule>& combination_rule)
 		{
 			m_combination_rule = combination_rule;
 		}
 
-		void add_machine(std::shared_ptr<Machine> machine)
+		void add_machine(const std::shared_ptr<Machine>& machine)
 		{
 			m_machines.push_back(machine);
 		}
