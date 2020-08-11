@@ -7,7 +7,9 @@
 // have to be declared after transformers
 %shared_ptr(shogun::PipelineBuilder)
 %shared_ptr(shogun::Pipeline)
+%shared_ptr(shogun::Composite)
 %include "shogun/machine/Pipeline.h"
+%include "shogun/machine/Composite.h"
 
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 
