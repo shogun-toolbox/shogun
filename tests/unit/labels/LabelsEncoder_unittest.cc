@@ -9,6 +9,8 @@
 #include <shogun/labels/LabelEncoder.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/MulticlassLabelsEncoder.h>
+#include <shogun/labels/RegressionLabelsEncoder.h>
+
 using namespace shogun;
 
 TEST(BinaryLabelEncoder, fit_transform)
@@ -196,3 +198,17 @@ TEST(MulticlassLabelsEncoder, contiguous_labels)
 		EXPECT_NEAR(vec[i], inv_vec[i], eps);
 	}
 }
+
+TEST(RegressionLabelsEncoder, fit)
+{
+	auto labels_encoder = std::make_shared<RegressionLabelsEncoder>();
+	SGVector<float64_t> vec{0, 1, 2, 3, 4, 5};
+	auto multiclass_labels = std::make_shared<MulticlassLabels>(vec);
+	labels_encoder->fit(multiclass_labels);
+	auto res1 = labels_encoder->transform(multiclass_labels);
+
+	SGVector<int32_t> vec2{-1, 1, 1, -1, -1};
+	auto binary_labels = std::make_shared<BinaryLabels>(vec);
+	labels_encoder->fit(binary_labels);
+	auto res2 = labels_encoder->transform(binary_labels);
+}	
