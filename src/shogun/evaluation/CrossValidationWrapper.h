@@ -20,10 +20,10 @@ namespace shogun
 {
     template<typename MachineType, std::enable_if_t<
                     std::is_base_of_v<Machine, MachineType>>>
-    class CrossValidatationWrapper : public SGObject
+    class CrossValidationWrapper : public SGObject
     {   
         template<typename T, typename U>
-        CrossValidatationWrapper(T&& params, U&& cross_validater): 
+        CrossValidationWrapper(T&& params, U&& cross_validater): 
             m_params(std::forward<T>(params), m_cross_validater(std::forward<U>(cross_validater)))
         {
         }
