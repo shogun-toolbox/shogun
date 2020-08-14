@@ -26,22 +26,14 @@ CrossValidation::CrossValidation() : Seedable<MachineEvaluation>()
 }
 
 CrossValidation::CrossValidation(
-    std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
-    std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion)
-    : Seedable<MachineEvaluation>(
-          std::move(machine), std::move(features), std::move(labels), std::move(splitting_strategy), std::move(evaluation_criterion))
+	std::shared_ptr<Machine> machine, 
+	std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion)
+	: Seedable<MachineEvaluation>(
+          std::move(machine), std::move(splitting_strategy), std::move(evaluation_criterion))
 {
 	init();
-}
+} 
 
-CrossValidation::CrossValidation(
-    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
-    std::shared_ptr<Evaluation> evaluation_criterion)
-    : Seedable<MachineEvaluation>(
-          std::move(machine), std::move(labels), std::move(splitting_strategy), std::move(evaluation_criterion))
-{
-	init();
-}
 
 CrossValidation::~CrossValidation()
 {
@@ -54,7 +46,8 @@ void CrossValidation::init()
 	SG_ADD(&m_num_runs, kNumRuns, "Number of repetitions");
 }
 
-std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl() const
+std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs) const
 {
 	SGVector<float64_t> results(m_num_runs);
 
@@ -62,7 +55,7 @@ std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl() const
 	SG_DEBUG("starting {} runs of cross-validation", m_num_runs);
 	for (auto i : SG_PROGRESS(range(m_num_runs)))
 	{
-		results[i] = evaluate_one_run(i);
+		results[i] = evaluate_one_run(data, labs, i);
 		io::info("Result of cross-validation run {}/{} is {}", i+1, m_num_runs, results[i]);
 	}
 
@@ -85,7 +78,8 @@ void CrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs = num_runs;
 }
 
-float64_t CrossValidation::evaluate_one_run(int64_t index) const
+float64_t CrossValidation::evaluate_one_run(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs, int64_t index) const
 {
 	SG_TRACE("entering {}::evaluate_one_run()", get_name());
 	index_t num_subsets = m_splitting_strategy->get_num_subsets();
@@ -109,10 +103,10 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 		SGVector<index_t> idx_test =
 			m_splitting_strategy->generate_subset_indices(i);
 
-		auto features_train = view(m_features, idx_train);
-		auto labels_train = view(m_labels, idx_train);
-		auto features_test = view(m_features, idx_test);
-		auto labels_test = view(m_labels, idx_test);
+		auto features_train = view(data, idx_train);
+		auto labels_train = view(labs, idx_train);
+		auto features_test = view(data, idx_test);
+		auto labels_test = view(labs, idx_test);
 
 		auto evaluation_criterion = make_clone(m_evaluation_criterion);
 

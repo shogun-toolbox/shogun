@@ -17,8 +17,8 @@ SplittingStrategy strategy = create_splitting_strategy("CrossValidationSplitting
 
 #![evaluate_and_get_result]
 Evaluation evaluation_criterium = create_evaluation("MeanSquaredError")
-MachineEvaluation cross_validation = create_machine_evaluation("CrossValidation", machine=predictor, features=feats_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterium, num_runs=10)
-EvaluationResult result = cross_validation.evaluate()
+MachineEvaluation cross_validation = create_machine_evaluation("CrossValidation", machine=predictor, splitting_strategy=strategy, evaluation_criterion=evaluation_criterium, num_runs=10)
+EvaluationResult result = cross_validation.evaluate(feats_train, labels_train)
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]

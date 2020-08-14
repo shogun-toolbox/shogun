@@ -22,27 +22,13 @@ MachineEvaluation::MachineEvaluation()
 	init();
 }
 
-MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
-		std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, 
+	std::shared_ptr<SplittingStrategy> splitting_strategy,
 		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock)
 {
 	init();
 
 	m_machine = std::move(machine);
-	m_features = std::move(features);
-	m_labels = std::move(labels);
-	m_splitting_strategy = std::move(splitting_strategy);
-	m_evaluation_criterion = std::move(evaluation_criterion);
-}
-
-MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
-		std::shared_ptr<SplittingStrategy> splitting_strategy,
-		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock)
-{
-	init();
-
-	m_machine = std::move(machine);
-	m_labels = std::move(labels);
 	m_splitting_strategy = std::move(splitting_strategy);
 	m_evaluation_criterion = std::move(evaluation_criterion);
 }
@@ -54,23 +40,20 @@ MachineEvaluation::~MachineEvaluation()
 void MachineEvaluation::init()
 {
 	m_machine = NULL;
-	m_features = NULL;
-	m_labels = NULL;
 	m_splitting_strategy = NULL;
 	m_evaluation_criterion = NULL;
 	m_cancel_computation = false;
 	m_pause_computation_flag = false;
 
-	SG_ADD(&m_machine, kMachine, "Used learning machine");
-	SG_ADD(&m_features, kFeatures, "Used features");
-	SG_ADD(&m_labels, kLabels, "Used labels");
-	SG_ADD(&m_splitting_strategy, kSplittingStrategy,
+	SG_ADD(&m_machine, "machine", "Used learning machine");
+	SG_ADD(&m_splitting_strategy, "splitting_strategy",
 			"Used splitting strategy");
 	SG_ADD(&m_evaluation_criterion, kEvaluationCriterion,
 			"Used evaluation criterion");
 }
 
-std::shared_ptr<EvaluationResult> MachineEvaluation::evaluate() const
+std::shared_ptr<EvaluationResult> MachineEvaluation::evaluate(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs) const
 {
 	SG_TRACE("entering {}::evaluate()", get_name());
 
@@ -79,17 +62,7 @@ std::shared_ptr<EvaluationResult> MachineEvaluation::evaluate() const
 	               "attached",
 	    get_name());
 
-	require(
-	    m_features, "{}::evaluate() is only possible if features are "
-	                "attached",
-	    get_name());
-
-	require(
-	    m_labels, "{}::evaluate() is only possible if labels are "
-	              "attached",
-	    get_name());
-
-	auto result = evaluate_impl();
+	auto result = evaluate_impl(data, labs);
 
 	SG_TRACE("leaving {}::evaluate()", get_name());
 	return result;

@@ -42,19 +42,7 @@ namespace shogun
 		 * evaluation
 		 */
 		MachineEvaluation(
-		    std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
-		    std::shared_ptr<SplittingStrategy> splitting_strategy,
-		    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
-
-		/** constructor, for use with custom kernels (no features)
-		 * @param machine learning machine to use
-		 * @param labels labels that correspond to the features
-		 * @param splitting_strategy splitting strategy to use
-		 * @param evaluation_criterion evaluation criterion to use
-		 * @param autolock autolock
-		 */
-		MachineEvaluation(
-		    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
+		    std::shared_ptr<Machine> machine,
 		    std::shared_ptr<SplittingStrategy> splitting_strategy,
 		    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
 
@@ -71,7 +59,8 @@ namespace shogun
 		 *
 		 * @return result of evaluation (already SG_REF'ed)
 		 */
-		virtual std::shared_ptr<EvaluationResult> evaluate() const;
+		virtual std::shared_ptr<EvaluationResult> evaluate(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs) const;
 
 		/** @return underlying learning machine */
 		std::shared_ptr<Machine> get_machine() const;
@@ -86,18 +75,13 @@ namespace shogun
 		 * before returning it.
 		 * @return the evaluation result
 		 */
-		virtual std::shared_ptr<EvaluationResult> evaluate_impl() const = 0;
+		virtual std::shared_ptr<EvaluationResult> evaluate_impl(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs) const = 0;
 
 		/** connect the machine instance to the signal handler */
 	protected:
 		/** Machine to be Evaluated */
 		std::shared_ptr<Machine> m_machine;
-
-		/** Features to be used*/
-		std::shared_ptr<Features> m_features;
-
-		/** Labels for the features */
-		std::shared_ptr<Labels> m_labels;
 
 		/** Splitting Strategy to be used */
 		std::shared_ptr<SplittingStrategy> m_splitting_strategy;

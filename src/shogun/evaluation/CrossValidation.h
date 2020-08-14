@@ -129,28 +129,9 @@ namespace shogun
 		/** constructor */
 		CrossValidation();
 
-		/** constructor
-		 * @param machine learning machine to use
-		 * @param features features to use for cross-validation
-		 * @param labels labels that correspond to the features
-		 * @param splitting_strategy splitting strategy to use
-		 * @param evaluation_criterion evaluation criterion to use
-		 * evaluation
-		 */
 		CrossValidation(
-			std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
-			std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
-			std::shared_ptr<Evaluation> evaluation_criterion);
-
-		/** constructor, for use with custom kernels (no features)
-		 * @param machine learning machine to use
-		 * @param labels labels that correspond to the features
-		 * @param splitting_strategy splitting strategy to use
-		 * @param evaluation_criterion evaluation criterion to use
-		 */
-		CrossValidation(
-		    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
-		    std::shared_ptr<SplittingStrategy> splitting_strategy,
+		    std::shared_ptr<Machine> machine, 
+			std::shared_ptr<SplittingStrategy> splitting_strategy,
 		    std::shared_ptr<Evaluation> evaluation_criterion);
 
 		/** destructor */
@@ -173,7 +154,8 @@ namespace shogun
 		 * Does the actual evaluation.
 		 * @return the cross-validation result
 		 */
-		std::shared_ptr<EvaluationResult> evaluate_impl() const override;
+		virtual std::shared_ptr<EvaluationResult> evaluate_impl(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs) const override;
 
 		/** Evaluates one single cross-validation run.
 		 * Current implementation evaluates each fold separately and then
@@ -184,7 +166,8 @@ namespace shogun
 		 *
 		 * @return evaluation result of one cross-validation run
 		 */
-		float64_t evaluate_one_run(int64_t index) const;
+		float64_t evaluate_one_run(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs, int64_t index) const;
 
 		/** number of evaluation runs for one fold */
 		int32_t m_num_runs;

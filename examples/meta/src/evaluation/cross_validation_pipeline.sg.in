@@ -23,11 +23,11 @@ Pipeline pipeline = builder.then(svm)
 SplittingStrategy strategy = create_splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2, seed=10)
 Evaluation evaluation_criterion = create_evaluation("AccuracyMeasure")
 Machine pipeline_as_machine = as_machine(pipeline)
-MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=pipeline_as_machine, features=feats_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=pipeline_as_machine, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
-EvaluationResult result = cross.evaluate()
+EvaluationResult result = cross.evaluate(feats_train, labels_train)
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]

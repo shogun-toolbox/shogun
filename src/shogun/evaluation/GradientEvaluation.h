@@ -35,7 +35,6 @@ public:
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
 	GradientEvaluation(std::shared_ptr<Machine> machine,
-		std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
 		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock=true);
 
 	~GradientEvaluation() override;
@@ -75,7 +74,8 @@ private:
 	 *
 	 * @return GradientResult containing value and gradient
 	 */
-	std::shared_ptr<EvaluationResult> evaluate_impl() const override;
+	virtual std::shared_ptr<EvaluationResult> evaluate_impl(const std::shared_ptr<Features>& data,
+		const std::shared_ptr<Labels>& labs) const;
 
 	/** updates parameter dictionary of differentiable function */
 	void update_parameter_dictionary() const;

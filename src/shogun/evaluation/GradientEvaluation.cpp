@@ -17,9 +17,9 @@ GradientEvaluation::GradientEvaluation() : MachineEvaluation()
 	init();
 }
 
-GradientEvaluation::GradientEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
-		std::shared_ptr<Labels> labels, std::shared_ptr<Evaluation> evaluation_crit, bool autolock) :
-		MachineEvaluation(std::move(machine), std::move(features), std::move(labels), NULL, std::move(evaluation_crit), autolock)
+GradientEvaluation::GradientEvaluation(std::shared_ptr<Machine> machine,
+		std::shared_ptr<Evaluation> evaluation_crit, bool autolock) :
+		MachineEvaluation(std::move(machine), NULL, std::move(evaluation_crit), autolock)
 {
 	init();
 }
@@ -42,7 +42,8 @@ void GradientEvaluation::update_parameter_dictionary() const
 	m_diff->build_gradient_parameter_dictionary(m_parameter_dictionary);
 }
 
-std::shared_ptr<EvaluationResult> GradientEvaluation::evaluate_impl() const
+std::shared_ptr<EvaluationResult> GradientEvaluation::evaluate_impl(const std::shared_ptr<Features>& data,
+		const std::shared_ptr<Labels>& labs) const
 {
 	if (parameter_hash_changed())
 		update_parameter_dictionary();

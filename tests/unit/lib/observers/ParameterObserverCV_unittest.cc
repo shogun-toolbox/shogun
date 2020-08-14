@@ -65,7 +65,7 @@ std::shared_ptr<ParameterObserverCV> generate(bool locked = true)
 
 	/* cross validation instance, 100 runs, 95% confidence interval */
 	auto cross =
-	    std::make_shared<CrossValidation>(krr, features, labels, splitting, eval_crit);
+	    std::make_shared<CrossValidation>(krr, splitting, eval_crit);
 	cross->set_num_runs(10);
 
 	/* Create the parameter observer */
@@ -73,7 +73,7 @@ std::shared_ptr<ParameterObserverCV> generate(bool locked = true)
 	cross->subscribe(par);
 
 	/* actual evaluation */
-	auto result = cross->evaluate()->as<CrossValidationResult>();
+	auto result = cross->evaluate(features, labels)->as<CrossValidationResult>();
 
 	return par;
 }

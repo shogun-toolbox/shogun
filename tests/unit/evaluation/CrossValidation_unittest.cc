@@ -75,7 +75,7 @@ protected:
 			not_implemented(SOURCE_LOCATION);
 			break;
 		}
-		cv = std::make_shared<CrossValidation>(machine, features, labels, ss, ec);
+		cv = std::make_shared<CrossValidation>(machine, ss, ec);
 		cv->set_num_runs(3);
 	}
 
@@ -88,7 +88,7 @@ protected:
 		init();
 		this->cv->put("seed", 1);
 		env()->set_num_threads(1);
-		auto result = cv->evaluate()->get<float64_t>("mean");
+		auto result = cv->evaluate(features, labels)->template get<float64_t>("mean");
 		return result;
 	}
 
@@ -97,7 +97,7 @@ protected:
 		init();
 		this->cv->put("seed", 1);
 		env()->set_num_threads(4);
-		auto result = cv->evaluate()->get<float64_t>("mean");
+		auto result = cv->evaluate(features, labels)->template get<float64_t>("mean");
 		return result;
 	}
 

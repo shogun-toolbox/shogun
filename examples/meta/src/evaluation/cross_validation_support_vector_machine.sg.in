@@ -8,9 +8,9 @@ Machine svm = create_machine("LibLinear", liblinear_solver_type="L2R_L2LOSS_SVC"
 
 SplittingStrategy strategy = create_splitting_strategy("StratifiedCrossValidationSplitting", labels=labs, num_subsets=5)
 Evaluation evaluation_criterion = create_evaluation("AccuracyMeasure")
-MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=svm, features=feats, labels=labs, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=svm, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 
-EvaluationResult result = cross.evaluate()
+EvaluationResult result = cross.evaluate(feats, labs)
 
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")

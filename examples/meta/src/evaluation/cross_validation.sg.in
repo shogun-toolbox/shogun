@@ -22,11 +22,11 @@ Machine svm = create_machine("LibLinear", labels=labels_train, epsilon=epsilon, 
 #![create_cross_validation]
 SplittingStrategy strategy = create_splitting_strategy("StratifiedCrossValidationSplitting", labels=labels_train, num_subsets=2, seed=2)
 Evaluation evaluation_criterion = create_evaluation("AccuracyMeasure")
-MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=svm, features=features_train, labels=labels_train, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
+MachineEvaluation cross = create_machine_evaluation("CrossValidation", machine=svm, splitting_strategy=strategy, evaluation_criterion=evaluation_criterion, num_runs=2)
 #![create_cross_validation]
 
 #![evaluate_and_get_result]
-EvaluationResult result = cross.evaluate()
+EvaluationResult result = cross.evaluate(features_train, labels_train)
 real mean = result.get_real("mean")
 real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]
@@ -57,11 +57,11 @@ Machine lrr = create_machine("LinearRidgeRegression", tau=tau, labels=reg_labels
 #![create_cross_validation_REGRESSION]
 Evaluation MSE_evaluation = create_evaluation("MeanSquaredError")
 SplittingStrategy splitting = create_splitting_strategy("CrossValidationSplitting", labels=reg_labels_train, num_subsets=2, seed=2)
-MachineEvaluation cross_validation = create_machine_evaluation("CrossValidation", machine=lrr, features=reg_features_train, labels=reg_labels_train, splitting_strategy=splitting, evaluation_criterion=MSE_evaluation, num_runs=2)
+MachineEvaluation cross_validation = create_machine_evaluation("CrossValidation", machine=lrr, splitting_strategy=splitting, evaluation_criterion=MSE_evaluation, num_runs=2)
 #![create_cross_validation_REGRESSION]
 
 #![evaluate_and_get_result_REGRESSION]
-EvaluationResult result_lrr = cross_validation.evaluate()
+EvaluationResult result_lrr = cross_validation.evaluate(reg_features_train, reg_labels_train)
 #![evaluate_and_get_result_REGRESSION]
 
 #![evaluate_error_REGRESSION]
