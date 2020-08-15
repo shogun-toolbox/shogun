@@ -1,0 +1,44 @@
+File f_feats_train = read_csv("@SHOGUN_DATA@/fm_train_real.dat")
+File f_feats_test = read_csv("@SHOGUN_DATA@/fm_test_real.dat")
+File f_labels_train = read_csv("@SHOGUN_DATA@/label_train_multiclass.dat")
+
+#![create_features]
+Features feats_train = create_features(f_feats_train)
+Features features_test = create_features(f_feats_test)
+MulticlassLabels train_labels(f_labels_train)
+#![create_features]
+
+#![set_attribute_types]
+BoolVector ft(2)
+ft[0] = False
+ft[1] = False
+#![set_attribute_types]
+
+#![create_subset]
+IntVector vsubset([7,86,44,16,15,39,22,90,43,62,2,89,91,78,64,40,66,32,4,67,57,18,49,65,82,24,19,1,73])
+IntVector trsubset([50,41,88,74,68,10,38,76,5,48,59,56,47,30,46,53,70,87,27,79,6,75,14,31,52,81,28,42,25,60,51,3,69,26,83,0,54,9,84,36,23,12,35,29,63,20,17,58,80,21,8,55,34,45,37,13,11,77,72,33,71])
+train_labels.add_subset(trsubset)
+feats_train.add_subset(trsubset)
+#![create_subset]
+#![create_instance]
+C45ClassifierTree c()
+c.set_labels(train_labels)
+c.set_feature_types(ft)
+#![create_instance]
+
+#![train_and_apply]
+c.train(feats_train)
+train_labels.remove_subset()
+feats_train.remove_subset()
+# prune tree using validation subset
+train_labels.add_subset(vsubset)
+feats_train.add_subset(vsubset)
+c.prune_tree(feats_train,train_labels)
+train_labels.remove_subset() 
+feats_train.remove_subset()
+MulticlassLabels labels_predict = c.apply_multiclass(features_test)
+#![train_and_apply]
+
+# integration testing variables
+RealVector output = labels_predict.get_labels()
+RealVector output_certainty = c.get_certainty_vector()
