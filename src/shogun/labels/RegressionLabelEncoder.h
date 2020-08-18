@@ -4,8 +4,8 @@
  * Authors: Yuhui Liu
  *
  */
-#ifndef _RegressionLabelsEncoder__H__
-#define _RegressionLabelsEncoder__H__
+#ifndef _REGRESSIONLABELENCODER__H__
+#define _REGRESSIONLABELENCODER__H__
 
 #include <memory>
 #include <shogun/base/SGObject.h>
@@ -20,12 +20,12 @@ namespace shogun
 	/** @brief Implements a reversible mapping from
 	 * any form of labels to RegressionLabels.
 	 */
-	class RegressionLabelsEncoder : public LabelEncoder
+	class RegressionLabelEncoder : public LabelEncoder
 	{
 	public:
-		RegressionLabelsEncoder() = default;
+		RegressionLabelEncoder() = default;
 
-		~RegressionLabelsEncoder() override = default;
+		~RegressionLabelEncoder() override = default;
 
 		SGVector<float64_t> fit(const std::shared_ptr<Labels>& labs) override
 		{
@@ -55,7 +55,7 @@ namespace shogun
 
 		const char* get_name() const override
 		{
-			return "RegressionLabelsEncoder";
+			return "RegressionLabelEncoder";
 		}
 
 	};

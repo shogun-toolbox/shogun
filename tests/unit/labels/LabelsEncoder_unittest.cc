@@ -9,7 +9,7 @@
 #include <shogun/labels/LabelEncoder.h>
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/labels/MulticlassLabelsEncoder.h>
-#include <shogun/labels/RegressionLabelsEncoder.h>
+#include <shogun/labels/RegressionLabelEncoder.h>
 
 using namespace shogun;
 
@@ -199,9 +199,9 @@ TEST(MulticlassLabelsEncoder, contiguous_labels)
 	}
 }
 
-TEST(RegressionLabelsEncoder, fit)
+TEST(RegressionLabelEncoder, fit)
 {
-	auto labels_encoder = std::make_shared<RegressionLabelsEncoder>();
+	auto labels_encoder = std::make_shared<RegressionLabelEncoder>();
 	SGVector<float64_t> vec{0, 1, 2, 3, 4, 5};
 	auto multiclass_labels = std::make_shared<MulticlassLabels>(vec);
 	labels_encoder->fit(multiclass_labels);
