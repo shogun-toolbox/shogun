@@ -31,7 +31,7 @@ TEST(CrossValidation_Wrapper, fit)
     auto machine = std::make_shared<LinearRidgeRegression>();
     auto evaluation_criterion = std::make_shared<MeanSquaredError>();
     auto cv = std::make_shared<CrossValidation>(machine, strategy, evaluation_criterion);
-    std::pair<std::string_view, std::vector<double>> params{"tau", {0.1, 0.2, 0.5, 0.8, 2}};
+    std::vector<std::pair<std::string_view, std::vector<double>>> params{{"tau", {0.1, 0.2, 0.5, 0.8, 2}}};
     auto cv_wrapper = std::make_shared<CrossValidationWrapper<LinearRidgeRegression>>(params, cv);
     cv_wrapper->fit(train_feats, labels_train);
     auto pred = machine->apply(test_feats);
