@@ -5,7 +5,7 @@ Features feats = create_features(f_feats_train)
 #![create_features]
 
 #![set_parameters]
-Kernel k = create_kernel("LinearKernel", width=1.0)
+Kernel k = create_kernel("LinearKernel")
 Transformer fa = create_transformer("KernelLocallyLinearEmbedding", kernel=k, target_dim=1, k=20)
 #![set_parameters]
 
