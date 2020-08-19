@@ -5,7 +5,7 @@ Features feats = create_features(f_feats_train)
 #![create_features]
 
 #![set_parameters]
-Transformer fa = create_transformer("LaplacianEigenmaps", target_dim=1, k=20, tau=20)
+Transformer fa = create_transformer("LaplacianEigenmaps", target_dim=1, k=20, tau=20.0)
 #![set_parameters]
 
 #![apply_convert]
