@@ -51,8 +51,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
 
     # cross-validation instance
     cross_validation = sg.create_machine_evaluation(
-        "CrossValidation", machine=svm, features=comb_features,
-        labels=labels, splitting_strategy=splitting_strategy,
+        "CrossValidation", machine=svm, splitting_strategy=splitting_strategy,
         evaluation_criterion=evaluation_criterium, num_runs=3)
 
     # append cross vlaidation output classes
@@ -60,7 +59,7 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
     cross_validation.subscribe(mkl_storage)
 
     # perform cross-validation
-    result=cross_validation.evaluate()
+    result=cross_validation.evaluate(comb_features, labels)
 
     # print mkl weights
     weights = []
