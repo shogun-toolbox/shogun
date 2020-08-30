@@ -10,6 +10,7 @@
 #include <shogun/base/variant.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/transformer/Transformer.h>
+#include <shogun/machine/Composite.h>
 #include <utility>
 
 namespace shogun
@@ -67,6 +68,8 @@ namespace shogun
 		 * @return the new pipeline instance
 		 */
 		std::shared_ptr<Pipeline> build();
+
+		std::shared_ptr<Composite> composite();
 
 		const char* get_name() const override
 		{
