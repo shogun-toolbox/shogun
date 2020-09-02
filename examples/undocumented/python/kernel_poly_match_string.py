@@ -11,7 +11,7 @@ def kernel_poly_match_string (fm_train_dna=traindat,fm_test_dna=testdat,degree=3
 	feats_train=sg.create_string_features(fm_train_dna, sg.DNA)
 	feats_test=sg.create_string_features(fm_train_dna, sg.DNA)
 
-	kernel=sg.create_kernel("PolyMatchStringKernel", degree=degree, inhomogene=inhomogene)
+	kernel=sg.create("PolyMatchStringKernel", degree=degree, inhomogene=inhomogene)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

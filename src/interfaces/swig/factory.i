@@ -95,6 +95,15 @@ namespace shogun{
 
 #endif //SWIGJAVA
 
+// FIXME: There is an ambiguity with create_kernel for custom kernels which takes a matrix
+// the meta example parser can't differentiate between the two!
+%template(create_kernel) shogun::create_<shogun::Kernel, std::string>;
+// same problem with the ambiguity
+%template(create_features) shogun::create_<shogun::Features, std::string>;
+
+%template(create_labels) shogun::create_labels<float64_t>;
+
+#ifndef SWIGPYTHON
 %template(create_svm) shogun::create_<shogun::SVM,std::string>;
 %template(create_evaluation) shogun::create_<shogun::Evaluation, std::string>;
 %template(create_multiclass_strategy) shogun::create_<shogun::MulticlassStrategy, std::string>;
@@ -114,13 +123,13 @@ namespace shogun{
 %template(create_distribution) shogun::create_<shogun::Distribution, std::string>;
 %template(create_combination_rule) shogun::create_<shogun::CombinationRule, std::string>;
 %template(create_distance) shogun::create_<shogun::Distance, std::string>;
-%template(create_kernel) shogun::create_<shogun::Kernel, std::string>;
-%template(create_features) shogun::create_<shogun::Features, std::string>;
 %template(create_machine) shogun::create_<shogun::Machine, std::string>;
 %template(create_structured_model) shogun::create_<shogun::StructuredModel, std::string>;
 %template(create_factor_type) shogun::create_<shogun::FactorType, std::string>;
 %template(create_gaussian_process) shogun::create_<shogun::GaussianProcess, std::string>;
-%template(create_labels) shogun::create_labels<float64_t>;
 %template(create_minimizer) shogun::create_<shogun::Minimizer, std::string>;
 %template(create_lbfgs_minimizer) shogun::create_<shogun::LBFGSMinimizer, std::string>;
 %template(create_kernel_normalizer) shogun::create_<shogun::KernelNormalizer, std::string>;
+#else
+%include "factory_python.i"
+#endif

@@ -16,7 +16,7 @@ def evaluation_prcevaluation (ground_truth, predicted):
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
 
-	evaluator = sg.create_evaluation("PRCEvaluation")
+	evaluator = sg.create("PRCEvaluation")
 	evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return evaluator.get("PRC"), evaluator.get("auPRC")

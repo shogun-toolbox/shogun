@@ -8,9 +8,9 @@ X, Y = util.get_sinedata()
 
 feat = sg.create_features(X)
 lab = sg.create_labels(Y.flatten())
-gk = sg.create_kernel('GaussianKernel', width=1.0)
+gk = sg.create('GaussianKernel', width=1.0)
 gk.init(feat, feat)
-krr = sg.create_machine('KernelRidgeRegression', labels=lab, kernel=gk, tau=1e-3)
+krr = sg.create('KernelRidgeRegression', labels=lab, kernel=gk, tau=1e-3)
 krr.train()
 
 plt.scatter(X, Y,  label='train data', color='tab:red')

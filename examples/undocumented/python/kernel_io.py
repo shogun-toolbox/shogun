@@ -11,7 +11,7 @@ def kernel_io (train_fname=traindat,test_fname=testdat,width=1.9):
 	feats_train=sg.create_features(sg.read_csv(train_fname))
 	feats_test=sg.create_features(sg.read_csv(test_fname))
 
-	kernel=sg.create_kernel("GaussianKernel", width=width)
+	kernel=sg.create("GaussianKernel", width=width)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 	tmp_train_csv = NamedTemporaryFile(suffix='train.csv')

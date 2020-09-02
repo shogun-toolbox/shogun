@@ -16,34 +16,34 @@ def evaluation_contingencytableevaluation (ground_truth, predicted):
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
 
-	base_evaluator = sg.create_evaluation("ContingencyTableEvaluation")
+	base_evaluator = sg.create("ContingencyTableEvaluation")
 	base_evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("AccuracyMeasure")
+	evaluator = sg.create("AccuracyMeasure")
 	accuracy = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("ErrorRateMeasure")
+	evaluator = sg.create("ErrorRateMeasure")
 	errorrate = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("BALMeasure")
+	evaluator = sg.create("BALMeasure")
 	bal = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("WRACCMeasure")
+	evaluator = sg.create("WRACCMeasure")
 	wracc = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("F1Measure")
+	evaluator = sg.create("F1Measure")
 	f1 = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("CrossCorrelationMeasure")
+	evaluator = sg.create("CrossCorrelationMeasure")
 	crosscorrelation = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("RecallMeasure")
+	evaluator = sg.create("RecallMeasure")
 	recall = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("PrecisionMeasure")
+	evaluator = sg.create("PrecisionMeasure")
 	precision = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
-	evaluator = sg.create_evaluation("SpecificityMeasure")
+	evaluator = sg.create("SpecificityMeasure")
 	specificity = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return accuracy, errorrate, bal, wracc, f1, crosscorrelation, recall, precision, specificity

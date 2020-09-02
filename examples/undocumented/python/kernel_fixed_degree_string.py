@@ -12,7 +12,7 @@ def kernel_fixed_degree_string (fm_train_dna=traindat, fm_test_dna=testdat,degre
 	feats_train=sg.create_string_features(fm_train_dna, sg.DNA)
 	feats_test=sg.create_string_features(fm_test_dna, sg.DNA)
 
-	kernel=sg.create_kernel("FixedDegreeStringKernel", degree=degree)
+	kernel=sg.create("FixedDegreeStringKernel", degree=degree)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

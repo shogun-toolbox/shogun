@@ -17,7 +17,7 @@ def kernel_ssk_string (fm_train_dna=traindat, fm_test_dna=testdat, maxlen=1, dec
 	feats_train=sg.create_string_features(fm_train_dna, sg.DNA)
 	feats_test=sg.create_string_features(fm_test_dna, sg.DNA)
 
-	kernel=sg.create_kernel("SubsequenceStringKernel", maxlen=maxlen, decay=decay)
+	kernel=sg.create("SubsequenceStringKernel", maxlen=maxlen, decay=decay)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

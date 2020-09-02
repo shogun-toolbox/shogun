@@ -41,7 +41,7 @@ config_tests = ["HAVE_HDF5", "HAVE_LAPACK",
                 "HAVE_NLOPT", "HAVE_PROTOBUF", "HAVE_VIENNACL", "USE_GPL_SHOGUN",
                 "USE_META_INTEGRATION_TESTS", "HAVE_TFLOGGER"]
 # TODO: remove once plugins are working
-class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix", 
+class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix",
         "SGStringList", "SGMatrixList", "SGCachedVector", "SGNDArray",
         "ObservedValue", "ObservedValueTemplated",
         "ParameterObserverHistogram", "ParameterObserverScalar", "ParameterObserverTensorBoard",
@@ -163,7 +163,18 @@ def get_definitions(classes):
     definitions.append("#define %s" % SHOGUN_TEMPLATE_CLASS)
     definitions.append("#define %s" % SHOGUN_BASIC_CLASS)
     for c, t in classes:
-        d = "static %s SGObject* __new_%s(EPrimitiveType g) { return g == PT_NOT_GENERIC? new %s(): NULL; }" % (SHOGUN_BASIC_CLASS,c,c)
+        d = \
+"""static %s std::shared_ptr<SGObject>\n__new_%s(EPrimitiveType g, const std::shared_ptr<InterfaceTypeVisitor>& visitor)
+{
+\tif(g == PT_NOT_GENERIC)
+\t{
+\t\tauto obj = std::make_shared<%s>();
+\t\tif(visitor) visitor->on(&obj);
+\t\treturn obj;
+\t}
+\treturn {};
+}""" \
+            % (SHOGUN_BASIC_CLASS, c, c)
         definitions.append(d)
     return definitions
 
@@ -172,20 +183,27 @@ def get_template_definitions(classes, supports_complex):
     definitions = []
     for c, t in classes:
         d = []
-        d.append("static %s SGObject* __new_%s(EPrimitiveType g)\n{\n\tswitch (g)\n\t{\n"
+        d.append("static %s std::shared_ptr<SGObject>\n" % (SHOGUN_BASIC_CLASS))
+        d.append("\n__new_%s(EPrimitiveType g, const std::shared_ptr<InterfaceTypeVisitor>& visitor)\n"
                  % (SHOGUN_TEMPLATE_CLASS, c))
+        d.append("{\n\tswitch (g)\n\t{\n")
         for t in types:
             if t in ('BOOL', 'CHAR'):
                 suffix = ''
             else:
                 suffix = '_t'
             if t == 'COMPLEX128' and not supports_complex:
-                d.append("\t\tcase PT_COMPLEX128: return NULL;\n")
+                d.append("\t\tcase PT_COMPLEX128: return {};\n")
             else:
-                d.append("\t\tcase PT_%s: return new %s<%s%s>();\n"
-                         % (t, c, t.lower(), suffix))
+                d.append(
+                    "\t\tcase PT_%s: {\n\t\t\tauto obj = std::make_shared<%s<%s%s>>();"
+                    % (t, c, t.lower(), suffix))
+                d.append(
+                    "\n\t\t\tif(visitor) visitor->on(&obj);\n\t\t\treturn obj;\n\t\t}\n")
+
         d.append("\t\tcase PT_SGOBJECT:\n")
-        d.append("\t\tcase PT_UNDEFINED: return NULL;\n\t}\n\treturn NULL;\n}")
+        d.append("\t\tcase PT_UNDEFINED: return {};\n\t}")
+        d.append("\n\treturn {};\n}\n")
         definitions.append(''.join(d))
     return definitions
 

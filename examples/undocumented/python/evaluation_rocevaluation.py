@@ -16,7 +16,7 @@ def evaluation_rocevaluation (ground_truth, predicted):
 	ground_truth_labels = BinaryLabels(ground_truth)
 	predicted_labels = BinaryLabels(predicted)
 
-	evaluator = sg.create_evaluation("ROCEvaluation")
+	evaluator = sg.create("ROCEvaluation")
 	evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return evaluator.get("ROC"), evaluator.get("auROC")

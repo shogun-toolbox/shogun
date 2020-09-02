@@ -19,9 +19,9 @@ def features_hasheddocdot(strings):
 	normalize=True
 
 	#create HashedDocDot features
-	hddf = sg.create_features("HashedDocDotFeatures", num_bits=num_bits, 
-		 					  doc_collection=f, tokenizer=tokenizer, 
-		 					  should_normalize=normalize)
+	hddf = sg.create("HashedDocDotFeatures", num_bits=num_bits,
+                  doc_collection=f, tokenizer=tokenizer,
+                  should_normalize=normalize)
 	#should expect 32
 	#print('Feature space dimensionality is', hddf.get_dim_feature_space())
 

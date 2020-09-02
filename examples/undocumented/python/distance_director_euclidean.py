@@ -29,7 +29,7 @@ def distance_director_euclidean (fm_train_real=traindat,fm_test_real=testdat,sca
 	feats_train.get_global_parallel().set_num_threads(1)
 	feats_test=sg.create_features(fm_test_real)
 
-	distance=sg.create_distance("EuclideanDistance")
+	distance=sg.create("EuclideanDistance")
 	distance.init(feats_train, feats_test)
 
 	ddistance=DirectorEuclideanDistance()

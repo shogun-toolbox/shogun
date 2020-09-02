@@ -12,7 +12,7 @@
 namespace shogun
 {
 
-	// all shogun base classes for put/add templates
+	// all shogun base classes for put/add templates and factories
 	class Machine;
 	class Kernel;
 	class Distance;
@@ -34,34 +34,15 @@ namespace shogun
 	class LossFunction;
 	class Tokenizer;
 	class CombinationRule;
-
-	// type trait to enable certain methods only for shogun base types
-	// FIXME: use sg_interface to populate this trait
-	template <class T>
-	struct is_sg_base
-	    : std::integral_constant<
-	          bool, std::is_same<Machine, T>::value ||
-	                    std::is_same<Kernel, T>::value ||
-	                    std::is_same<Distance, T>::value ||
-	                    std::is_same<Features, T>::value ||
-	                    std::is_same<Labels, T>::value ||
-	                    std::is_same<ECOCEncoder, T>::value ||
-	                    std::is_same<ECOCDecoder, T>::value ||
-	                    std::is_same<Evaluation, T>::value ||
-	                    std::is_same<MulticlassStrategy, T>::value ||
-	                    std::is_same<NeuralLayer, T>::value ||
-	                    std::is_same<SplittingStrategy, T>::value ||
-	                    std::is_same<SVM, T>::value ||
-	                    std::is_same<DifferentiableFunction, T>::value ||
-	                    std::is_same<Inference, T>::value ||
-	                    std::is_same<LikelihoodModel, T>::value ||
-	                    std::is_same<MeanFunction, T>::value ||
-	                    std::is_same<LossFunction, T>::value ||
-	                    std::is_same<Tokenizer, T>::value ||
-	                    std::is_same<EvaluationResult, T>::value ||
-	                    std::is_same<CombinationRule, T>::value>
-	{
-	};
+	class KernelNormalizer;
+	class Transformer;
+	class MachineEvaluation;
+	class StructuredModel;
+	class FactorType;
+	class ParameterObserver;
+	class Distribution;
+	class GaussianProcess;
+	class Alphabet;
 
 	template <class T>
 	struct is_string
@@ -114,7 +95,43 @@ namespace shogun
 		EvaluationResult, MulticlassStrategy, NeuralLayer,
 		SplittingStrategy, LikelihoodModel, MeanFunction,
 		DifferentiableFunction, Inference, LossFunction,
-		Tokenizer>;
+		Tokenizer, CombinationRule, KernelNormalizer, Transformer,
+		MachineEvaluation, StructuredModel, FactorType, ParameterObserver,
+		Distribution, GaussianProcess, Alphabet>;
+
+	namespace types_detail
+	{
+		template <typename T, typename... Ts>
+		struct typeInList_impl : public std::false_type
+		{
+		};
+
+		template <typename T, typename T1, typename... Ts>
+		struct typeInList_impl<T, T1, Ts...>
+		    : public std::conditional_t<
+		          std::is_same_v<T, T1>, std::true_type,
+		          typeInList_impl<T, Ts...>>
+		{
+		};
+	} // namespace types_detail
+
+	template <typename T, typename TypesT>
+	struct typeInList : public std::false_type
+	{
+		using X = typename TypesT : WTF;
+	};
+
+	template <typename T, template <typename...> class TypesT, typename... Args>
+	struct typeInList<T, TypesT<Args...>>
+	    : public types_detail::typeInList_impl<T, Args...>
+	{
+	};
+
+
+	template <class T>
+	struct is_sg_base : public typeInList<T, sg_inferface>
+	{
+	};
 
 	template <typename Derived>
 	constexpr auto find_base(type_list<>)

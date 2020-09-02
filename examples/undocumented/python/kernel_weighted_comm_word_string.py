@@ -11,7 +11,7 @@ def kernel_weighted_comm_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 
 	charfeat=sg.create_string_features(fm_train_dna, sg.DNA)
 	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
-	preproc = sg.create_transformer("SortWordString")
+	preproc = sg.create("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
@@ -20,7 +20,7 @@ def kernel_weighted_comm_word_string (fm_train_dna=traindat,fm_test_dna=testdat,
 	feats_test = preproc.transform(feats_test)
 
 	use_sign=False
-	kernel = sg.create_kernel("WeightedCommWordStringKernel", use_sign=use_sign)
+	kernel = sg.create("WeightedCommWordStringKernel", use_sign=use_sign)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

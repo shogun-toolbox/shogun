@@ -20,9 +20,9 @@ def stochasticgbmachine(train=traindat,train_labels=label_traindat,ft=feat_types
 	p=np.random.permutation(labels.get_num_labels())
 	num=labels.get_num_labels()*0.9
 
-	cart=sg.create_machine("CARTree", nominal=ft, max_depth=1)
-	loss = sg.create_loss('SquaredLoss')
-	s=sg.create_machine("StochasticGBMachine", machine=cart, loss=loss, 
+	cart=sg.create("CARTree", nominal=ft, max_depth=1)
+	loss = sg.create('SquaredLoss')
+	s=sg.create("StochasticGBMachine", machine=cart, loss=loss, 
 		num_iterations=500, learning_rate=0.01)
 
 	# train

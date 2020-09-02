@@ -18,7 +18,7 @@ plt.plot(neg[0, :], neg[1, :], "b.")
 # train lda
 labels = util.get_labels()
 features = util.get_realfeatures(pos, neg)
-lda = sg.create_machine('LDA', gamma=gamma, labels=labels)
+lda = sg.create('LDA', gamma=gamma, labels=labels)
 lda.train(features)
 
 # compute output plot iso-lines

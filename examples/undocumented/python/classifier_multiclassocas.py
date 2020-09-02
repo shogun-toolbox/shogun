@@ -6,7 +6,7 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 	from shogun import MulticlassLabels
 	import shogun as sg
 	try:
-		sg.create_machine("MulticlassOCAS")
+		sg.create("MulticlassOCAS")
 	except ImportError:
 		print("MulticlassOCAS not available")
 		return
@@ -28,7 +28,7 @@ def classifier_multiclassocas (num_vec=10,num_class=3,distance=15,width=2.1,C=1,
 
 	labels=sg.create_labels(label_train)
 
-	classifier = sg.create_machine("MulticlassOCAS", labels=labels, C=C)
+	classifier = sg.create("MulticlassOCAS", labels=labels, C=C)
 	classifier.train(feats_train)
 
 	out = classifier.apply(feats_test).get("labels")

@@ -23,40 +23,40 @@ def evaluation_cross_validation_mkl_weight_storage(traindat=traindat, label_trai
 
     # training data, combined features all on same data
     features=sg.create_features(traindat)
-    comb_features=sg.create_features("CombinedFeatures")
+    comb_features=sg.create("CombinedFeatures")
     comb_features.add("feature_array", features)
     comb_features.add("feature_array", features)
     comb_features.add("feature_array", features)
     labels=BinaryLabels(label_traindat)
 
     # kernel, different Gaussians combined
-    kernel=sg.create_kernel("CombinedKernel")
-    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", width=0.1))
-    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", width=1))
-    kernel.add("kernel_array", sg.create_kernel("GaussianKernel", width=2))
+    kernel=sg.create("CombinedKernel")
+    kernel.add("kernel_array", sg.create("GaussianKernel", width=0.1))
+    kernel.add("kernel_array", sg.create("GaussianKernel", width=1))
+    kernel.add("kernel_array", sg.create("GaussianKernel", width=2))
 
     # create mkl using libsvm, due to a mem-bug, interleaved is not possible
-    libsvm = sg.create_machine("LibSVM")
-    svm = sg.create_machine("MKLClassification", svm=sg.as_svm(libsvm),
+    libsvm = sg.create("LibSVM")
+    svm = sg.create("MKLClassification", svm=sg.as_svm(libsvm),
             interleaved_optimization=False, kernel=kernel)
 
     # splitting strategy for 5 fold cross-validation (for classification its better
     # to use "StratifiedCrossValidation", but the standard
     # "StratifiedCrossValidationSplitting" is also available
-    splitting_strategy = sg.create_splitting_strategy(
+    splitting_strategy = sg.create(
         "StratifiedCrossValidationSplitting", labels=labels, num_subsets=5)
 
     # evaluation method
-    evaluation_criterium=sg.create_evaluation("ContingencyTableEvaluation", type="ACCURACY")
+    evaluation_criterium=sg.create("ContingencyTableEvaluation", type="ACCURACY")
 
     # cross-validation instance
-    cross_validation = sg.create_machine_evaluation(
+    cross_validation = sg.create(
         "CrossValidation", machine=svm, features=comb_features,
         labels=labels, splitting_strategy=splitting_strategy,
         evaluation_criterion=evaluation_criterium, num_runs=3)
 
     # append cross vlaidation output classes
-    mkl_storage=sg.create_parameter_observer("ParameterObserverCV")
+    mkl_storage=sg.create("ParameterObserverCV")
     cross_validation.subscribe(mkl_storage)
 
     # perform cross-validation

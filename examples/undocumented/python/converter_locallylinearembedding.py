@@ -12,7 +12,7 @@ def converter_locallylinearembeeding (data, k):
 
 	features = sg.create_features(data)
 
-	converter = sg.create_transformer('LocallyLinearEmbedding', k=k)
+	converter = sg.create('LocallyLinearEmbedding', k=k)
 
 	converter.fit(features)
 	features = converter.transform(features)

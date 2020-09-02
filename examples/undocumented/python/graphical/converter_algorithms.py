@@ -48,7 +48,7 @@ for converter in ['FastICA', 'FFSep', 'Jade', 'JediSep', 'SOBI', 'UWedgeSep']:
     mixed_signals = sg.create_features(X)
 
     # Separating
-    transformer = sg.create_transformer(converter)
+    transformer = sg.create(converter)
     transformer.fit(mixed_signals)
     signals = transformer.transform(mixed_signals)
     S_ = signals.get('feature_matrix')

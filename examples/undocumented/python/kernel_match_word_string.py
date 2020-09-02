@@ -18,8 +18,8 @@ degree=3,scale=1.4,size_cache=10,order=3,gap=0,reverse=False):
 	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
 	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
-	kernel=sg.create_kernel("MatchWordStringKernel", cache_size=size_cache, degree=degree)
-	kernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
+	kernel=sg.create("MatchWordStringKernel", cache_size=size_cache, degree=degree)
+	kernel.set_normalizer(sg.create("AvgDiagKernelNormalizer", scale=scale))
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

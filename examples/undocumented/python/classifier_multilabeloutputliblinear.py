@@ -14,7 +14,7 @@ def classifier_multilabeloutputliblinear (fm_train_real=traindat,fm_test_real=te
 
 	labels=MulticlassLabels(label_train_multiclass)
 
-	classifier = sg.create_machine("MulticlassLibLinear", C=C, labels=labels)
+	classifier = sg.create("MulticlassLibLinear", C=C, labels=labels)
 	classifier.train(feats_train)
 
 	# TODO: figure out the new style API for the below call, disabling for now

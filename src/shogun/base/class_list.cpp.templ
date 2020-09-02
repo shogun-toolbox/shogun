@@ -32,6 +32,7 @@
 
 #include <shogun/lib/common.h>
 #include <shogun/base/class_list.h>
+#include <shogun/util/visitors/InterfaceTypeVisitor.h>
 #include <string.h>
 
 REPLACE includes THIS
@@ -45,18 +46,20 @@ REPLACE template_definitions THIS
 
 REPLACE complex_template_definitions THIS
 
-typedef SGObject* (*CreateFunction)(EPrimitiveType generic);
+typedef std::shared_ptr<SGObject> (*CreateFunction)(EPrimitiveType generic, const std::shared_ptr<InterfaceTypeVisitor>&);
 
-static const std::map<std::string, CreateFunction> classes = {
+static const std::unordered_map<std::string, CreateFunction> classes = {
 REPLACE struct THIS
 };
 
-std::shared_ptr<SGObject> shogun::create(const char* classname, EPrimitiveType generic)
+std::shared_ptr<SGObject> shogun::create(
+    const char* classname, EPrimitiveType generic,
+    const std::shared_ptr<InterfaceTypeVisitor>& visitor)
 {
 	auto entry = classes.find(classname);
 	if (entry != classes.end())
 	{
-		return std::shared_ptr<SGObject>(entry->second(generic));
+		return entry->second(generic, visitor);
 	}
 	return nullptr;
 }

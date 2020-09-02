@@ -7,17 +7,17 @@ import shogun as sg
 tid = 0
 cards = np.array([2,2], np.int32)
 w_gt = np.array([0.3,0.5,1.0,0.2,0.05,0.6,-0.2,0.75])
-fac_type = sg.create_factor_type("TableFactorType",type_id=tid, cards=cards, w=w_gt)
+fac_type = sg.create("TableFactorType",type_id=tid, cards=cards, w=w_gt)
 
 tid_u = 1
 cards_u = np.array([2], np.int32)
 w_gt_u = np.array([0.5,0.8,1.0,-0.3])
-fac_type_u = sg.create_factor_type("TableFactorType",type_id=tid_u, cards=cards_u, w=w_gt_u)
+fac_type_u = sg.create("TableFactorType",type_id=tid_u, cards=cards_u, w=w_gt_u)
 
 tid_b = 2
 cards_b = np.array([2], np.int32)
 w_gt_b = np.array([0.8, -0.8])
-fac_type_b = sg.create_factor_type("TableFactorType",type_id=tid_b, cards=cards_b, w=w_gt_b)
+fac_type_b = sg.create("TableFactorType",type_id=tid_b, cards=cards_b, w=w_gt_b)
 
 def gen_data(ftype, num_samples, show_data = False):
 
@@ -92,14 +92,14 @@ parameter_list = [[samples,labels,w_all,ftype_all]]
 
 def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w_all, ftype = ftype_all):
 	try:
-		_ = sg.create_machine("DualLibQPBMSOSVM")
+		_ = sg.create("DualLibQPBMSOSVM")
 	except:
 		print("DualLibQPBMSOSVM not available")
 		return
 
 	# create model
-	model = sg.create_structured_model("FactorGraphModel", features=tr_samples, labels=tr_labels, 
-								inf_type="TREE_MAX_PROD")
+	model = sg.create("FactorGraphModel", features=tr_samples, labels=tr_labels,
+                   inf_type="TREE_MAX_PROD")
 	w_truth = [w[0].copy(), w[1].copy(), w[2].copy()]
 	w[0] = np.zeros(8)
 	w[1] = np.zeros(4)
@@ -112,7 +112,7 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	model.add("factor_types", ftype[2])
 
 	# --- training with BMRM ---
-	bmrm = sg.create_machine("DualLibQPBMSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
+	bmrm = sg.create("DualLibQPBMSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
 	#bmrm.set_verbose(True)
 	bmrm.train()
 	#print 'learned weights:'
@@ -142,7 +142,7 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print hbm.get_train_errors()
 
 	# --- training with SGD ---
-	sgd = sg.create_machine("StochasticSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
+	sgd = sg.create("StochasticSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
 	#sgd.set_verbose(True)
 	sgd.train()
 
@@ -154,7 +154,7 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print hp.get_train_errors()
 
 	# --- training with FW ---
-	fw = sg.create_machine("FWSOSVM", model=model, labels=tr_labels, m_lambda=0.01, 
+	fw = sg.create("FWSOSVM", model=model, labels=tr_labels, m_lambda=0.01, 
 					gap_threshold=0.01)
 	fw.train()
 

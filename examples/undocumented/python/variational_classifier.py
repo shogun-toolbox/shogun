@@ -63,7 +63,7 @@ def variational_classifier(kl_inference,train_fname=traindat,test_fname=testdat,
 	error_eval=ErrorRateMeasure()
 	mean_func=ConstMean()
 	kernel_sigma=2*exp(2*kernel_log_sigma);
-	kernel_func=sg.create_kernel("GaussianKernel", width=kernel_sigma)
+	kernel_func=sg.create("GaussianKernel", width=kernel_sigma)
 
 	inf=kl_inference(kernel_func, features_train, mean_func, labels_train, likelihood)
 	try:

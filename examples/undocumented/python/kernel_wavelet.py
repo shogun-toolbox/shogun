@@ -13,7 +13,7 @@ def kernel_wavelet (fm_train_real=traindat,fm_test_real=testdat, dilation=1.5, t
 	feats_train=sg.create_features(fm_train_real)
 	feats_test=sg.create_features(fm_test_real)
 
-	kernel=sg.create_kernel("WaveletKernel", dilation=dilation, translation=translation)
+	kernel=sg.create("WaveletKernel", dilation=dilation, translation=translation)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

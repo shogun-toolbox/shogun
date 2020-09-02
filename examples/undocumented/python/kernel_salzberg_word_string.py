@@ -17,10 +17,10 @@ order=3,gap=0,reverse=False):
 	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
 	labels=sg.create_labels(label_train_dna)
-	pie=sg.create_machine("PluginEstimate", labels=labels)
+	pie=sg.create("PluginEstimate", labels=labels)
 	pie.train(feats_train)
 
-	kernel=sg.create_kernel("SalzbergWordStringKernel", plugin_estimate=pie, labels=labels)
+	kernel=sg.create("SalzbergWordStringKernel", plugin_estimate=pie, labels=labels)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

@@ -19,7 +19,7 @@ def structure_plif_hmsvm_mosek (num_examples, example_length, num_features, num_
 	#print(sosvm.get_w())
 
 	predicted = sosvm.apply(model.get_features())
-	evaluator = sg.create_evaluation("StructuredAccuracy")
+	evaluator = sg.create("StructuredAccuracy")
 	acc = evaluator.evaluate(predicted, model.get_labels())
 	#print('Accuracy = %.4f' % acc)
 

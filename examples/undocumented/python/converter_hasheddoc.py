@@ -20,7 +20,7 @@ def converter_hasheddoc(strings):
 	normalize=True
 
 	#create converter
-	converter = sg.create_transformer('HashedDocConverter', tokenizer=tokenizer, num_bits=num_bits, should_normalize=normalize)
+	converter = sg.create('HashedDocConverter', tokenizer=tokenizer, num_bits=num_bits, should_normalize=normalize)
 
 	converted_feats=converter.transform(f)
 
@@ -29,9 +29,9 @@ def converter_hasheddoc(strings):
 
 	#print('Self dot product of string 0 with converted feats:', converted_feats.dot(0, converted_feats, 0))
 
-	hashed_feats=sg.create_features("HashedDocDotFeatures", num_bits=num_bits, 
-									doc_collection=f, tokenizer=tokenizer, 
-									should_normalize=normalize)
+	hashed_feats = sg.create("HashedDocDotFeatures", num_bits=num_bits,
+                          doc_collection=f, tokenizer=tokenizer,
+                          should_normalize=normalize)
 
 	#print('Hashed features\' space dimensionality is', hashed_feats.get_dim_feature_space())
 
@@ -42,5 +42,4 @@ def converter_hasheddoc(strings):
 if __name__=='__main__':
 	print('HashedDocConverter')
 	converter_hasheddoc(*parameter_list[0])
-
 

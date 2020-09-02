@@ -24,7 +24,7 @@ def classifier_larank (num_vec,num_class,distance,C=0.9,num_threads=1,num_iter=5
 	feats_train=sg.create_features(fm_train)
 	feats_test=sg.create_features(fm_test)
 
-	kernel=sg.create_kernel("GaussianKernel", width=1)
+	kernel=sg.create("GaussianKernel", width=1)
 
 	epsilon=1e-5
 	labels=MulticlassLabels(label_train)

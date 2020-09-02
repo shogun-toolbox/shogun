@@ -106,11 +106,11 @@ def structure_hierarchical_multilabel_classification(train_file_name,
         train_file)
 
     # TODO: fix HierarchicalMultilabelModel initialisation
-    model = sg.create_structured_model("HierarchicalMultilabelModel",
+    model = sg.create("HierarchicalMultilabelModel",
                                 features=train_features, 
                                 labels=train_labels,
                                 taxonomy=train_taxonomy)
-    sgd = sg.create_machine("StochasticSOSVM", model=model, labels=train_labels)
+    sgd = sg.create("StochasticSOSVM", model=model, labels=train_labels)
     # t1 = time.time()
     # sgd.train()
     # print('>>> Took %f time for training' % (time.time() - t1))
@@ -118,7 +118,7 @@ def structure_hierarchical_multilabel_classification(train_file_name,
     # test_features, test_labels, test_taxonomy = get_features_labels(test_file)
     # assert(test_taxonomy.all() == train_taxonomy.all())
 
-    # evaluator = sg.create_evaluation("StructuredAccuracy")
+    # evaluator = sg.create("StructuredAccuracy")
     # outlabel = sgd.apply(test_features)
 
     # print('>>> Accuracy of classification = %f' % evaluator.evaluate(

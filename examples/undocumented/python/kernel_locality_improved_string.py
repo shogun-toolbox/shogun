@@ -12,7 +12,7 @@ def kernel_locality_improved_string (fm_train_dna=traindat,fm_test_dna=testdat,l
 	feats_train=sg.create_string_features(fm_train_dna, sg.DNA)
 	feats_test=sg.create_string_features(fm_test_dna, sg.DNA)
 
-	kernel=sg.create_kernel("LocalityImprovedStringKernel", length=length, inner_degree=inner_degree, outer_degree=outer_degree)
+	kernel=sg.create("LocalityImprovedStringKernel", length=length, inner_degree=inner_degree, outer_degree=outer_degree)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats_train, feats_test)

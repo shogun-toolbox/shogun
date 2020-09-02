@@ -18,7 +18,7 @@ def evaluation_meansquarederror (ground_truth, predicted):
 	ground_truth_labels = RegressionLabels(ground_truth)
 	predicted_labels = RegressionLabels(predicted)
 
-	evaluator = sg.create_evaluation("MeanSquaredError")
+	evaluator = sg.create("MeanSquaredError")
 	mse = evaluator.evaluate(predicted_labels,ground_truth_labels)
 
 	return mse

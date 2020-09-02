@@ -10,9 +10,9 @@ def kernel_rationalquadratic (train_fname=traindat,test_fname=testdat, shift_coe
 	feats_train=sg.create_features(sg.read_csv(train_fname))
 	feats_test=sg.create_features(sg.read_csv(test_fname))
 
-	distance = sg.create_distance('EuclideanDistance')
+	distance = sg.create('EuclideanDistance')
 
-	kernel = sg.create_kernel('RationalQuadraticKernel', coef=shift_coef,
+	kernel = sg.create('RationalQuadraticKernel', coef=shift_coef,
 			   distance=distance)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

@@ -7,9 +7,9 @@ from numpy import *
 
 def run_clustering(data, k):
 
-	distance = sg.create_distance('EuclideanDistance')
+	distance = sg.create('EuclideanDistance')
 	distance.init(data, data)
-	kmeans=sg.create_machine("KMeans", k=k, distance=distance, seed=1)
+	kmeans=sg.create("KMeans", k=k, distance=distance, seed=1)
 
 	#print("Running clustering...")
 	kmeans.train()
@@ -23,9 +23,9 @@ def assign_labels(data, centroids, ncenters):
 
 	labels = MulticlassLabels(arange(0.,ncenters))
 	fea_centroids = sg.create_features(centroids)
-	distance = sg.create_distance('EuclideanDistance')
+	distance = sg.create('EuclideanDistance')
 	distance.init(fea_centroids, fea_centroids)
-	knn = sg.create_machine("KNN", k=1, distance=distance, labels=labels)
+	knn = sg.create("KNN", k=1, distance=distance, labels=labels)
 	knn.train()
 	return knn.apply(data)
 

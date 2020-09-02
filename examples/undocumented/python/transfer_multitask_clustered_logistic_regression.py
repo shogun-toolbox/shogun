@@ -13,7 +13,7 @@ parameter_list = [[traindat,testdat,label_traindat]]
 def transfer_multitask_clustered_logistic_regression (fm_train=traindat,fm_test=testdat,label_train=label_traindat):
 	import shogun as sg
 	try:
-		sg.create_machine("MultitaskClusteredLogisticRegression")
+		sg.create("MultitaskClusteredLogisticRegression")
 	except ImportError:
 		print("MultitaskClusteredLogisticRegression not available")
 		exit()

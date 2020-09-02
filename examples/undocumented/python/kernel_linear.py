@@ -10,8 +10,8 @@ def kernel_linear (train_fname=traindat,test_fname=testdat,scale=1.2):
 	feats_train=sg.create_features(sg.read_csv(train_fname))
 	feats_test=sg.create_features(sg.read_csv(test_fname))
 
-	kernel=sg.create_kernel("LinearKernel")
-	kernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
+	kernel=sg.create("LinearKernel")
+	kernel.set_normalizer(sg.create("AvgDiagKernelNormalizer", scale=scale))
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

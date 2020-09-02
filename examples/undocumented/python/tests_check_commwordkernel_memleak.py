@@ -62,12 +62,12 @@ def tests_check_commwordkernel_memleak (num, order, gap, reverse):
 		trainudat=StringWordFeatures(traindat.get_alphabet());
 		trainudat.obtain_from_char(traindat, order-1, order, gap, reverse)
 		#trainudat.io.set_loglevel(MSG_DEBUG)
-		pre = sg.create_transformer("SortWordString")
+		pre = sg.create("SortWordString")
 		#pre.io.set_loglevel(MSG_DEBUG)
 		pre.fit(trainudat)
 		trainudat = pre.transform(trainudat)
-		spec = sg.create_kernel("CommWordStringKernel", cache_size=10, use_sign=False)
-		spec.set_normalizer(sg.create_kernel_normalizer("IdentityKernelNormalizer"))
+		spec = sg.create("CommWordStringKernel", cache_size=10, use_sign=False)
+		spec.set_normalizer(sg.create("IdentityKernelNormalizer"))
 		spec.init(trainudat, trainudat)
 		K=spec.get_kernel_matrix()
 

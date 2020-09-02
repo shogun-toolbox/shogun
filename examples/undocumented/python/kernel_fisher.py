@@ -46,7 +46,7 @@ def kernel_fisher (fm_train_dna=traindat, fm_test_dna=testdat,
 	neg.set_observations(wordfeats_train)
 	feats_train=FKFeatures(10, pos, neg)
 	feats_train.set_opt_a(-1) #estimate prior
-	kernel=sg.create_kernel("PolyKernel", c=c)
+	kernel=sg.create("PolyKernel", c=c)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

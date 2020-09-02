@@ -13,7 +13,7 @@ def kernel_sparse_gaussian (fm_train_real=traindat,fm_test_real=testdat,width=1.
 	feats_train=SparseRealFeatures(fm_train_real)
 	feats_test=SparseRealFeatures(fm_test_real)
 
-	kernel=sg.create_kernel("GaussianKernel", width=width)
+	kernel=sg.create("GaussianKernel", width=width)
 	kernel.init(feats_train, feats_train,)
 	km_train=kernel.get_kernel_matrix()
 

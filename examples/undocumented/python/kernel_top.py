@@ -46,7 +46,7 @@ def kernel_top (fm_train_dna=traindat,fm_test_dna=testdat,label_train_dna=label_
 	pos.set_observations(wordfeats_train)
 	neg.set_observations(wordfeats_train)
 	feats_train=TOPFeatures(10, pos, neg, False, False)
-	kernel=sg.create_kernel("PolyKernel", c=c)
+	kernel=sg.create("PolyKernel", c=c)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()
 

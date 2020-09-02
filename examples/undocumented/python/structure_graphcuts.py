@@ -59,13 +59,13 @@ def define_factor_types(num_vars, len_feat, edge_table):
     cards_u = np.array([n_stats], np.int32)
     w_u = np.zeros(n_stats*len_feat)
     for i in range(num_vars):
-        v_factor_types[i] = sg.create_factor_type("TableFactorType",type_id=i, cards=cards_u, w=w_u)
+        v_factor_types[i] = sg.create("TableFactorType",type_id=i, cards=cards_u, w=w_u)
 
     # pair-wise factors
     cards_pw = np.array([n_stats, n_stats], np.int32)
     w_pw = np.zeros(n_stats*n_stats)
     for j in range(n_edges):
-        v_factor_types[j + num_vars] = sg.create_factor_type("TableFactorType", type_id=j + num_vars, 
+        v_factor_types[j + num_vars] = sg.create("TableFactorType", type_id=j + num_vars, 
             cards=cards_pw, w=w_pw)
 
     return v_factor_types
@@ -170,7 +170,7 @@ def graphcuts_sosvm(num_train_samples = 10, len_label = 5, len_feat = 20, num_te
     (labels_fg, feats_fg) = build_factor_graph_model(labels_train, feats_train, factor_types, full, sg.GRAPH_CUT)
 
     # create model and register factor types
-    model = sg.create_structured_model("FactorGraphModel", features=feats_fg, labels=labels_fg, 
+    model = sg.create("FactorGraphModel", features=feats_fg, labels=labels_fg, 
                                 inf_type="GRAPH_CUT")
 
     for i in range(len(factor_types)):
@@ -180,7 +180,7 @@ def graphcuts_sosvm(num_train_samples = 10, len_label = 5, len_feat = 20, num_te
     # the 3rd parameter is do_weighted_averaging, by turning this on,
     # a possibly faster convergence rate may be achieved.
     # the 4th parameter controls outputs of verbose training information
-    sgd = sg.create_machine("StochasticSOSVM", model=model, labels=labels_fg, do_weighted_averaging=True,
+    sgd = sg.create("StochasticSOSVM", model=model, labels=labels_fg, do_weighted_averaging=True,
                      num_iter=150, m_lambda=0.0001)
 
     # train

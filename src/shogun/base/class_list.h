@@ -20,12 +20,15 @@
 
 namespace shogun {
 	class SGObject;
+	class InterfaceTypeVisitor;
 
 	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	std::shared_ptr<SGObject> create(const char* sgserializable_name, EPrimitiveType generic);
+	std::shared_ptr<SGObject> create(
+	    const char* sgserializable_name, EPrimitiveType generic,
+	    const std::shared_ptr<InterfaceTypeVisitor>& visitor = {});
 
 	/** Creates new shogun instance, typed.
 	 *
@@ -35,10 +38,11 @@ namespace shogun {
 	 */
 	template <class T>
 	std::shared_ptr<T> create_object(
-	    const char* name,
-	    EPrimitiveType pt = PT_NOT_GENERIC) noexcept(false)
+	    const char* name, EPrimitiveType pt = PT_NOT_GENERIC,
+	    const std::shared_ptr<InterfaceTypeVisitor>& visitor =
+	        {}) noexcept(false)
 	{
-		auto object = create(name, pt);
+		auto object = create(name, pt, visitor);
 		if (!object)
 		{
 			error(

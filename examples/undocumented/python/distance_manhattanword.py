@@ -9,7 +9,7 @@ def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=
 
 	charfeat=sg.create_string_features(sg.read_csv(train_fname), sg.DNA)
 	feats_train=sg.create_string_features(charfeat, order-1, order, gap, reverse)
-	preproc = sg.create_transformer("SortWordString")
+	preproc = sg.create("SortWordString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 
@@ -17,7 +17,7 @@ def distance_manhattenword (train_fname=traindna,test_fname=testdna,order=3,gap=
 	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 	feats_test = preproc.transform(feats_test)
 
-	distance = sg.create_distance('ManhattanWordDistance')
+	distance = sg.create('ManhattanWordDistance')
 	distance.init(feats_train, feats_train)
 
 	dm_train=distance.get_distance_matrix()

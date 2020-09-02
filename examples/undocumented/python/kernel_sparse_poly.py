@@ -17,7 +17,7 @@ def kernel_sparse_poly (fm_train_real=traindat,fm_test_real=testdat,
 
 
 
-	kernel=sg.create_kernel("PolyKernel", cache_size=cache_size, degree=degree,
+	kernel=sg.create("PolyKernel", cache_size=cache_size, degree=degree,
 					 c=c)
 	kernel.init(feats_train, feats_train)
 	km_train=kernel.get_kernel_matrix()

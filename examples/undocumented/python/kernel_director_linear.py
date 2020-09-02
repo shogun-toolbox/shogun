@@ -27,12 +27,12 @@ def kernel_director_linear (fm_train_real=traindat,fm_test_real=testdat,scale=1.
 	feats_train.get_global_parallel().set_num_threads(1)
 	feats_test=sg.create_features(fm_test_real)
 
-	kernel=sg.create_kernel("LinearKernel")
-	kernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
+	kernel=sg.create("LinearKernel")
+	kernel.set_normalizer(sg.create("AvgDiagKernelNormalizer", scale=scale))
 	kernel.init(feats_train, feats_train)
 
 	dkernel=DirectorLinearKernel()
-	dkernel.set_normalizer(sg.create_kernel_normalizer("AvgDiagKernelNormalizer", scale=scale))
+	dkernel.set_normalizer(sg.create("AvgDiagKernelNormalizer", scale=scale))
 	dkernel.init(feats_train, feats_train)
 
 	#print  "km_train"

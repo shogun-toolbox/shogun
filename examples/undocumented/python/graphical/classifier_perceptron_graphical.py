@@ -23,7 +23,7 @@ def classifier_perceptron_graphical(n=100, distance=5, learn_rate=1, max_iter=10
     feats_train = sg.create_features(fm_train_real)
     labels = sg.create_labels(label_train_twoclass)
 
-    perceptron = sg.create_machine('Perceptron', labels=labels, learn_rate=learn_rate, max_iterations=max_iter,
+    perceptron = sg.create('Perceptron', labels=labels, learn_rate=learn_rate, max_iterations=max_iter,
                             initialize_hyperplane=False)
 
     # Find limits for visualization

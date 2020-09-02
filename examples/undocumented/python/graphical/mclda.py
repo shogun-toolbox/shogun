@@ -26,7 +26,7 @@ neg = np.array([x_neg, y_neg])
 
 features = sg.create_features(np.array(np.concatenate([pos, neg], 1)))
 
-lda = sg.create_machine('MCLDA', labels=labels)
+lda = sg.create('MCLDA', labels=labels)
 lda.train(features)
 
 # compute output plot iso-lines

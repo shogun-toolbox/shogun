@@ -16,12 +16,12 @@ def preprocessor_sortulongstring (fm_train_dna=traindna,fm_test_dna=testdna,orde
 	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
 	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse, sg.PT_UINT64)
 
-	preproc = sg.create_transformer("SortUlongString")
+	preproc = sg.create("SortUlongString")
 	preproc.fit(feats_train)
 	feats_train = preproc.transform(feats_train)
 	feats_test = preproc.transform(feats_test)
 
-	kernel=sg.create_kernel("CommUlongStringKernel", use_sign=use_sign)
+	kernel=sg.create("CommUlongStringKernel", use_sign=use_sign)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()

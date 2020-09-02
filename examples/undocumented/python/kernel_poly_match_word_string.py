@@ -16,7 +16,7 @@ degree=2,inhomogene=True,order=3,gap=0,reverse=False):
 	charfeat=sg.create_string_features(fm_test_dna, sg.DNA)
 	feats_test=sg.create_string_features(charfeat, order-1, order, gap, reverse)
 
-	kernel=sg.create_kernel("PolyMatchWordStringKernel", degree=degree, inhomogene=inhomogene)
+	kernel=sg.create("PolyMatchWordStringKernel", degree=degree, inhomogene=inhomogene)
 	kernel.init(feats_train, feats_train)
 
 	km_train=kernel.get_kernel_matrix()
