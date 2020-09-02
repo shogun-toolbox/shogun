@@ -4,7 +4,7 @@
 // we can use:
 // SWIG_TypeQueryModule or SWIG_MangledTypeQueryModule or SWIG_Python_TypeQuery
 // to query the swig_type in run time and be less implementation dependent maybe?
-// but this is faster and should not cause problems
+// but this is faster (compile-time) and should not cause problems
 #define SHOGUN_GET_SWIG_TYPE(name)                                             \
 	SWIGTYPE_p_std__shared_ptrT_shogun__##name##_t
 
@@ -13,127 +13,127 @@ namespace shogun
 	class ShogunInterfaceToPyObject : public InterfaceTypeVisitor
 	{
 	public:
-		virtual void on(std::shared_ptr<SGObject>* v)
+		void on(std::shared_ptr<SGObject>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(SGObject));
 		}
-		virtual void on(std::shared_ptr<Machine>* v)
+		void on(std::shared_ptr<Machine>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Machine));
 		}
-		virtual void on(std::shared_ptr<Kernel>* v)
+		void on(std::shared_ptr<Kernel>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Kernel));
 		}
-		virtual void on(std::shared_ptr<Distance>* v)
+		void on(std::shared_ptr<Distance>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Distance));
 		}
-		virtual void on(std::shared_ptr<Features>* v)
+		void on(std::shared_ptr<Features>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Features));
 		}
-		virtual void on(std::shared_ptr<Labels>* v)
+		void on(std::shared_ptr<Labels>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Labels));
 		}
-		virtual void on(std::shared_ptr<ECOCEncoder>* v)
+		void on(std::shared_ptr<ECOCEncoder>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(ECOCEncoder));
 		}
-		virtual void on(std::shared_ptr<ECOCDecoder>* v)
+		void on(std::shared_ptr<ECOCDecoder>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(ECOCDecoder));
 		}
-		virtual void on(std::shared_ptr<Evaluation>* v)
+		void on(std::shared_ptr<Evaluation>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Evaluation));
 		}
-		virtual void on(std::shared_ptr<EvaluationResult>* v)
+		void on(std::shared_ptr<EvaluationResult>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(EvaluationResult));
 		}
-		virtual void on(std::shared_ptr<MulticlassStrategy>* v)
+		void on(std::shared_ptr<MulticlassStrategy>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(MulticlassStrategy));
 		}
-		virtual void on(std::shared_ptr<NeuralLayer>* v)
+		void on(std::shared_ptr<NeuralLayer>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(NeuralLayer));
 		}
-		virtual void on(std::shared_ptr<SplittingStrategy>* v)
+		void on(std::shared_ptr<SplittingStrategy>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(SplittingStrategy));
 		}
-		virtual void on(std::shared_ptr<Pipeline>* v)
+		void on(std::shared_ptr<Pipeline>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Pipeline));
 		}
-		virtual void on(std::shared_ptr<SVM>* v)
+		void on(std::shared_ptr<SVM>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(SVM));
 		}
-		virtual void on(std::shared_ptr<LikelihoodModel>* v)
+		void on(std::shared_ptr<LikelihoodModel>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(LikelihoodModel));
 		}
-		virtual void on(std::shared_ptr<MeanFunction>* v)
+		void on(std::shared_ptr<MeanFunction>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(MeanFunction));
 		}
-		virtual void on(std::shared_ptr<DifferentiableFunction>* v)
+		void on(std::shared_ptr<DifferentiableFunction>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(DifferentiableFunction));
 		}
-		virtual void on(std::shared_ptr<Inference>* v)
+		void on(std::shared_ptr<Inference>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Inference));
 		}
-		virtual void on(std::shared_ptr<LossFunction>* v)
+		void on(std::shared_ptr<LossFunction>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(LossFunction));
 		}
-		virtual void on(std::shared_ptr<Tokenizer>* v)
+		void on(std::shared_ptr<Tokenizer>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Tokenizer));
 		}
-		virtual void on(std::shared_ptr<CombinationRule>* v)
+		void on(std::shared_ptr<CombinationRule>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(CombinationRule));
 		}
-		virtual void on(std::shared_ptr<KernelNormalizer>* v)
+		void on(std::shared_ptr<KernelNormalizer>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(KernelNormalizer));
 		}
-		virtual void on(std::shared_ptr<Transformer>* v)
+		void on(std::shared_ptr<Transformer>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Transformer));
 		}
-		virtual void on(std::shared_ptr<MachineEvaluation>* v)
+		void on(std::shared_ptr<MachineEvaluation>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(MachineEvaluation));
 		}
-		virtual void on(std::shared_ptr<StructuredModel>* v)
+		void on(std::shared_ptr<StructuredModel>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(StructuredModel));
 		}
-		virtual void on(std::shared_ptr<FactorType>* v)
+		void on(std::shared_ptr<FactorType>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(FactorType));
 		}
-		virtual void on(std::shared_ptr<ParameterObserver>* v)
+		void on(std::shared_ptr<ParameterObserver>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(ParameterObserver));
 		}
-		virtual void on(std::shared_ptr<Distribution>* v)
+		void on(std::shared_ptr<Distribution>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Distribution));
 		}
-		virtual void on(std::shared_ptr<GaussianProcess>* v)
+		void on(std::shared_ptr<GaussianProcess>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(GaussianProcess));
 		}
-		virtual void on(std::shared_ptr<Alphabet>* v)
+		void on(std::shared_ptr<Alphabet>* v) override
 		{
 			return on_impl(v, SHOGUN_GET_SWIG_TYPE(Alphabet));
 		}
@@ -151,13 +151,9 @@ namespace shogun
 
 		PyObject* pyobj()
 		{
-			// this should never be true since "create" throws on error
 			if (!m_pyobj)
-			{
-				m_pyobj = SWIG_Python_NewPointerObj(
-					nullptr, nullptr, SHOGUN_GET_SWIG_TYPE(SGObject),
-					SWIG_POINTER_OWN);
-			}
+				error("Unexpected error while creating the object");
+
 			return m_pyobj;
 		}
 
@@ -175,10 +171,8 @@ namespace shogun
 	PyObject* create(const char* name)
 	{
 		static auto visitor = std::make_shared<ShogunInterfaceToPyObject>();
-		auto sgobj = create(name, PT_NOT_GENERIC, visitor);
-		require(sgobj, "Class {} does not exist.", name);
+		create_object<SGObject>(name, PT_NOT_GENERIC, visitor);
 		return visitor->pyobj();
 	}
 }
-
 %}

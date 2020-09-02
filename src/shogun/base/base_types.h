@@ -90,14 +90,14 @@ namespace shogun
 		typedef T type;
 	};
 
-	using sg_inferface = type_list<Machine, Kernel, Distance,
-		Features, Labels, ECOCEncoder, ECOCDecoder, Evaluation,
-		EvaluationResult, MulticlassStrategy, NeuralLayer,
-		SplittingStrategy, LikelihoodModel, MeanFunction,
-		Inference, DifferentiableFunction, LossFunction,
-		Tokenizer, CombinationRule, KernelNormalizer, Transformer,
-		MachineEvaluation, StructuredModel, FactorType, ParameterObserver,
-		Distribution, GaussianProcess, Alphabet>;
+	using sg_inferface = type_list<
+	    GaussianProcess, Kernel, Distance, Features, Labels, ECOCEncoder,
+	    ECOCDecoder, Evaluation, EvaluationResult, MulticlassStrategy,
+	    NeuralLayer, SplittingStrategy, LikelihoodModel, MeanFunction,
+	    Inference, DifferentiableFunction, LossFunction, Tokenizer,
+	    CombinationRule, KernelNormalizer, Transformer, MachineEvaluation,
+	    StructuredModel, FactorType, ParameterObserver, Distribution, Alphabet,
+	    Machine>;
 
 	namespace types_detail
 	{
@@ -116,9 +116,8 @@ namespace shogun
 	} // namespace types_detail
 
 	template <typename T, typename TypesT>
-	struct typeInList : public std::false_type
+	struct typeInList
 	{
-		static_assert(!std::is_same_v<T, T>);
 	};
 
 	template <typename T, template <typename...> class TypesT, typename... Args>
@@ -127,12 +126,13 @@ namespace shogun
 	{
 	};
 
-
 	template <class T>
 	struct is_sg_base : public typeInList<T, sg_inferface>
 	{
 	};
 
+	// all classes in the same class hierarchy chain should be ordered from
+	// most derived to least derived
 	template <typename Derived>
 	constexpr auto find_base(type_list<>)
 	{

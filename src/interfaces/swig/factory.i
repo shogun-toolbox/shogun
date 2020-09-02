@@ -131,5 +131,5 @@ namespace shogun{
 %template(create_lbfgs_minimizer) shogun::create_<shogun::LBFGSMinimizer, std::string>;
 %template(create_kernel_normalizer) shogun::create_<shogun::KernelNormalizer, std::string>;
 #else
-%include "factory_python.i"
+%include "factory_visitors.i"
 #endif
