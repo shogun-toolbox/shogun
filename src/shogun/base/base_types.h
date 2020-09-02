@@ -118,7 +118,7 @@ namespace shogun
 	template <typename T, typename TypesT>
 	struct typeInList : public std::false_type
 	{
-		using X = typename TypesT : WTF;
+		static_assert(!std::is_same_v<T, T>);
 	};
 
 	template <typename T, template <typename...> class TypesT, typename... Args>

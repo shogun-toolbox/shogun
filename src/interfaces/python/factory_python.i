@@ -3,7 +3,7 @@
 
 // we can use:
 // SWIG_TypeQueryModule or SWIG_MangledTypeQueryModule or SWIG_Python_TypeQuery
-// to query the swig_type and be less implementation dependent
+// to query the swig_type in run time and be less implementation dependent maybe?
 // but this is faster and should not cause problems
 #define SHOGUN_GET_SWIG_TYPE(name)                                             \
 	SWIGTYPE_p_std__shared_ptrT_shogun__##name##_t

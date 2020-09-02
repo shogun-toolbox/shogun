@@ -1028,7 +1028,7 @@ TYPEMAP_SPARSEFEATURES_OUT(PyObject,      NPY_OBJECT)
 %pythoncode %{
 import sys
 
-_FACTORIES = ["create", "create_features"]
+_FACTORIES = ["create", "create_features", "create_kernel"]
 
 def _internal_factory_wrapper(object_name, new_name, docstring=None):
     """

@@ -185,7 +185,7 @@ def get_template_definitions(classes, supports_complex):
         d = []
         d.append("static %s std::shared_ptr<SGObject>\n" % (SHOGUN_BASIC_CLASS))
         d.append("\n__new_%s(EPrimitiveType g, const std::shared_ptr<InterfaceTypeVisitor>& visitor)\n"
-                 % (SHOGUN_TEMPLATE_CLASS, c))
+                 % (c))
         d.append("{\n\tswitch (g)\n\t{\n")
         for t in types:
             if t in ('BOOL', 'CHAR'):
