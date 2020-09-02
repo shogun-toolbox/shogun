@@ -27,7 +27,7 @@ def structure_discrete_hmsvm_mosek (m_data_dict=data_dict):
 
 	num_obs = 4	# given by the data file used
 	model = sg.create("HMSVMModel", features=features, labels=labels,
-                   state_model_type=SMT_TWO_STATE, num_obs=num_obs)
+                   state_model_type=sg.SMT_TWO_STATE, num_obs=num_obs)
 
 	sosvm = sg.create("PrimalMosekSOSVM", model=model, labels=labels)
 	sosvm.train()

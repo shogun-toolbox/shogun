@@ -151,12 +151,12 @@ namespace shogun
 
 		PyObject* pyobj()
 		{
+			// this should never be true since "create" throws on error
 			if (!m_pyobj)
 			{
-				auto smartresult = new std::shared_ptr<SGObject>(nullptr);
 				m_pyobj = SWIG_Python_NewPointerObj(
-					nullptr, SWIG_as_voidptr(smartresult),
-					SHOGUN_GET_SWIG_TYPE(SGObject), SWIG_POINTER_OWN);
+					nullptr, nullptr, SHOGUN_GET_SWIG_TYPE(SGObject),
+					SWIG_POINTER_OWN);
 			}
 			return m_pyobj;
 		}
@@ -175,7 +175,8 @@ namespace shogun
 	PyObject* create(const char* name)
 	{
 		static auto visitor = std::make_shared<ShogunInterfaceToPyObject>();
-		create(name, PT_NOT_GENERIC, visitor);
+		auto sgobj = create(name, PT_NOT_GENERIC, visitor);
+		require(sgobj, "Class {} does not exist.", name);
 		return visitor->pyobj();
 	}
 }
