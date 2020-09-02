@@ -94,7 +94,7 @@ namespace shogun
 		Features, Labels, ECOCEncoder, ECOCDecoder, Evaluation,
 		EvaluationResult, MulticlassStrategy, NeuralLayer,
 		SplittingStrategy, LikelihoodModel, MeanFunction,
-		DifferentiableFunction, Inference, LossFunction,
+		Inference, DifferentiableFunction, LossFunction,
 		Tokenizer, CombinationRule, KernelNormalizer, Transformer,
 		MachineEvaluation, StructuredModel, FactorType, ParameterObserver,
 		Distribution, GaussianProcess, Alphabet>;
