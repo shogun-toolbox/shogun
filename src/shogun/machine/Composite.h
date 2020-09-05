@@ -56,12 +56,7 @@ namespace shogun
 			m_stages = std::forward<T>(stages);
 		}
 
-#ifdef SWIG
-		std::shared_ptr<Machine>
-#else
-		std::shared_ptr<EnsembleMachine>
-#endif
-		train(
+		std::shared_ptr<Machine> train(
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs)
 		{
