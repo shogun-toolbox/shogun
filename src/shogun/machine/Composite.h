@@ -56,7 +56,7 @@ namespace shogun
 			m_stages = std::forward<T>(stages);
 		}
 
-		std::shared_ptr<EnsembleMachine> train(
+		std::shared_ptr<Machine> train(
 		    const std::shared_ptr<Features>& data,
 		    const std::shared_ptr<Labels>& labs)
 		{
