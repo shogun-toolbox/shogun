@@ -12,8 +12,8 @@ IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	SET(SWIG_CXX_COMPILER_FLAGS "${SWIG_CXX_COMPILER_FLAGS} -DDO_NOT_USE_CXX_HEADERS")
 ENDIF()
 
+SET(INTERFACE_KEEP_VARS 1)
 GENERATE_INTERFACE_TARGET(r ${CMAKE_CURRENT_SOURCE_DIR} ${R_LIBRARIES})
-set_target_properties(interface_r PROPERTIES PREFIX "")
 
 ADD_CUSTOM_TARGET(interface_r_fix
   ${PYTHON_EXECUTABLE}
@@ -24,7 +24,10 @@ ADD_CUSTOM_TARGET(interface_r_fix
        ${swig_generated_sources}
 )
 
-ADD_DEPENDENCIES(interface_r interface_r_fix)
+ADD_DEPENDENCIES(interface_r_fix ${INTERFACE_TARGET_SRC})
+ADD_DEPENDENCIES(${INTERFACE_REAL_NAME} interface_r_fix)
+
+GENERATE_INTERFACE_TARGET_UNSET_VARS()
 
 EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from time import gmtime, strftime; print(strftime(\"%Y-%m-%d\", gmtime()))"
 	OUTPUT_VARIABLE DATE

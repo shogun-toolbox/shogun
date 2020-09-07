@@ -58,7 +58,7 @@ namespace shogun
 }
 %enddef
 
-#ifdef HAVE_DOXYGEN
+#if defined(HAVE_DOXYGEN) && defined(ENABLE_DOXYGEN)
 #ifndef SWIGRUBY
 %include "shogun_doxygen.i"
 #endif
