@@ -85,12 +85,11 @@ jobs:
         CXX: "clang++"
         cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_CSHARP=ON'
         interfaceName: 'csharp'
-      # disable R tests
-      #r:
-        #CC: "clang"
-        #CXX: "clang++"
-        #cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
-        #interfaceName: 'r'
+      r:
+        CC: "clang"
+        CXX: "clang++"
+        cmakeOptions: '$(commonSWIGCMakeFlags) -DINTERFACE_R=ON'
+        interfaceName: 'r'
       octave:
         CC: "gcc"
         CXX: "g++"

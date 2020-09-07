@@ -1,4 +1,3 @@
-MESSAGE(FATAL_ERROR "R interface currenlty does not work, see swig/swig#1660 issue")
 IF (SWIG_VERSION VERSION_LESS 4.0.0)
 	MESSAGE(FATAL_ERROR "For R interface SWIG 4.0.0 or later is required")
 ENDIF()
@@ -15,6 +14,18 @@ ENDIF()
 
 GENERATE_INTERFACE_TARGET(r ${CMAKE_CURRENT_SOURCE_DIR} ${R_LIBRARIES})
 set_target_properties(interface_r PROPERTIES PREFIX "")
+
+ADD_CUSTOM_TARGET(interface_r_fix
+  ${PYTHON_EXECUTABLE}
+       ${CMAKE_CURRENT_SOURCE_DIR}/fix_generated_swig_files.py
+       ${CMAKE_CURRENT_BINARY_DIR}/shogun.R
+       ${CMAKE_CURRENT_BINARY_DIR}/shogunR_wrap.cxx
+  DEPENDS
+      ${CMAKE_CURRENT_BINARY_DIR}/shogun.R
+      ${CMAKE_CURRENT_BINARY_DIR}/shogunR_wrap.cxx
+)
+
+ADD_DEPENDENCIES(interface_r interface_r_fix)
 
 EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from time import gmtime, strftime; print(strftime(\"%Y-%m-%d\", gmtime()))"
 	OUTPUT_VARIABLE DATE
