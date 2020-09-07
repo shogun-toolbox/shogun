@@ -21,8 +21,7 @@ ADD_CUSTOM_TARGET(interface_r_fix
        ${CMAKE_CURRENT_BINARY_DIR}/shogun.R
        ${CMAKE_CURRENT_BINARY_DIR}/shogunR_wrap.cxx
   DEPENDS
-      ${CMAKE_CURRENT_BINARY_DIR}/shogun.R
-      ${CMAKE_CURRENT_BINARY_DIR}/shogunR_wrap.cxx
+       ${swig_generated_sources}
 )
 
 ADD_DEPENDENCIES(interface_r interface_r_fix)
