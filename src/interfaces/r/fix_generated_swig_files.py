@@ -43,15 +43,19 @@ def add_finalizer_in_swig_type_info(cpp_file):
     finalizer_line = ("  R_CFinalizer_t         finalizer;\t\t"
                       "/* function pointer to the destructor */\n")
 
+    extern_c_index = -1
     for index in range(len(cpp_file)):
         line = cpp_file[index]
-        if line.startswith("typedef struct swig_type_info *"):
-            cpp_file.insert(
-                index + 1, "#include <Rinternals.h>\n#undef length;\n")
-            index += 1
+        if line.startswith('extern "C"'):
+            extern_c_index = index
             continue
         if line.startswith("} swig_type_info;"):
             cpp_file.insert(index, finalizer_line)
+            if (extern_c_index == -1):
+                raise Exception(
+                    "Expected to find swig_type_info externed to C linkage!")
+            cpp_file.insert(
+                extern_c_index - 2, "#include <Rinternals.h>\n#undef length;\n")
             break
     return cpp_file
 

@@ -22,6 +22,7 @@ ADD_CUSTOM_TARGET(interface_r_fix
        ${CMAKE_CURRENT_BINARY_DIR}/shogunR_wrap.cxx
   DEPENDS
        ${swig_generated_sources}
+       ${CMAKE_CURRENT_SOURCE_DIR}/fix_generated_swig_files.py
 )
 
 ADD_DEPENDENCIES(interface_r_fix ${INTERFACE_TARGET_SRC})
