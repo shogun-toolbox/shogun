@@ -77,6 +77,10 @@ def change_delete_functions_signatures(cpp_file):
         if in_delete_function:
             cpp_file[index] = regexp.sub("return;", line).replace(
                 "SWIG_exception(", "SWIG_Error(")
+            if cpp_file[index].find("SWIG_exception_fail") != -1:
+                cpp_file[index] = cpp_file[index].replace(
+                    "SWIG_exception_fail(", "{ SWIG_Error(")
+                cpp_file.insert(index+1, "SWIG_fail; }\n")
         if line == "}\n":
             in_delete_function = False
     return cpp_file
