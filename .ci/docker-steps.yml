@@ -93,6 +93,7 @@ steps:
       $(build.binariesDirectory):/build
     envVars: |
       R_LIBS_USER='/build'
+      LD_LIBRARY_PATH=/build/src/shogun:$LD_LIBRARY_PATH
     workDir: '/build'
     containerCommand: 'ctest --output-on-failure -j 2'
     detached: false
