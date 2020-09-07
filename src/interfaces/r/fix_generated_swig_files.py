@@ -33,6 +33,10 @@ def remove_finalizers(r_file):
         # the line registering the finalizer in constructors
         if line.find("reg.finalizer") != -1:
             return False
+        if line.find("setMethod('delete',") != -1:
+            return False
+        if line.find('setGeneric("delete",') != -1:
+            return False
         return True
     return list(filter(condition, r_file))
 
@@ -60,32 +64,6 @@ def add_finalizer_in_swig_type_info(cpp_file):
     return cpp_file
 
 
-def change_delete_functions_signatures(cpp_file):
-    # change signature of delete functions to be R_CFinalizer_t
-    # specifically they should return void
-
-    regexp = re.compile("return [^;]*;")
-    in_delete_function = False
-    for index in range(len(cpp_file)):
-        line = cpp_file[index]
-        prev_line = cpp_file[index-1]
-        if line.startswith("R_swig_delete_") and prev_line.startswith(
-                "SWIGEXPORT SEXP"):
-            cpp_file[index - 1] = "SWIGEXPORT void\n"
-            in_delete_function = True
-            continue
-        if in_delete_function:
-            cpp_file[index] = regexp.sub("return;", line).replace(
-                "SWIG_exception(", "SWIG_Error(")
-            if cpp_file[index].find("SWIG_exception_fail") != -1:
-                cpp_file[index] = cpp_file[index].replace(
-                    "SWIG_exception_fail(", "{ SWIG_Error(")
-                cpp_file.insert(index+1, "SWIG_fail; }\n")
-        if line == "}\n":
-            in_delete_function = False
-    return cpp_file
-
-
 def remove_delete_from_callentry(cpp_file):
     # remove delete functions from call entry
     return list(filter(
@@ -95,7 +73,6 @@ def remove_delete_from_callentry(cpp_file):
 def make_delete_type_map(cpp_file):
     # creates a map from type name to its deletor/finalizer
 
-    # assumes that change_delete_functions_signatures is run
     delete_type_map = dict()
     in_delete_function = False
     delete_fun_name = None
@@ -103,7 +80,7 @@ def make_delete_type_map(cpp_file):
         line = cpp_file[index]
         prev_line = cpp_file[index-1]
         if line.startswith("R_swig_delete_") and prev_line.startswith(
-                "SWIGEXPORT void"):
+                "SWIGEXPORT SEXP"):
             in_delete_function = True
             delete_fun_name = line[0:line.find('(')].strip()
             continue
@@ -130,7 +107,7 @@ def add_finalizer_foreach_type(cpp_file):
                 if t.startswith("std::shared_ptr< "):
                     t = t[len("std::shared_ptr< "):][: -len(" > *")] + " *"
             if t in delete_type_map:
-                delete_fun = f'&{delete_type_map[t]}'
+                delete_fun = '[](SEXP self){%s(self);}' % delete_type_map[t]
             else:
                 delete_fun = "(R_CFinalizer_t) 0"
             cpp_file[index] = line[:-3] + ", " + delete_fun + "};\n"
@@ -264,7 +241,6 @@ if __name__ == '__main__':
 
     if cpp_file[0] != cpp_mark:
         cpp_file = add_finalizer_in_swig_type_info(cpp_file)
-        cpp_file = change_delete_functions_signatures(cpp_file)
         cpp_file = remove_delete_from_callentry(cpp_file)
         cpp_file = add_finalizer_foreach_type(cpp_file)
         cpp_file = attach_finalizer_on_sexp_creation(cpp_file)
