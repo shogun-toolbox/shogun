@@ -196,7 +196,6 @@ namespace shogun
 			//    progress_bar_space > 0,
 			//    "Not enough terminal space to show the progress bar!");
 
-			char str[1000];
 			float64_t runtime = Time::get_curtime();
 
 			if (difference > 0.0)
@@ -243,17 +242,15 @@ namespace shogun
 
 			if (estimate > 120)
 			{
-				snprintf(
-				    str, sizeof(str),
-				    "   {:1.1f} minutes remaining  {:1.1f} minutes total\r");
-				io::print(str, estimate / 60, total_estimate / 60);
+				io::print(
+				    "   {:1.1f} minutes remaining  {:1.1f} minutes total\r",
+				    estimate / 60, total_estimate / 60);
 			}
 			else
 			{
-				snprintf(
-				    str, sizeof(str),
-				    "   {:1.1f} seconds remaining  {:1.1f} seconds total\r");
-				io::print(str, estimate, total_estimate);
+				io::print(
+				    "   {:1.1f} seconds remaining  {:1.1f} seconds total\r",
+				    estimate, total_estimate);
 			}
 		}
 
@@ -292,7 +289,6 @@ namespace shogun
 			//    progress_bar_space > 0,
 			//    "Not enough terminal space to show the progress bar!");
 
-			char str[1000];
 			float64_t runtime = Time::get_curtime();
 
 			if (difference > 0.0)
@@ -338,17 +334,15 @@ namespace shogun
 
 			if (estimate > 120)
 			{
-				snprintf(
-				    str, sizeof(str),
-				    "   {:1.1f} minutes remaining  {:1.1f} minutes total\r");
-				io::print(str, estimate / 60, total_estimate / 60);
+				io::print(
+				    "   {:1.1f} minutes remaining  {:1.1f} minutes total\r",
+				    estimate / 60, total_estimate / 60);
 			}
 			else
 			{
-				snprintf(
-				    str, sizeof(str),
-				    "   {:1.1f} seconds remaining  {:1.1f} seconds total\r");
-				io::print(str, estimate, total_estimate);
+				io::print(
+				    "   {:1.1f} seconds remaining  {:1.1f} seconds total\r",
+				    estimate, total_estimate);
 			}
 		}
 

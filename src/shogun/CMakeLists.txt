@@ -355,7 +355,7 @@ IF (NOT HAVE_STD_VARIANT)
 ENDIF()
 
 # spdlog
-FIND_PACKAGE(spdlog CONFIG)
+FIND_PACKAGE(spdlog 1.3.1 CONFIG)
 IF (NOT spdlog_FOUND)
     include(external/spdlog)
     SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC SYSTEM
@@ -363,10 +363,19 @@ IF (NOT spdlog_FOUND)
           $<INSTALL_INTERFACE:include/shogun/third_party>
           )
 ELSE()
-    SET(USE_EXTERNAL_SPDLOG 1)
-    target_link_libraries(shogun PRIVATE spdlog::spdlog)
+    get_target_property(
+      spdlog_INCLUDE_DIR spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(
+      spdlog_COMPILE_DEFINITIONS spdlog::spdlog INTERFACE_COMPILE_DEFINITIONS)
+
+    target_include_directories(libshogun PRIVATE ${spdlog_INCLUDE_DIR})
+    if (spdlog_COMPILE_DEFINITIONS)
+      target_compile_definitions(libshogun PRIVATE ${spdlog_COMPILE_DEFINITIONS})
+    endif()
+
+    target_link_libraries(shogun PUBLIC spdlog::spdlog)
     if (EXISTS shogun-static)
-	target_link_libraries(shogun-static PRIVATE spdlog::spdlog)
+      target_link_libraries(shogun-static PUBLIC spdlog::spdlog)
     endif()
 ENDIF()
 
