@@ -4,10 +4,10 @@
  * Authors: Yuhui Liu
  */
 #include <shogun/base/SGObject.h>
+#include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/util/traits.h>
-#include <shogun/lib/SGVector.h>
 #include <string>
 #include <variant>
 namespace shogun
@@ -19,7 +19,9 @@ namespace shogun
 	class Dimension : public SGObject
 	{
 	public:
-        Dimension() {}
+		Dimension()
+		{
+		}
 		Dimension(
 		    std::string param_name, std::pair<float64_t, float64_t> bound,
 		    std::string prior = "uniform", std::string param_type = "Real")
@@ -38,8 +40,11 @@ namespace shogun
 		{
 		}
 
-        Dimension(const Dimension& other) : m_param_name(other.m_param_name), m_bound(other.m_bound),
-            m_prior(other.m_prior), m_param_type(other.m_param_type) {}
+		Dimension(const Dimension& other)
+		    : m_param_name(other.m_param_name), m_bound(other.m_bound),
+		      m_prior(other.m_prior), m_param_type(other.m_param_type)
+		{
+		}
 		// unnormalize the value in [0, 1] to origianl space [lower, high]
 		std::variant<float64_t, std::shared_ptr<SGObject>>
 		unnormolize(float64_t value)
@@ -47,25 +52,25 @@ namespace shogun
 			if (std::holds_alternative<sgobjects_t>(m_bound))
 			{
 				//[0, v.size() - 1] for categorical type
-                auto v = std::get<sgobjects_t>(m_bound);
+				auto v = std::get<sgobjects_t>(m_bound);
 				int idx = value * (v.size() - 1);
 				return v[idx];
 			}
 			else
 			{
-                auto [lower_bound, upper_bound] = std::get<bound_pair>(m_bound);
+				auto [lower_bound, upper_bound] = std::get<bound_pair>(m_bound);
 				return value * (upper_bound - lower_bound) + lower_bound;
 			}
 		}
 
-        virtual const char* get_name() const 
-        {
-            return "Dimension";
-        }
+		virtual const char* get_name() const
+		{
+			return "Dimension";
+		}
 		// this function aims to select the initial point
 		std::pair<std::string, float64_t> random_samples()
 		{
-            std::mt19937_64 prng(0);
+			std::mt19937_64 prng(0);
 			if (m_prior == "uniform")
 			{
 				auto uniform = UniformRealDistribution<>(0.0, 1.0);
@@ -77,8 +82,8 @@ namespace shogun
 	public:
 		using sgobjects_t = std::vector<std::shared_ptr<SGObject>>;
 		using bound_pair = std::pair<float64_t, float64_t>;
-        std::string m_param_name;
-        //such as float64_t m_lower_bound, m_upper_bound;
+		std::string m_param_name;
+		// such as float64_t m_lower_bound, m_upper_bound;
 		//{ConstKernel, GaussianKernel}
 		std::variant<bound_pair, sgobjects_t> m_bound;
 		std::string m_prior, m_param_type;
@@ -87,7 +92,9 @@ namespace shogun
 	using sgobject_t = std::shared_ptr<SGObject>;
 	struct DimensionWithSGObject : public SGObject
 	{
-        DimensionWithSGObject() {}
+		DimensionWithSGObject()
+		{
+		}
 		DimensionWithSGObject(
 		    std::pair<
 		        std::string, std::vector<std::pair<sgobject_t, Dimension>>>
@@ -95,31 +102,34 @@ namespace shogun
 		    : sgobject_name(params.first), m_params(params.second)
 		{
 		}
-        virtual const char* get_name() const 
-        {
-            return "DimensionWithSGObject";
-        }
+		virtual const char* get_name() const
+		{
+			return "DimensionWithSGObject";
+		}
 		std::vector<std::pair<sgobject_t, Dimension>> m_params;
 		std::string sgobject_name;
 	};
 
-    /**
-	 * @brief: The space aim to represent a search space from given specifications.
+	/**
+	 * @brief: The space aim to represent a search space from given
+	 * specifications.
 	 */
 	class Space : public SGObject
 	{
 
 	public:
-        Space() {}
+		Space()
+		{
+		}
 		Space(std::vector<std::variant<Dimension, DimensionWithSGObject>> s)
 		{
 			convert(s);
 		}
 
-        virtual const char* get_name() const 
-        {
-            return "Space";
-        }
+		virtual const char* get_name() const
+		{
+			return "Space";
+		}
 
 		std::pair<std::vector<std::string>, SGVector<float64_t>>
 		random_samples()
@@ -162,20 +172,25 @@ namespace shogun
 				        [&](DimensionWithSGObject dim) {
 					        std::vector<sgobject_t> sgobjects;
 					        std::string name = dim.sgobject_name;
-					    std::transform(dim.m_params.begin(), dim.m_params.end(),
-                            std::back_inserter(sgobjects), 
-                                [](std::pair<sgobject_t , Dimension> p) {
-						            return p.first;});
-                        m_dimensions.emplace_back(name, sgobjects);
+					        std::transform(
+					            dim.m_params.begin(), dim.m_params.end(),
+					            std::back_inserter(sgobjects),
+					            [](std::pair<sgobject_t, Dimension> p) {
+						            return p.first;
+					            });
+					        m_dimensions.emplace_back(name, sgobjects);
 
-                        std::for_each(dim.m_params.begin(), dim.m_params.end(),
-                            [&](std::pair<sgobject_t , Dimension> d) {
-						        auto& p = d.second;
-                                std::string name = std::string(d.first->get_name()) + "::" ;
-                                std::string new_name = name + p.m_param_name;
-						        p.m_param_name = std::move(new_name);
-                                m_dimensions.emplace_back(p);
-						    });
+					        std::for_each(
+					            dim.m_params.begin(), dim.m_params.end(),
+					            [&](std::pair<sgobject_t, Dimension> d) {
+						            auto& p = d.second;
+						            std::string name =
+						                std::string(d.first->get_name()) + "::";
+						            std::string new_name =
+						                name + p.m_param_name;
+						            p.m_param_name = std::move(new_name);
+						            m_dimensions.emplace_back(p);
+					            });
 				        }},
 				    v);
 			}
