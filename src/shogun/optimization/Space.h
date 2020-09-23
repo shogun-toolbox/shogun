@@ -7,6 +7,7 @@
 #include <shogun/mathematics/RandomMixin.h>
 #include <shogun/mathematics/UniformRealDistribution.h>
 #include <shogun/util/traits.h>
+#include <shogun/lib/SGVector.h>
 #include <string>
 #include <variant>
 namespace shogun
@@ -76,9 +77,9 @@ namespace shogun
 	public:
 		using sgobjects_t = std::vector<std::shared_ptr<SGObject>>;
 		using bound_pair = std::pair<float64_t, float64_t>;
-		// float64_t m_lower_bound, m_upper_bound;
-		//{ConstKernel, GaussianKernel}
         std::string m_param_name;
+        //such as float64_t m_lower_bound, m_upper_bound;
+		//{ConstKernel, GaussianKernel}
 		std::variant<bound_pair, sgobjects_t> m_bound;
 		std::string m_prior, m_param_type;
 	};
@@ -101,6 +102,10 @@ namespace shogun
 		std::vector<std::pair<sgobject_t, Dimension>> m_params;
 		std::string sgobject_name;
 	};
+
+    /**
+	 * @brief: The space aim to represent a search space from given specifications.
+	 */
 	class Space : public SGObject
 	{
 
@@ -116,7 +121,7 @@ namespace shogun
             return "Space";
         }
 
-		std::tuple<std::vector<std::string>, SGVector<float64_t>>
+		std::pair<std::vector<std::string>, SGVector<float64_t>>
 		random_samples()
 		{
 			std::vector<std::string> param_names;
@@ -128,7 +133,7 @@ namespace shogun
 				param_names.push_back(param_name);
 				param_values[idx++] = param_value;
 			}
-			return std::make_tuple(param_names, param_values);
+			return std::make_pair(param_names, param_values);
 		}
 
 	private:
