@@ -15,6 +15,7 @@
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
 #include <shogun/base/constraint.h>
+#include <shogun/base/Param.h>
 #include <shogun/base/macros.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
@@ -324,6 +325,13 @@ public:
 		update_parameter(_tag, value);
 	}
 
+	template <typename T>
+	void put(const Tag<T>& _tag, const Param<T>& value)
+	{
+		auto& parameter = get_parameter(_tag);
+		parameter.set_parameter_range(value.get_paramter_range());
+	}
+
 	/** Setter for a class parameter that has values of type string,
 	 * identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -505,6 +513,15 @@ public:
 			put(Tag<T>(name), value);
 	}
 
+template<typename T>
+#ifdef SWIG
+	void put(const std::string& name, Param<T>&& value)
+#else
+	void put(std::string_view name, Param<T>&& value)
+#endif
+	{
+		put(Tag<T>(name), value);
+	}
 #ifndef SWIG
 	/** Getter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.

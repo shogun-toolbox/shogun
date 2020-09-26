@@ -583,3 +583,12 @@ TEST(SGObject, auto_parameter)
     obj->put(MockObject::kAutoParameter, 1);
     EXPECT_EQ(obj->get<int32_t>(MockObject::kAutoParameter), 1);
 }
+
+TEST(SGObject, parameter_range)
+{
+    auto obj = std::make_shared<MockObject>();
+    obj->put(MockObject::kConstrainedParameter, Param{1.0, 2.0});
+	std::shared_ptr<Kernel> gaussian_kernel = std::make_shared<GaussianKernel>();
+	std::shared_ptr<Kernel> const_kernel = std::make_shared<LinearKernel>();
+	obj->put(MockObject::kWatchedObject, Param{gaussian_kernel, const_kernel});
+}

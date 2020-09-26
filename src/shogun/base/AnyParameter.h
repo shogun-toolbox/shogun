@@ -10,7 +10,7 @@
 #include <shogun/lib/abstract_auto_init.h>
 #include <shogun/lib/any.h>
 #include <shogun/lib/bitmask_operators.h>
-
+#include <shogun/base/Param.h>
 #include <list>
 #include <memory>
 #include <string_view>
@@ -213,7 +213,12 @@ namespace shogun
 		{
 			return m_properties;
 		}
-
+		using ParameterRange = std::variant<std::pair<Any, Any>, std::vector<Any>>;
+		
+		void set_parameter_range(const ParameterRange& params) 
+		{
+			m_param_range = params;
+		}
 		const std::shared_ptr<params::AutoInit>& get_init_function() const
 		{
 			return m_init_function;
@@ -275,6 +280,7 @@ namespace shogun
 		std::shared_ptr<params::AutoInit> m_init_function;
 		std::function<std::optional<std::string>(Any)> m_constrain_function;
 		std::vector<std::function<void()>> m_callback_functions;
+		std::optional<ParameterRange> m_param_range;
 	};
 } // namespace shogun
 
