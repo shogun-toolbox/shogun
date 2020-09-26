@@ -586,8 +586,8 @@ TEST(SGObject, auto_parameter)
 
 TEST(SGObject, parameter_range)
 {
-    auto obj = std::make_shared<MockObject>();
-    obj->put(MockObject::kConstrainedParameter, Param{1.0, 2.0});
+	auto obj = std::make_shared<MockObject>();
+	obj->put(MockObject::kConstrainedParameter, Param{1.0, 2.0});
 	std::shared_ptr<Kernel> gaussian_kernel = std::make_shared<GaussianKernel>();
 	std::shared_ptr<Kernel> const_kernel = std::make_shared<LinearKernel>();
 	obj->put(MockObject::kWatchedObject, Param{gaussian_kernel, const_kernel});

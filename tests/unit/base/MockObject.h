@@ -320,7 +320,6 @@ namespace shogun
 		int32_t m_watched = 0;
 		int32_t m_constrained_parameter = 1;
 		AutoValue<int32_t> m_auto_parameter = AutoValueEmpty{};
-		
 		std::shared_ptr<MockObject> m_object = nullptr;
 
 	public:
