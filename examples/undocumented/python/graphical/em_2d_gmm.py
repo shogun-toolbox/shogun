@@ -1,7 +1,6 @@
 from pylab import figure,scatter,contour,show,legend,connect
 from numpy import array, append, arange, reshape, empty, exp
-from shogun import Gaussian, GMM
-from shogun import RealFeatures
+import shogun as sg
 import util
 
 util.set_title('EM for 2d GMM example')
@@ -13,7 +12,7 @@ min_change=1e-9
 cov_type=0
 
 #setup the real GMM
-real_gmm=GMM(2)
+real_gmm=sg.GMM(2)
 
 real_gmm.set_nth_mean(array([1.0, 1.0]), 0)
 real_gmm.set_nth_mean(array([-1.0, -1.0]), 1)
@@ -29,10 +28,10 @@ for i in range(199):
     generated=append(generated, array([real_gmm.sample()]), axis=0)
 
 generated=generated.transpose()
-feat_train=RealFeatures(generated)
+feat_train=sg.RealFeatures(generated)
 
 #train GMM using EM
-est_gmm=GMM(2, cov_type)
+est_gmm=sg.GMM(2, cov_type)
 est_gmm.train(feat_train)
 est_gmm.train_em(min_cov, max_iter, min_change)
 

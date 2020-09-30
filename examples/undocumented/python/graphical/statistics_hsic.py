@@ -6,13 +6,7 @@ from numpy import *
 from pylab import *
 from scipy import *
 
-from shogun import RealFeatures
-from shogun import DataGenerator
-from shogun import GaussianKernel
-from shogun import HSIC
-from shogun import PERMUTATION, HSIC_GAMMA
-from shogun import EuclideanDistance
-from shogun import Statistics, Math
+import shogun as sg
 
 # for nice plotting that fits into our shogun tutorial
 import latex_plot_inits
@@ -29,11 +23,11 @@ def hsic_graphical():
 	num_null_samples=500
 
 	# use data generator class to produce example data
-	data=DataGenerator.generate_sym_mix_gauss(m,difference,angle)
+	data=sg.DataGenerator.generate_sym_mix_gauss(m,difference,angle)
 
 	# create shogun feature representation
-	features_x=RealFeatures(array([data[0]]))
-	features_y=RealFeatures(array([data[1]]))
+	features_x=sg.RealFeatures(array([data[0]]))
+	features_y=sg.RealFeatures(array([data[1]]))
 
 	# compute median data distance in order to use for Gaussian kernel width
 	# 0.5*median_distance normally (factor two in Gaussian kernel)
@@ -44,21 +38,21 @@ def hsic_graphical():
 	subset=random.permutation(subset) # numpy permutation
 	subset=subset[0:200]
 	features_x.add_subset(subset)
-	dist=EuclideanDistance(features_x, features_x)
+	dist=sg.EuclideanDistance(features_x, features_x)
 	distances=dist.get_distance_matrix()
 	features_x.remove_subset()
 	median_distance=np.median(distances)
 	sigma_x=median_distance**2
 	features_y.add_subset(subset)
-	dist=EuclideanDistance(features_y, features_y)
+	dist=sg.EuclideanDistance(features_y, features_y)
 	distances=dist.get_distance_matrix()
 	features_y.remove_subset()
 	median_distance=np.median(distances)
 	sigma_y=median_distance**2
 	print "median distance for Gaussian kernel on x:", sigma_x
 	print "median distance for Gaussian kernel on y:", sigma_y
-	kernel_x=GaussianKernel(10,sigma_x)
-	kernel_y=GaussianKernel(10,sigma_y)
+	kernel_x=sg.GaussianKernel(10,sigma_x)
+	kernel_y=sg.GaussianKernel(10,sigma_y)
 
 	# create hsic instance. Note that this is a convienience constructor which copies
 	# feature data. features_x and features_y are not these used in hsic.
@@ -66,28 +60,28 @@ def hsic_graphical():
 	# Below, the alternative distribution is sampled, which means
 	# that new feature objects have to be created in each iteration (slow)
 	# However, normally, the alternative distribution is not sampled
-	hsic=HSIC(kernel_x,kernel_y,features_x,features_y)
+	hsic=sg.HSIC(kernel_x,kernel_y,features_x,features_y)
 
 	# sample alternative distribution
 	alt_samples=zeros(num_null_samples)
 	for i in range(len(alt_samples)):
-		data=DataGenerator.generate_sym_mix_gauss(m,difference,angle)
+		data=sg.DataGenerator.generate_sym_mix_gauss(m,difference,angle)
 		features_x.set_feature_matrix(array([data[0]]))
 		features_y.set_feature_matrix(array([data[1]]))
 
 		# re-create hsic instance everytime since feature objects are copied due to
 		# useage of convienience constructor
-		hsic=HSIC(kernel_x,kernel_y,features_x,features_y)
+		hsic=sg.HSIC(kernel_x,kernel_y,features_x,features_y)
 		alt_samples[i]=hsic.compute_statistic()
 
 	# sample from null distribution
 	# permutation, biased statistic
-	hsic.set_null_approximation_method(PERMUTATION)
+	hsic.set_null_approximation_method(sg.PERMUTATION)
 	hsic.set_num_null_samples(num_null_samples)
 	null_samples_boot=hsic.sample_null()
 
 	# fit gamma distribution, biased statistic
-	hsic.set_null_approximation_method(HSIC_GAMMA)
+	hsic.set_null_approximation_method(sg.HSIC_GAMMA)
 	gamma_params=hsic.fit_null_gamma()
 	# sample gamma with parameters
 	null_samples_gamma=array([gamma(gamma_params[0], gamma_params[1]) for _ in range(num_null_samples)])

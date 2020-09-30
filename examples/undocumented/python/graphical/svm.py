@@ -1,6 +1,6 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect,axis
 from numpy.random import randn
-from shogun import *
+import shogun as sg
 import util
 
 util.set_title('SVM')
@@ -19,8 +19,8 @@ plot(neg[0,:], neg[1,:], "b.")
 # train svm
 labels=util.get_labels()
 train=util.get_realfeatures(pos, neg)
-gk=GaussianKernel(train, train, width)
-svm = LibSVM(10.0, gk, labels)
+gk=sg.GaussianKernel(train, train, width)
+svm = sg.LibSVM(10.0, gk, labels)
 svm.train()
 
 x, y, z=util.compute_output_plot_isolines(svm, gk, train)

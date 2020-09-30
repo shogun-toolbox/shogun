@@ -6,12 +6,6 @@ from numpy import *
 from pylab import *
 from scipy import *
 
-from shogun import RealFeatures
-from shogun import MeanShiftDataGenerator
-from shogun import LinearTimeMMD, MMDKernelSelectionOpt
-from shogun import PERMUTATION, MMD1_GAUSSIAN
-from shogun import EuclideanDistance
-from shogun import Statistics, Math
 import shogun as sg
 
 # for nice plotting that fits into our shogun tutorial
@@ -31,8 +25,8 @@ def linear_time_mmd_graphical():
 	num_null_samples=150
 
 	# streaming data generator for mean shift distributions
-	gen_p=MeanShiftDataGenerator(0, dim)
-	gen_q=MeanShiftDataGenerator(difference, dim)
+	gen_p=sg.MeanShiftDataGenerator(0, dim)
+	gen_q=sg.MeanShiftDataGenerator(difference, dim)
 
 	# use the median kernel selection
 	# create combined kernel with Gaussian kernels inside (shoguns Gaussian kernel is
@@ -50,11 +44,11 @@ def linear_time_mmd_graphical():
 
 	# mmd instance using streaming features, blocksize of 10000
 	block_size=1000
-	mmd=LinearTimeMMD(combined, gen_p, gen_q, m, block_size)
+	mmd=sg.LinearTimeMMD(combined, gen_p, gen_q, m, block_size)
 
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# single kernels
-	selection=MMDKernelSelectionOpt(mmd)
+	selection=sg.MMDKernelSelectionOpt(mmd)
 
 	# perform kernel selection
 	kernel=selection.select_kernel()
@@ -68,12 +62,12 @@ def linear_time_mmd_graphical():
 
 	# sample from null distribution
 	# bootstrapping, biased statistic
-	mmd.set_null_approximation_method(PERMUTATION)
+	mmd.set_null_approximation_method(sg.PERMUTATION)
 	mmd.set_num_null_samples(num_null_samples)
 	null_samples_boot=mmd.sample_null()
 
 	# fit normal distribution to null and sample a normal distribution
-	mmd.set_null_approximation_method(MMD1_GAUSSIAN)
+	mmd.set_null_approximation_method(sg.MMD1_GAUSSIAN)
 	variance=mmd.compute_variance_estimate()
 	null_samples_gaussian=normal(0,sqrt(variance),num_null_samples)
 

@@ -1,7 +1,5 @@
 from pylab import plot,grid,title,subplot,xlabel,ylabel,text,subplots_adjust,fill_between,mean,connect,show
-from shogun import GaussianKernel
-from shogun import LibSVM, LDA
-from shogun import ROCEvaluation
+import shogun as sg
 import util
 
 util.set_title('ROC example')
@@ -14,10 +12,10 @@ features=util.get_realfeatures(pos, neg)
 labels=util.get_labels()
 
 # classifiers
-gk=GaussianKernel(features, features, 1.0)
-svm = LibSVM(1000.0, gk, labels)
+gk = sg.GaussianKernel(features, features, 1.0)
+svm = sg.LibSVM(1000.0, gk, labels)
 svm.train()
-lda=LDA(1,features,labels)
+lda = sg.LDA(1,features,labels)
 lda.train()
 
 ## plot points
@@ -29,7 +27,7 @@ title('Data',size=10)
 
 # plot ROC for SVM
 subplot(223)
-ROC_evaluation=ROCEvaluation()
+ROC_evaluation = sg.ROCEvaluation()
 ROC_evaluation.evaluate(svm.apply(),labels)
 roc = ROC_evaluation.get_ROC()
 print roc

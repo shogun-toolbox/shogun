@@ -41,9 +41,7 @@ except ImportError:
 import numpy as np
 from numpy    import random
 
-from shogun import RealFeatures
-from shogun import PCA
-from shogun import EuclideanDistance
+import shogun as sg
 import math
 import os
 import pylab as pl
@@ -69,9 +67,9 @@ class EigenFaces():
         self._labels = labels;
 
         #transform the numpe vector to shogun structure
-        features = RealFeatures(images)
+        features = sg.RealFeatures(images)
         #PCA
-        self.pca = PCA()
+        self.pca = sg.PCA()
         #set dimension
         self.pca.set_target_dim(self._num_components);
         #compute PCA
@@ -92,7 +90,7 @@ class EigenFaces():
         imageAsRow = np.asarray(image.reshape(image.shape[0]*image.shape[1],1),
                                 np.float64);
         #project inthe subspace
-        p = self.pca.apply_to_feature_vector(RealFeatures(imageAsRow).get_feature_vector(0));
+        p = self.pca.apply_to_feature_vector(sg.RealFeatures(imageAsRow).get_feature_vector(0));
 
         #min value to find the face
         minDist =1e100;
@@ -100,10 +98,10 @@ class EigenFaces():
         minClass = -1;
         #search which face is the best match
         for sampleIdx in range(len(self._projections)):
-            test = RealFeatures(np.asmatrix(p,np.float64).T)
-            projection = RealFeatures(np.asmatrix(self._projections[sampleIdx],
+            test = sg.RealFeatures(np.asmatrix(p,np.float64).T)
+            projection = sg.RealFeatures(np.asmatrix(self._projections[sampleIdx],
                                         np.float64).T)
-            dist = EuclideanDistance( test, projection).distance(0,0)
+            dist = sg.EuclideanDistance( test, projection).distance(0,0)
 
             if(dist < minDist ):
                 minDist = dist;
@@ -229,17 +227,17 @@ if __name__ == '__main__':
 
         print "Reconstruct with " + str(i) + " eigenvectors"
 
-        pca = PCA()
+        pca = sg.PCA()
         #set dimension
         pca.set_target_dim(i);
         #compute PCA
-        pca.init(RealFeatures(images))
+        pca.init(sg.RealFeatures(images))
 
-        pca.apply_to_feature_vector(RealFeatures(imageAsRow)
+        pca.apply_to_feature_vector(sg.RealFeatures(imageAsRow)
                                     .get_feature_vector(0));
 
         #reconstruct
-        projection = pca.apply_to_feature_vector(RealFeatures(imageAsRow)
+        projection = pca.apply_to_feature_vector(sg.RealFeatures(imageAsRow)
                                                 .get_feature_vector(0));
 
         reconstruction = np.asmatrix( np.asarray(projection, np.float64))* \

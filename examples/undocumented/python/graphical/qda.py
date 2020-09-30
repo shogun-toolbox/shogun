@@ -1,6 +1,4 @@
-from shogun import RealFeatures
-from shogun import MulticlassLabels
-from shogun import QDA
+import shogun as sg
 from pylab import pcolor, contour, colorbar, connect, show, plot, axis
 
 import numpy as np
@@ -15,22 +13,22 @@ mean_pos = [-1, 4]
 cov_pos  = [[1,40], [50, -2]]
 
 x_pos, y_pos = np.random.multivariate_normal(mean_pos, cov_pos, 500).T
-plot(x_pos, y_pos, 'bo');
+plot(x_pos, y_pos, 'bo')
 
 # negative examples
 mean_neg = [0, -3]
 cov_neg  = [[100,50], [20, 3]]
 
 x_neg, y_neg = np.random.multivariate_normal(mean_neg, cov_neg, 500).T
-plot(x_neg, y_neg, 'ro');
+plot(x_neg, y_neg, 'ro')
 
 # train qda
-labels = MulticlassLabels( np.concatenate([np.zeros(N), np.ones(N)]) )
+labels = sg.MulticlassLabels( np.concatenate([np.zeros(N), np.ones(N)]) )
 pos = np.array([x_pos, y_pos])
 neg = np.array([x_neg, y_neg])
-features = RealFeatures( np.array(np.concatenate([pos, neg], 1)) )
+features = sg.RealFeatures( np.array(np.concatenate([pos, neg], 1)) )
 
-qda = QDA()
+qda = sg.QDA()
 qda.set_labels(labels)
 qda.train(features)
 
@@ -48,7 +46,7 @@ x2 = np.linspace(x2_min, x2_max, size)
 
 x, y = np.meshgrid(x1, x2)
 
-dense = RealFeatures( np.array((np.ravel(x), np.ravel(y))) )
+dense = sg.RealFeatures( np.array((np.ravel(x), np.ravel(y))) )
 dense_labels = qda.apply(dense).get_labels()
 
 z = dense_labels.reshape((size, size))

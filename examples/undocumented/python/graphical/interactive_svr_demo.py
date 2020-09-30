@@ -16,7 +16,6 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from shogun import *
 import shogun as sg
 
 class Form(QMainWindow):
@@ -99,33 +98,33 @@ class Form(QMainWindow):
         # train svm
         labels = self.data.get_labels()
         print type(labels)
-        lab = RegressionLabels(labels)
+        lab = sg.RegressionLabels(labels)
         features = self.data.get_examples()
-        train = RealFeatures(features)
+        train = sg.RealFeatures(features)
 
         kernel_name = self.kernel_combo.currentText()
         print "current kernel is %s" % (kernel_name)
 
         if kernel_name == "LinearKernel":
-            gk = LinearKernel(train, train)
-            gk.set_normalizer(IdentityKernelNormalizer())
+            gk = sg.LinearKernel(train, train)
+            gk.set_normalizer(sg.IdentityKernelNormalizer())
         elif kernel_name == "PolynomialKernel":
             gk = sg.create_kernel("PolyKernel", degree=degree, c=1.0)
             gk.init(train, train)
-            gk.set_normalizer(IdentityKernelNormalizer())
+            gk.set_normalizer(sg.IdentityKernelNormalizer())
         elif kernel_name == "GaussianKernel":
-            gk = GaussianKernel(train, train, width)
+            gk = sg.GaussianKernel(train, train, width)
 
         cost = float(self.cost.text())
         tubeeps = float(self.tubeeps.text())
 
         print "cost", cost
-        svm = LibSVR(cost, tubeeps, gk, lab)
+        svm = sg.LibSVR(cost, tubeeps, gk, lab)
         svm.train()
         svm.set_epsilon(1e-2)
 
         x=numpy.linspace(-5.0,5.0,100)
-        y=svm.apply(RealFeatures(numpy.array([x]))).get_labels()
+        y=svm.apply(sg.RealFeatures(numpy.array([x]))).get_labels()
 
         self.axes.plot(x,y,'r-')
 

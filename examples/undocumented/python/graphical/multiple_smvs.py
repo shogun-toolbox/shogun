@@ -4,7 +4,7 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,connect,axis
 from numpy import concatenate
 from numpy.random import randn
-from shogun import *
+import shogun as sg
 import util
 
 util.set_title('Multiple SVMS')
@@ -26,8 +26,8 @@ for i in range(num_svms):
 	trainfeatList[i] = util.get_realfeatures(pos, neg)
 	trainlabsList[i] = util.get_labels(True)
 	trainlabList[i] = util.get_labels()
-	kernelList[i] = GaussianKernel(trainfeatList[i], trainfeatList[i], width)
-	svmList[i] = LibSVM(10, kernelList[i], trainlabList[i])
+	kernelList[i] = sg.GaussianKernel(trainfeatList[i], trainfeatList[i], width)
+	svmList[i] = sg.LibSVM(10, kernelList[i], trainlabList[i])
 
 for i in range(num_svms):
 	print "Training svm nr. %d" % (i)

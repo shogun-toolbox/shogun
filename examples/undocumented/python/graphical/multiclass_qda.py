@@ -10,8 +10,7 @@ import pylab
 import util
 
 from scipy import linalg
-from shogun import QDA
-from shogun import RealFeatures, MulticlassLabels
+import shogun as sg
 
 # colormap
 cmap = mpl.colors.LinearSegmentedColormap('color_classes',
@@ -31,7 +30,7 @@ def gen_data():
 			 [[ 2,  0  ], [ .0,  1.5 ]]])
 	X = np.r_[np.dot(np.random.randn(N, dim), covs[0]) + np.array([-4, 3]),
 		  np.dot(np.random.randn(N, dim), covs[1]) + np.array([-1, -5]),
-		  np.dot(np.random.randn(N, dim), covs[2]) + np.array([3, 4])];
+		  np.dot(np.random.randn(N, dim), covs[2]) + np.array([3, 4])]
 	Y = np.hstack((np.zeros(N), np.ones(N), 2*np.ones(N)))
 	return X, Y
 
@@ -81,7 +80,7 @@ def plot_regions(qda):
 	y_min, y_max = pylab.ylim()
 	xx, yy = np.meshgrid(np.linspace(x_min, x_max, nx),
 			     np.linspace(y_min, y_max, ny))
-	dense = RealFeatures(np.array((np.ravel(xx), np.ravel(yy))))
+	dense = sg.RealFeatures(np.array((np.ravel(xx), np.ravel(yy))))
 	dense_labels = qda.apply(dense).get_labels()
 	Z = dense_labels.reshape(xx.shape)
 	pylab.pcolormesh(xx, yy, Z)
@@ -102,9 +101,9 @@ pylab.title('Quadratic Discrimant Analysis')
 
 X, y = gen_data()
 
-labels = MulticlassLabels(y)
-features = RealFeatures(X.T)
-qda = QDA(features, labels, 1e-4, True)
+labels = sg.MulticlassLabels(y)
+features = sg.RealFeatures(X.T)
+qda = sg.QDA(features, labels, 1e-4, True)
 qda.train()
 ypred = qda.apply().get_labels()
 

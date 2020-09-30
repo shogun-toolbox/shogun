@@ -1,7 +1,6 @@
 from pylab import figure,show,connect,hist,plot,legend
 from numpy import array, append, arange, empty, exp
-from shogun import Gaussian, GMM
-from shogun import RealFeatures
+import shogun as sg
 import util
 
 util.set_title('SMEM for 1d GMM example')
@@ -14,7 +13,7 @@ max_em_iter=1000
 min_change=1e-9
 
 #setup the real GMM
-real_gmm=GMM(3)
+real_gmm=sg.GMM(3)
 
 real_gmm.set_nth_mean(array([-2.0]), 0)
 real_gmm.set_nth_mean(array([0.0]), 1)
@@ -31,14 +30,14 @@ generated=array([real_gmm.sample()])
 for i in range(199):
     generated=append(generated, array([real_gmm.sample()]), axis=1)
 
-feat_train=RealFeatures(generated)
+feat_train=sg.RealFeatures(generated)
 
 #train GMM using SMEM and print log-likelihood
-est_smem_gmm=GMM(3)
+est_smem_gmm=sg.GMM(3)
 est_smem_gmm.train(feat_train)
 print est_smem_gmm.train_smem(max_iter, max_cand, min_cov, max_em_iter, min_change)
 #train GMM using EM and print log-likelihood
-est_em_gmm=GMM(3)
+est_em_gmm=sg.GMM(3)
 est_em_gmm.train(feat_train)
 print est_em_gmm.train_em(min_cov, max_em_iter, min_change)
 

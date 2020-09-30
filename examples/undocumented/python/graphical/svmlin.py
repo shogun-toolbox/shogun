@@ -1,5 +1,5 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,axis, connect
-from shogun import *
+import shogun as sg
 import util
 
 util.set_title('SVM Linear 1')
@@ -14,12 +14,12 @@ neg=util.get_realdata(False)
 # train svm lin
 labels=util.get_labels()
 dense=util.get_realfeatures(pos, neg)
-train=SparseRealFeatures()
+train=sg.SparseRealFeatures()
 train.obtain_from_simple(dense)
-svm=SVMLin(C, train, labels)
+svm=sg.SVMLin(C, train, labels)
 svm.train()
 
-lk=LinearKernel(dense, dense)
+lk=sg.LinearKernel(dense, dense)
 try:
 	svmlight=LibSVM(C, lk, labels)
 except NameError:

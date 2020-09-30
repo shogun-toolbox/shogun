@@ -3,9 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from shogun import RegressionLabels, RealFeatures
-from shogun import LeastAngleRegression, LinearRidgeRegression, LeastSquaresRegression
-from shogun import MeanSquaredError
+import shogun as sg
 
 # we compare LASSO with ordinary least-squares (OLE)
 # in the ideal case, the MSE of OLE should coincide
@@ -43,43 +41,43 @@ for i in xrange(p):
 y -= np.mean(y)
 
 # train LASSO
-LeastAngleRegression = LeastAngleRegression()
-LeastAngleRegression.set_labels(RegressionLabels(y))
-LeastAngleRegression.train(RealFeatures(X.T))
+LeastAngleRegression = sg.LeastAngleRegression()
+LeastAngleRegression.set_labels(sg.RegressionLabels(y))
+LeastAngleRegression.train(sg.RealFeatures(X.T))
 
 # train ordinary LSR
 if use_ridge:
-    lsr = LinearRidgeRegression(0.01, RealFeatures(X.T), Labels(y))
+    lsr = sg.LinearRidgeRegression(0.01, sg.RealFeatures(X.T), sg.Labels(y))
     lsr.train()
 else:
-    lsr = LeastSquaresRegression()
-    lsr.set_labels(RegressionLabels(y))
-    lsr.train(RealFeatures(X.T))
+    lsr = sg.LeastSquaresRegression()
+    lsr.set_labels(sg.RegressionLabels(y))
+    lsr.train(sg.RealFeatures(X.T))
 
 # gather LASSO path
 path = np.zeros((p, LeastAngleRegression.get_path_size()))
 for i in xrange(path.shape[1]):
     path[:,i] = LeastAngleRegression.get_w(i)
 
-evaluator = MeanSquaredError()
+evaluator = sg.MeanSquaredError()
 
 # apply on training data
 mse_train = np.zeros(LeastAngleRegression.get_path_size())
 for i in xrange(mse_train.shape[0]):
     LeastAngleRegression.switch_w(i)
-    ypred = LeastAngleRegression.apply(RealFeatures(X.T))
-    mse_train[i] = evaluator.evaluate(ypred, RegressionLabels(y))
-ypred = lsr.apply(RealFeatures(X.T))
-mse_train_lsr = evaluator.evaluate(ypred, RegressionLabels(y))
+    ypred = LeastAngleRegression.apply(sg.RealFeatures(X.T))
+    mse_train[i] = evaluator.evaluate(ypred, sg.RegressionLabels(y))
+ypred = lsr.apply(sg.RealFeatures(X.T))
+mse_train_lsr = evaluator.evaluate(ypred, sg.RegressionLabels(y))
 
 # apply on test data
 mse_test = np.zeros(LeastAngleRegression.get_path_size())
 for i in xrange(mse_test.shape[0]):
     LeastAngleRegression.switch_w(i)
-    ypred = LeastAngleRegression.apply(RealFeatures(Xtest.T))
-    mse_test[i] = evaluator.evaluate(ypred, RegressionLabels(y))
-ypred = lsr.apply(RealFeatures(Xtest.T))
-mse_test_lsr = evaluator.evaluate(ypred, RegressionLabels(y))
+    ypred = LeastAngleRegression.apply(sg.RealFeatures(Xtest.T))
+    mse_test[i] = evaluator.evaluate(ypred, sg.RegressionLabels(y))
+ypred = lsr.apply(sg.RealFeatures(Xtest.T))
+mse_test_lsr = evaluator.evaluate(ypred, sg.RegressionLabels(y))
 
 fig = plt.figure()
 ax_path = fig.add_subplot(1,2,1)

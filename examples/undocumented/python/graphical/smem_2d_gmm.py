@@ -1,7 +1,6 @@
 from pylab import figure,scatter,contour,show,legend,connect
 from numpy import array, append, arange, reshape, empty, exp
-from shogun import Gaussian, GMM
-from shogun import RealFeatures
+import shogun as sg
 import util
 
 util.set_title('SMEM for 2d GMM example')
@@ -15,7 +14,7 @@ min_change=1e-9
 cov_type=0
 
 #setup the real GMM
-real_gmm=GMM(3)
+real_gmm=sg.GMM(3)
 
 real_gmm.set_nth_mean(array([2.0, 2.0]), 0)
 real_gmm.set_nth_mean(array([-2.0, -2.0]), 1)
@@ -33,10 +32,10 @@ for i in range(199):
     generated=append(generated, array([real_gmm.sample()]), axis=0)
 
 generated=generated.transpose()
-feat_train=RealFeatures(generated)
+feat_train=sg.RealFeatures(generated)
 
 #train GMM using SMEM and print log-likelihood
-est_smem_gmm=GMM(3, cov_type)
+est_smem_gmm=sg.GMM(3, cov_type)
 est_smem_gmm.train(feat_train)
 
 est_smem_gmm.set_nth_mean(array([2.0, 0.0]), 0)
@@ -52,7 +51,7 @@ est_smem_gmm.set_coef(array([0.3333, 0.3333, 0.3334]))
 print est_smem_gmm.train_smem(max_iter, max_cand, min_cov, max_em_iter, min_change)
 
 #train GMM using EM and bad initial conditions and print log-likelihood
-est_em_gmm=GMM(3, cov_type)
+est_em_gmm=sg.GMM(3, cov_type)
 est_em_gmm.train(feat_train)
 
 est_em_gmm.set_nth_mean(array([2.0, 0.0]), 0)
