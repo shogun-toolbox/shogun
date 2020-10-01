@@ -28,6 +28,8 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <limits>
+
 #include <shogun/multiclass/tree/KNNHeap.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/lib/SGVector.h>
@@ -43,7 +45,7 @@ KNNHeap::KNNHeap(int32_t k)
 
 	for (int32_t i=0;i<m_capacity;i++)
 	{
-		m_dists[i]=Math::MAX_REAL_NUMBER;
+		m_dists[i]=std::numeric_limits<float64_t>::max();
 		m_inds[i]=0;
 	}
 }

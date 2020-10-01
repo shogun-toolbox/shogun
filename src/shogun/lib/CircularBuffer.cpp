@@ -38,11 +38,9 @@ CircularBuffer::~CircularBuffer()
 	
 }
 
-void CircularBuffer::set_tokenizer(std::shared_ptr<Tokenizer> tokenizer)
+void CircularBuffer::set_tokenizer(const std::shared_ptr<Tokenizer>& tokenizer)
 {
-	
-	
-	m_tokenizer=std::move(tokenizer);
+	m_tokenizer=tokenizer;
 }
 
 int32_t CircularBuffer::push(SGVector<char> source)
@@ -352,13 +350,13 @@ void CircularBuffer::detach_chunk(char** dest, int32_t* dest_size, int32_t dest_
 
 	if (*dest==NULL)
 	{
-		*dest=SG_MALLOC(char, num_bytes+dest_offset);
+		*dest=SG_ALIGNED_MALLOC(char, num_bytes+dest_offset, alignment::container_alignment);
 		*dest_size=num_bytes+dest_offset;
 	}
 
 	if (*dest_size<num_bytes+dest_offset)
 	{
-		*dest=SG_REALLOC(char, *dest, *dest_size, num_bytes+dest_offset);
+		*dest=SG_ALIGNED_REALLOC(char, *dest, *dest_size, num_bytes+dest_offset, alignment::container_alignment);
 		*dest_size=num_bytes+dest_offset;
 	}
 

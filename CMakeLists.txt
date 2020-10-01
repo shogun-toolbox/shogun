@@ -34,6 +34,7 @@ SET(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 #### set required C++ standard level of the compiler
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if (MSVC)
 	if (MSVC_VERSION VERSION_LESS 1900)
@@ -46,6 +47,8 @@ if (MSVC)
 		endif()
 	endif()
 endif()
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 #### check for c++17 features - not all compilers support c++17 in 2019
 include(CheckCXXSourceCompiles)

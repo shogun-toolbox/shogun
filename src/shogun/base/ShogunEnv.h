@@ -20,7 +20,7 @@ namespace shogun
 {
 	namespace io
 	{
-		class SGIO;	
+		class SGIO;
 	}
 	class SGLinalg;
 	class Signal;
@@ -47,7 +47,7 @@ namespace shogun
 		/** @return the globally over-ridden floating point epsilon for
 		 * CMath::fequals
 		 */
-		float64_t fequals_epsilon();
+		float64_t fequals_epsilon() const;
 
 		/** Globally over-ride the floating point epsilon for CMath::fequals.
 		 * Hack required for SGObject::equals checks for certain serialization
@@ -58,7 +58,7 @@ namespace shogun
 
 		/** @return whether global linient check for CMath::fequals is enabled
 		 */
-		bool fequals_tolerant();
+		bool fequals_tolerant() const;
 
 		/** Globally enable linient check for CMath::fequals.
 		 * Hack required for SGObject::equals checks for certain serialization
@@ -72,13 +72,13 @@ namespace shogun
 		 *
 		 * @return linalg object
 		 */
-		SGLinalg* linalg();
+		SGLinalg* linalg() const;
 
 		/** get the global singnal handler object
 		 *
 		 * @return linalg object
 		 */
-		Signal* signal();
+		Signal* signal() const;
 #endif
 
 	private:

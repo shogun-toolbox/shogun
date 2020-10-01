@@ -33,7 +33,9 @@ ShogunEnv* ShogunEnv::instance()
 
 ShogunEnv::ShogunEnv()
 {
+#ifndef _MSC_VER
 	sg_io = std::make_unique<io::SGIO>();
+#endif
 	sg_linalg = std::make_unique<SGLinalg>();
 	sg_signal = std::make_unique<Signal>();
 
@@ -60,7 +62,7 @@ void ShogunEnv::init_from_env()
 {
 	char* env_log_val = NULL;
 	env_log_val = getenv("SHOGUN_LOG_LEVEL");
-	if (env_log_val)
+	if (env_log_val && sg_io)
 	{
 		if (strncmp(env_log_val, "TRACE", 5) == 0)
 			sg_io->set_loglevel(io::MSG_TRACE);
@@ -103,10 +105,17 @@ void ShogunEnv::init_from_env()
 
 io::SGIO* ShogunEnv::io()
 {
+#ifdef _MSC_VER
+	if (SG_UNLIKELY(!sg_io))
+	{
+		sg_io = std::make_unique<io::SGIO>();
+		init_from_env();
+	}
+#endif
 	return sg_io.get();
 }
 
-float64_t ShogunEnv::fequals_epsilon()
+float64_t ShogunEnv::fequals_epsilon() const
 {
 	return sg_fequals_epsilon;
 }
@@ -121,17 +130,17 @@ void ShogunEnv::set_global_fequals_tolerant(bool fequals_tolerant)
 	sg_fequals_tolerant = fequals_tolerant;
 }
 
-bool ShogunEnv::fequals_tolerant()
+bool ShogunEnv::fequals_tolerant() const
 {
 	return sg_fequals_tolerant;
 }
 
-Signal* ShogunEnv::signal()
+Signal* ShogunEnv::signal() const
 {
 	return sg_signal.get();
 }
 
-SGLinalg* ShogunEnv::linalg()
+SGLinalg* ShogunEnv::linalg() const
 {
 	return sg_linalg.get();
 }

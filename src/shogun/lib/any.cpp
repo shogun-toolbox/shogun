@@ -73,10 +73,6 @@ namespace shogun
 		}
 	}
 
-	Any::CastingRegistry Any::casting_registry = {};
-
-	Any::VisitorRegistry Any::visitor_registry = {};
-
 	Any::Any() : Any(owning_policy<Empty>(), nullptr)
 	{
 	}
@@ -225,5 +221,19 @@ namespace shogun
 		policy->clear(&storage);
 		policy = owning_policy<Empty>();
 		storage = nullptr;
+	}
+
+	Any::RegistrySingleton::RegistrySingleton()
+	{
+	}
+
+	Any::RegistrySingleton::~RegistrySingleton()
+	{
+	}
+
+	Any::RegistrySingleton* Any::RegistrySingleton::instance()
+	{
+		static RegistrySingleton registry_instance{};
+		return &registry_instance;
 	}
 }

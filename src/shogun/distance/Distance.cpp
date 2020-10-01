@@ -267,8 +267,6 @@ void Distance::init()
 template <class T>
 SGMatrix<T> Distance::get_distance_matrix()
 {
-	T* result = NULL;
-
 	require(has_features(), "no features assigned to distance");
 	init(lhs, rhs);
 
@@ -283,7 +281,7 @@ SGMatrix<T> Distance::get_distance_matrix()
 
 	SG_DEBUG("returning distance matrix of size {}x{}", m, n)
 
-	result=SG_MALLOC(T, total_num);
+	SGMatrix<T> result (m,n);
 
 	PRange<int64_t> pb = PRange<int64_t>(
 	    range(total_num), "PROGRESS: ", UTF8, []() { return true; });
@@ -342,7 +340,7 @@ SGMatrix<T> Distance::get_distance_matrix()
 	}
 	pb.complete();
 
-	return SGMatrix<T>(result,m,n,true);
+	return result;
 }
 
 template SGMatrix<float64_t> Distance::get_distance_matrix<float64_t>();

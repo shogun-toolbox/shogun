@@ -33,6 +33,7 @@
 #define _CARTREE_H__
 
 #include <memory>
+#include <shogun/shogun_export.h>
 #include <shogun/lib/config.h>
 
 #include <shogun/features/DenseFeatures.h>
@@ -431,13 +432,13 @@ protected:
 	void init();
 public:
 	/** denotes that a feature in a vector is missing MISSING = NOT_A_NUMBER */
-	static const float64_t MISSING;
+	static SHOGUN_EXPORT const float64_t MISSING;
 
 	/** min gain for splitting to be allowed */
-	static const float64_t MIN_SPLIT_GAIN;
+	static SHOGUN_EXPORT const float64_t MIN_SPLIT_GAIN;
 
 	/** equality epsilon */
-	static const float64_t EQ_DELTA;
+	static SHOGUN_EXPORT const float64_t EQ_DELTA;
 
 protected:
 	/** Returns whether the type of various feature dimensions are specified

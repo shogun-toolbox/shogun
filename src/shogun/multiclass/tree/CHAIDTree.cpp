@@ -28,6 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
+#include <limits>
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/Statistics.h>
@@ -35,7 +36,7 @@
 
 using namespace shogun;
 
-const float64_t CHAIDTree::MISSING=Math::MAX_REAL_NUMBER;
+const float64_t CHAIDTree::MISSING=std::numeric_limits<float64_t>::max();
 
 CHAIDTree::CHAIDTree()
 : TreeMachine<CHAIDTreeNodeData>()
@@ -303,7 +304,7 @@ std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDTree::CHAIDtrain(const 
 	}
 
 	// choose best attribute for splitting
-	float64_t min_pv=Math::MAX_REAL_NUMBER;
+	float64_t min_pv=std::numeric_limits<float64_t>::max();
 	SGVector<int32_t> cat_min;
 	int32_t attr_min=-1;
 	for (int32_t i=0;i<num_feats;i++)
@@ -442,7 +443,7 @@ SGVector<int32_t> CHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats,
 
 		// scan all allowable pairs of categories to find most similar one
 		int32_t cat_index_max=-1;
-		float64_t max_merge_pv=Math::MIN_REAL_NUMBER;
+		float64_t max_merge_pv=std::numeric_limits<float64_t>::min();
 		for (int32_t i=0;i<inum_cat-1;i++)
 		{
 			if (cat[i]==cat[i+1])
@@ -577,7 +578,7 @@ SGVector<int32_t> CHAIDTree::merge_categories_nominal(SGVector<float64_t> feats,
 		}
 
 		// consider all pairs for merging
-		float64_t max_merge_pv=Math::MIN_REAL_NUMBER;
+		float64_t max_merge_pv=std::numeric_limits<float64_t>::min();
 		int32_t cat1_max=-1;
 		int32_t cat2_max=-1;
 		for (int32_t i=0;i<leftcat.size()-1;i++)
@@ -739,7 +740,7 @@ bool CHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t
 	}
 
 	// find most similar category to MISSING
-	float64_t max_pv_pair=Math::MIN_REAL_NUMBER;
+	float64_t max_pv_pair=std::numeric_limits<float64_t>::min();
 	int32_t cindex_max=-1;
 	for (int32_t i=0;i<cat_ind.size();i++)
 	{

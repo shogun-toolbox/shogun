@@ -92,7 +92,7 @@ MACRO(AddMetaIntegrationTest META_TARGET CONDITION)
     IF (${CONDITION})
         add_test(NAME integration_meta_${META_TARGET}-${NAME_WITH_DIR}
                         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                        COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} generated_results reference_results)
+                        COMMAND meta_example_integration_tester ${REL_DIR} ${NAME}.dat ${META_TARGET} ${GENERATED_RESULTS_DIR} ${REFERENCE_RESULTS_DIR})
                     set_tests_properties(
                         integration_meta_${META_TARGET}-${NAME_WITH_DIR}
 	                        PROPERTIES
@@ -106,11 +106,7 @@ MACRO(AddLibShogunExample EXAMPLE_CPP)
 	STRING(REGEX REPLACE ".cpp\$" "" EXAMPLE "${EXAMPLE_CPP}")
 
 	add_executable(${EXAMPLE} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE_CPP})
-	if(WIN32)
-		target_link_libraries(${EXAMPLE} shogun::shogun-static ${SANITIZER_LIBRARY})
-	else()
-		target_link_libraries(${EXAMPLE} shogun::shogun ${SANITIZER_LIBRARY})
-	endif()
+	target_link_libraries(${EXAMPLE} shogun::shogun ${SANITIZER_LIBRARY})
 	IF(SANITIZER_FLAGS)
 		set_target_properties(${EXAMPLE} PROPERTIES COMPILE_FLAGS ${SANITIZER_FLAGS})
 	ENDIF()
@@ -196,7 +192,7 @@ macro(ADD_LIBRARY_DEPENDENCY)
 endmacro()
 
 macro(SHOGUN_DEPENDENCIES)
-	ADD_LIBRARY_DEPENDENCY(TARGETS shogun shogun-static libshogun shogun_deps ${ARGN})
+	ADD_LIBRARY_DEPENDENCY(TARGETS shogun shogun-static shogun_deps ${ARGN})
 endmacro()
 
 function(SHOGUN_LINK_LIBS)
@@ -210,7 +206,6 @@ endfunction()
 
 function(SHOGUN_COMPILE_OPTS)
 	set(SCOPE PRIVATE)
-	target_compile_options(libshogun ${SCOPE} ${ARGN})
 	target_compile_options(shogun ${SCOPE} ${ARGN})
 	if (LIBSHOGUN_BUILD_STATIC)
 		target_compile_options(shogun-static ${SCOPE} ${ARGN})
@@ -227,7 +222,6 @@ function(SHOGUN_INCLUDE_DIRS)
 	if(SHOGUN_INCLUDE_DIRS_SYSTEM)
 		set(SYSTEM "SYSTEM")
 	endif()
-	target_include_directories(libshogun ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
 	target_include_directories(shogun ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
 	if (LIBSHOGUN_BUILD_STATIC)
 		target_include_directories(shogun-static ${SYSTEM} ${SHOGUN_INCLUDE_DIRS_SCOPE} ${DIRS})
@@ -328,3 +322,11 @@ function(ADD_SHOGUN_BENCHMARK REL_BENCHMARK_NAME)
 		set_tests_properties(${BENCHMARK_NAME} PROPERTIES ${ARGN})
 	endif()
 endfunction()
+
+
+macro(ADD_SHOGUN_DEPENDENCY DEPENDENT)
+	add_dependencies(shogun ${DEPENDENT})
+	if (LIBSHOGUN_BUILD_STATIC)
+		add_dependencies(shogun-static ${DEPENDENT})
+	endif()
+endmacro()

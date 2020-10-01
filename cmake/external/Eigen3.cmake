@@ -16,7 +16,7 @@ ExternalProject_Add(
 		-DEIGEN_BUILD_PKGCONFIG=0
 	)
 
-add_dependencies(libshogun Eigen3)
+ADD_SHOGUN_DEPENDENCY(Eigen3)
 
 UNSET(C_COMPILER)
 UNSET(CXX_COMPILER)

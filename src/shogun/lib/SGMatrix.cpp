@@ -955,7 +955,7 @@ void SGMatrix<T>::init_data()
 template<class T>
 void SGMatrix<T>::free_data()
 {
-	SG_FREE(matrix);
+	SG_ALIGNED_FREE(matrix);
 	matrix=NULL;
 	num_rows=0;
 	num_cols=0;

@@ -12,7 +12,7 @@
 #define __MATHEMATICS_H_
 
 #include <shogun/lib/config.h>
-
+#include <shogun/shogun_export.h>
 #include <shogun/lib/common.h>
 #include <shogun/base/Parallel.h>
 #include <shogun/base/ShogunEnv.h>
@@ -1524,33 +1524,33 @@ class Math : public SGObject
 				/**@name constants*/
 				//@{
 				/// not a number
-				static const float64_t NOT_A_NUMBER;
+				static SHOGUN_EXPORT const float64_t NOT_A_NUMBER;
 				/// infinity
-				static const float64_t INFTY;
-				static const float64_t ALMOST_INFTY;
+				static SHOGUN_EXPORT const float64_t INFTY;
+				static SHOGUN_EXPORT const float64_t ALMOST_INFTY;
 
 				/// almost neg (log) infinity
-				static const float64_t ALMOST_NEG_INFTY;
+				static SHOGUN_EXPORT const float64_t ALMOST_NEG_INFTY;
 
 				/** The number pi */
-				static const float64_t PI;
+				static SHOGUN_EXPORT const float64_t PI;
 
 				/** Machine epsilon for float64_t */
-				static const float64_t MACHINE_EPSILON;
+				static SHOGUN_EXPORT const float64_t MACHINE_EPSILON;
 
 				/* Largest and smallest possible float64_t */
-				static const float64_t MAX_REAL_NUMBER;
-				static const float64_t MIN_REAL_NUMBER;
+				static SHOGUN_EXPORT const float64_t MAX_REAL_NUMBER;
+				static SHOGUN_EXPORT const float64_t MIN_REAL_NUMBER;
 
 				/* Floating point Limits, Normalized */
-				static const float32_t F_MAX_VAL32;
-				static const float32_t F_MIN_NORM_VAL32;
-				static const float64_t F_MAX_VAL64;
-				static const float64_t F_MIN_NORM_VAL64;
+				static SHOGUN_EXPORT const float32_t F_MAX_VAL32;
+				static SHOGUN_EXPORT const float32_t F_MIN_NORM_VAL32;
+				static SHOGUN_EXPORT const float64_t F_MAX_VAL64;
+				static SHOGUN_EXPORT const float64_t F_MIN_NORM_VAL64;
 
 				/* Floating point limits, Denormalized */
-				static const float32_t F_MIN_VAL32;
-				static const float64_t F_MIN_VAL64;
+				static SHOGUN_EXPORT const float32_t F_MIN_VAL32;
+				static SHOGUN_EXPORT const float64_t F_MIN_VAL64;
 
 	protected:
 				/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0

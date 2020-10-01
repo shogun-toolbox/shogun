@@ -22,9 +22,9 @@ Serializer::~Serializer()
 {
 }
 
-void Serializer::attach(std::shared_ptr<OutputStream> stream)
+void Serializer::attach(const std::shared_ptr<OutputStream>& stream)
 {
-    m_stream = std::move(stream);
+	m_stream = stream;
 }
 
 std::shared_ptr<OutputStream> Serializer::stream() const

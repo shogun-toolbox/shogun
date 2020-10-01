@@ -157,6 +157,35 @@ void* sg_aligned_malloc(size_t size, size_t al)
 
 	return p;
 }
+
+#ifdef _MSC_VER
+void sg_aligned_free(void* ptr)
+{
+#if defined(USE_JEMALLOC)
+	je_free(ptr);
+#elif defined(USE_TCMALLOC)
+	tc_free(ptr);
+#else
+	_aligned_free(ptr);
+#endif
+}
+
+void* sg_aligned_realloc(void* ptr, size_t len, size_t al)
+{
+#if defined(USE_JEMALLOC)
+	void* p=je_realloc(ptr, len);
+#elif defined(USE_TCMALLOC)
+	void* p=tc_realloc(ptr, len);
+#else
+	void* p=_aligned_realloc(ptr, len, al);
+#endif
+
+	if (!p && (len || !ptr))
+		allocation_error(p, len, "aligned_realloc");
+
+	return p;
+}
+#endif // _MSC_VER
 #endif // HAVE_ALIGNED_MALLOC
 
 void* sg_calloc(size_t num, size_t size)
@@ -174,7 +203,7 @@ void* sg_calloc(size_t num, size_t size)
 	return p;
 }
 
-void  sg_free(void* ptr)
+void sg_free(void* ptr)
 {
 #if defined(USE_JEMALLOC)
 	je_free(ptr);

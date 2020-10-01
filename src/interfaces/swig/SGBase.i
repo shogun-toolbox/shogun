@@ -324,6 +324,10 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %shared_ptr(shogun::RandomMixin<shogun::SGObject, std::mt19937_64>)
 %shared_ptr(shogun::StoppableSGObject)
 
+// ignore SHOGUN_EXPORT
+#define SHOGUN_EXPORT
+#define SHOGUN_DEPRECATED
+
 %include <shogun/lib/common.h>
 %include <shogun/lib/exception/ShogunException.h>
 
