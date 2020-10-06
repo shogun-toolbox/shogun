@@ -27,7 +27,7 @@ def load_compressed_features(fname_features):
 	for i in xrange(num_vectors):
 		try:
 			fm[i,:] = map(numpy.float64, strlist_features[i].split())
-		except ValuError:
+		except ValueError:
 			print 'All the vectors must have the same number of features.'
 			import sys
 			sys.exit(0)
@@ -36,14 +36,14 @@ def load_compressed_features(fname_features):
 
 def metric_lmnn_statistics(k=3, fname_features='../../data/fm_train_multiclass_digits.dat.gz', fname_labels='../../data/label_train_multiclass_digits.dat'):
 	try:
-		from shogun import LMNN, CSVFile, RealFeatures, MulticlassLabels, MSG_DEBUG
+		import shogun as sg
 		import matplotlib.pyplot as pyplot
 	except ImportError:
 		print 'Error importing shogun or other required modules. Please, verify their installation.'
 		return
 
-	features = RealFeatures(load_compressed_features(fname_features).T)
-	labels = MulticlassLabels(CSVFile(fname_labels))
+	features = sg.RealFeatures(load_compressed_features(fname_features).T)
+	labels = sg.MulticlassLabels(sg.CSVFile(fname_labels))
 
 #	print 'number of examples = %d' % features.get_num_vectors()
 #	print 'number of features = %d' % features.get_num_features()
@@ -51,9 +51,9 @@ def metric_lmnn_statistics(k=3, fname_features='../../data/fm_train_multiclass_d
 	assert(features.get_num_vectors() == labels.get_num_labels())
 
 	# train LMNN
-	lmnn = LMNN(features, labels, k)
+	lmnn = sg.LMNN(features, labels, k)
 	lmnn.set_correction(100)
-#	lmnn.io.set_loglevel(MSG_DEBUG)
+#	lmnn.io.set_loglevel(sg.MSG_DEBUG)
 	print 'Training LMNN, this will take about two minutes...'
 	lmnn.train()
 	print 'Training done!'
@@ -70,5 +70,5 @@ def metric_lmnn_statistics(k=3, fname_features='../../data/fm_train_multiclass_d
 	pyplot.show()
 
 if __name__=='__main__':
-	print('LMNN objective')
+	print 'LMNN objective'
 	metric_lmnn_statistics()

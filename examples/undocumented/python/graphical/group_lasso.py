@@ -3,8 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.random import rand, randn, permutation, multivariate_normal
-
-from shogun import BinaryLabels, RealFeatures, IndexBlock, IndexBlockGroup, FeatureBlockLogisticRegression
+import shogun as sg
 
 
 def generate_synthetic_logistic_data(n, p, L, blk_nnz, gcov, nstd):
@@ -102,7 +101,7 @@ def compute_misclassifications(cls, true_coefs, L, rel_z):
 
 
 if __name__ == '__main__':
-    print('FeatureBlockLogisticRegression example')
+    print 'FeatureBlockLogisticRegression example'
 
     np.random.seed(956)     # reproducible results
 
@@ -123,19 +122,19 @@ if __name__ == '__main__':
     X, y, true_coefs = generate_synthetic_logistic_data(n, p, L, blk_nnz, gcov, nstd)
 
     # here each column represents a feature vector
-    features = RealFeatures(X)
+    features = sg.RealFeatures(X)
     # we have to convert the labels to +1/-1
-    labels = BinaryLabels(np.sign(y.astype(int) - 0.5))
+    labels = sg.BinaryLabels(np.sign(y.astype(int) - 0.5))
 
     # SETTING UP THE CLASSIFIERS
     # CLASSIFIER 1: group LASSO
     # build the feature blocks and add them to the block group
     pl = p / L
-    block_group = IndexBlockGroup()
+    block_group = sg.IndexBlockGroup()
     for i in xrange(L):
-        block_group.add_block(IndexBlock(pl * i, pl * (i + 1)))
+        block_group.add_block(sg.IndexBlock(pl * i, pl * (i + 1)))
 
-    cls_gl = FeatureBlockLogisticRegression(0.0, features, labels, block_group)
+    cls_gl = sg.FeatureBlockLogisticRegression(0.0, features, labels, block_group)
     # with set_regularization(1), the parameter z will indicate the fraction of
     # the maximum regularization to use, and so z is in [0,1]
     # (reference: SLEP manual)
@@ -143,11 +142,11 @@ if __name__ == '__main__':
     cls_gl.set_q(2.0)   # it is the default anyway...
 
     # CLASSIFIER 2: LASSO (illustrating group lasso with all group sizes = 1)
-    block_group_ones = IndexBlockGroup()
+    block_group_ones = sg.IndexBlockGroup()
     for i in xrange(p):
-        block_group_ones.add_block(IndexBlock(i, i + 1))
+        block_group_ones.add_block(sg.IndexBlock(i, i + 1))
 
-    cls_l = FeatureBlockLogisticRegression(0.0, features, labels, block_group_ones)
+    cls_l = sg.FeatureBlockLogisticRegression(0.0, features, labels, block_group_ones)
     cls_l.set_regularization(1)
     cls_l.set_q(2.0)
 

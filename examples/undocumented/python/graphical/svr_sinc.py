@@ -1,5 +1,5 @@
 from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,legend, connect
-from shogun import *
+import shogun as sg
 import util
 
 util.set_title('SVR on Sinus')
@@ -9,11 +9,11 @@ C=10
 width=0.5
 epsilon=0.01
 
-feat = RealFeatures(X)
-lab = RegressionLabels(Y.flatten())
-gk=GaussianKernel(feat,feat, width)
-#svr = SVRLight(C, epsilon, gk, lab)
-svr = LibSVR(C, epsilon, gk, lab)
+feat = sg.RealFeatures(X)
+lab = sg.RegressionLabels(Y.flatten())
+gk=sg.GaussianKernel(feat,feat, width)
+#svr = sg.SVRLight(C, epsilon, gk, lab)
+svr = sg.LibSVR(C, epsilon, gk, lab)
 svr.train()
 
 plot(X, Y, '.', label='train data')

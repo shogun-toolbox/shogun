@@ -6,9 +6,6 @@ from numpy import *
 from pylab import *
 from scipy import *
 
-from shogun import MeanShiftDataGenerator
-from shogun import QuadraticTimeMMD, MMDKernelSelectionMax
-from shogun import PERMUTATION, MMD2_SPECTRUM, MMD2_GAMMA, BIASED, UNBIASED
 import shogun as sg
 
 # for nice plotting that fits into our shogun tutorial
@@ -27,8 +24,8 @@ def quadratic_time_mmd_graphical():
 	num_null_samples=500
 
 	# streaming data generator for mean shift distributions
-	gen_p=MeanShiftDataGenerator(0, dim)
-	gen_q=MeanShiftDataGenerator(difference, dim)
+	gen_p=sg.MeanShiftDataGenerator(0, dim)
+	gen_q=sg.MeanShiftDataGenerator(difference, dim)
 
 	# Stream examples and merge them in order to compute MMD on joint sample
 	# alternative is to call a different constructor of QuadraticTimeMMD
@@ -50,12 +47,12 @@ def quadratic_time_mmd_graphical():
 		combined.add("kernel_array", sg.create_kernel("GaussianKernel", width=widths[i]))
 
 	# create MMD instance, use biased statistic
-	mmd=QuadraticTimeMMD(combined,features, m)
-	mmd.set_statistic_type(BIASED)
+	mmd=sg.QuadraticTimeMMD(combined,features, m)
+	mmd.set_statistic_type(sg.BIASED)
 
 	# kernel selection instance (this can easily replaced by the other methods for selecting
 	# single kernels
-	selection=MMDKernelSelectionMax(mmd)
+	selection=sg.MMDKernelSelectionMax(mmd)
 
 	# perform kernel selection
 	kernel=selection.select_kernel()
@@ -73,21 +70,21 @@ def quadratic_time_mmd_graphical():
 
 	# sample from null distribution
 	# bootstrapping, biased statistic
-	mmd.set_null_approximation_method(PERMUTATION)
-	mmd.set_statistic_type(BIASED)
+	mmd.set_null_approximation_method(sg.PERMUTATION)
+	mmd.set_statistic_type(sg.BIASED)
 	mmd.set_num_null_samples(num_null_samples)
 	null_samples_boot=mmd.sample_null()
 
 	# sample from null distribution
 	# spectrum, biased statistic
-	if "sample_null_spectrum" in dir(QuadraticTimeMMD):
-			mmd.set_null_approximation_method(MMD2_SPECTRUM)
-			mmd.set_statistic_type(BIASED)
+	if "sample_null_spectrum" in dir(sg.QuadraticTimeMMD):
+			mmd.set_null_approximation_method(sg.MMD2_SPECTRUM)
+			mmd.set_statistic_type(sg.BIASED)
 			null_samples_spectrum=mmd.sample_null_spectrum(num_null_samples, m-10)
 
 	# fit gamma distribution, biased statistic
-	mmd.set_null_approximation_method(MMD2_GAMMA)
-	mmd.set_statistic_type(BIASED)
+	mmd.set_null_approximation_method(sg.MMD2_GAMMA)
+	mmd.set_statistic_type(sg.BIASED)
 	gamma_params=mmd.fit_null_gamma()
 	# sample gamma with parameters
 	null_samples_gamma=array([gamma(gamma_params[0], gamma_params[1]) for _ in range(num_null_samples)])

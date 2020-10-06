@@ -20,9 +20,6 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from shogun import *
-from shogun import KernelMeanMatching
-from shogun import Math
 import shogun as sg
 import util
 
@@ -110,12 +107,12 @@ class Form(QMainWindow):
 
         # train kmm
         labels = self.data.get_labels()
-        lab = BinaryLabels(labels)
+        lab = sg.BinaryLabels(labels)
         features = self.data.get_examples()
-        train = RealFeatures(features)
+        train = sg.RealFeatures(features)
 
-        nTrain=len(self.data.x1_train);
-        nTest=len(self.data.x1_test);
+        nTrain=len(self.data.x1_train)
+        nTest=len(self.data.x1_test)
         trainI=numpy.array(range(nTrain), dtype=numpy.int32)
         testI=numpy.array(range(nTrain,nTest+nTrain),dtype=numpy.int32)
 
@@ -124,16 +121,16 @@ class Form(QMainWindow):
         print "current kernel is %s" % (kernel_name)
 
         if kernel_name == "LinearKernel":
-            gk = LinearKernel(train, train)
-            gk.set_normalizer(IdentityKernelNormalizer())
+            gk = sg.LinearKernel(train, train)
+            gk.set_normalizer(sg.IdentityKernelNormalizer())
         elif kernel_name == "PolynomialKernel":
             gk = sg.create_kernel("PolyKernel", degree=degree, c=1.0)
             gk.init(train, train)
-            gk.set_normalizer(IdentityKernelNormalizer())
+            gk.set_normalizer(sg.IdentityKernelNormalizer())
         elif kernel_name == "GaussianKernel":
-            gk = GaussianKernel(train, train, width)
+            gk = sg.GaussianKernel(train, train, width)
 
-        kmm = KernelMeanMatching(gk, trainI, testI)
+        kmm = sg.KernelMeanMatching(gk, trainI, testI)
         w = kmm.compute_weights()
         print 'Weights'
         print w

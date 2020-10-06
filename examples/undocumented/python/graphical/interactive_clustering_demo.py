@@ -16,9 +16,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from shogun import *
-from shogun import *
-from shogun import *
+import shogun as sg
 import util
 
 class Form(QMainWindow):
@@ -97,22 +95,22 @@ class Form(QMainWindow):
         # train svm
         labels = self.data.get_labels()
         print type(labels)
-        lab = BinaryLabels(labels)
+        lab = sg.BinaryLabels(labels)
         features = self.data.get_examples()
-        train = RealFeatures(features)
+        train = sg.RealFeatures(features)
 
         distance_name = self.distance_combo.currentText()
         if distance_name == "EuclideanDistance":
-            distance=EuclideanDistance(train, train)
+            distance = sg.EuclideanDistance(train, train)
         elif distance_name == "ManhattanMetric":
-            distance=ManhattanMetric(train, train)
+            distance = sg.ManhattanMetric(train, train)
         elif distance_name == "JensenMetric":
-            distance=JensenMetric(train, train)
+            distance = sg.JensenMetric(train, train)
 
-        kmeans=KMeans(k, distance)
+        kmeans = sg.KMeans(k, distance)
         kmeans.train()
         centers = kmeans.get_cluster_centers()
-        radi=kmeans.get_radiuses()
+        radi = kmeans.get_radiuses()
 
         self.axes.plot(features[0,labels==+1], features[1,labels==+1],'ro')
         self.axes.plot(features[0,labels==-1], features[1,labels==-1],'bo')

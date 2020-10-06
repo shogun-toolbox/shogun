@@ -3,10 +3,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import show, imshow
+import shogun as sg
 
 def simulate_data (n,p):
-	from shogun import SparseInverseCovariance
-	import numpy as np
 
 	#create a random pxp covariance matrix
 	cov = np.random.normal(size=(p,p))
@@ -18,10 +17,8 @@ def simulate_data (n,p):
 	return data
 
 def inverse_covariance (data,lc):
-	from shogun import SparseInverseCovariance
-	from numpy import dot
 
-	sic = SparseInverseCovariance()
+	sic = sg.SparseInverseCovariance()
 
 	#by default cov() expects each row to represent a variable, with observations in the columns
 	cov = np.cov(data.T)
@@ -36,7 +33,6 @@ def inverse_covariance (data,lc):
 
 
 def draw_graph(sic, subplot):
-	import numpy as np
 	import networkx as nx
 
 	#create list of edges
@@ -82,10 +78,10 @@ if __name__=='__main__':
 	f, axarr = plt.subplots(2, columns)
 	f.suptitle('Inverse Covariance Estimation\nfor ' +str(num_variables)+' variables and '+str(num_observations)+' observations', fontsize=20)
 
-	data = simulate_data (num_observations, num_variables)
+	data = simulate_data(num_observations, num_variables)
 	print data.shape
 
-	column = -1;
+	column = -1
 	for p in penalties:
 		column = column + 1
 
@@ -101,6 +97,6 @@ if __name__=='__main__':
 	cbar_ax = f.add_axes([0.85, 0.15, 0.05, 0.7])
 	f.colorbar(i, cax=cbar_ax)
 
-	show();
+	show()
 
 
