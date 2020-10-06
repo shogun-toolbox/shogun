@@ -80,6 +80,7 @@ namespace shogun
 	BASE_CLASS_FACTORY(GaussianProcess, gaussian_process)
 	BASE_CLASS_FACTORY(Alphabet, alphabet)
 
+#ifndef SWIG
 	namespace details
 	{
 
@@ -402,7 +403,6 @@ namespace shogun
 	}
 	} // namespace details
 
-#ifndef SWIG
 	template <typename TypeName, typename... Args>
 	auto create(Args&&... args)
 	{

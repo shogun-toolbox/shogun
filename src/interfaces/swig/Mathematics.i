@@ -5,9 +5,6 @@
  */
 
 /* Remove C Prefix */
-%shared_ptr(shogun::Math)
-%shared_ptr(shogun::Statistics)
-
 /* Trace samplers */
 %shared_ptr(shogun::TraceSampler)
 SHARED_RANDOM_INTERFACE(shogun::TraceSampler)
@@ -40,33 +37,6 @@ SHARED_RANDOM_INTERFACE(shogun::TraceSampler)
 #ifdef USE_GPL_SHOGUN
 %shared_ptr(shogun::SparseInverseCovariance)
 #endif //USE_GPL_SHOGUN
-
-// fix overloaded methods in Math
-#if defined(SWIGLUA) || defined(SWIGR)
-
-namespace shogun
-{
-#ifdef USE_INT32
-%rename(pow_int32) Math::pow(int32_t,int32_t);
-#endif
-
-#ifdef USE_FLOAT32
-%rename(sqrt_float32) std::sqrt(float32_t);
-#endif
-
-#ifdef USE_FLOAT64
-%rename(pow_float64_int32) Math::pow(float64_t,int32_t);
-%rename(pow_float64_float64) Math::pow(float64_t,float64_t);
-%rename(sqrt_float64) std::sqrt(float64_t);
-}
-#endif
-
-#ifdef USE_COMPLEX128
-/*%rename(shogun::pow_complex128_float64) Math::pow(complex128_t,float64_t)
-%rename(shogun::pow_complex128_int32) Math::pow(complex128_t,int32_t)*/
-#endif
-
-#endif // defined(SWIGLUA) || defined(SWIGR)
 
 /* Log-det framework */
 
@@ -175,8 +145,6 @@ namespace shogun
 %shared_ptr(shogun::LogDetEstimator)
 
 /* Include Class Headers to make them visible from within the target language */
-%include <shogun/mathematics/Math.h>
-%include <shogun/mathematics/Statistics.h>
 #ifdef USE_GPL_SHOGUN
 %include <shogun/mathematics/SparseInverseCovariance.h>
 #endif //USE_GPL_SHOGUN
