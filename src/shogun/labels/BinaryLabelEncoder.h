@@ -13,6 +13,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/LabelEncoder.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/Fequal.h>
 #include <unordered_set>
 namespace shogun
 {
@@ -51,7 +52,7 @@ namespace shogun
 			std::transform(
 			    transformed_vec.begin(), transformed_vec.end(),
 			    transformed_vec.begin(), [](float64_t e) {
-				    return Math::fequals(
+				    return fequals(
 				               e, 0.0,
 				               std::numeric_limits<float64_t>::epsilon())
 				               ? -1.0
@@ -69,7 +70,7 @@ namespace shogun
 			std::transform(
 			    normalized_vector.begin(), normalized_vector.end(),
 			    normalized_vector.begin(), [](float64_t e) {
-				    return Math::fequals(
+				    return fequals(
 				               e, -1.0,
 				               std::numeric_limits<float64_t>::epsilon())
 				               ? 0.0

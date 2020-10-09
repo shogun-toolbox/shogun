@@ -15,6 +15,7 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
+#include <shogun/lib/Fequal.h>
 #include <limits>
 #include <algorithm>
 
@@ -225,7 +226,7 @@ bool SGMatrix<T>::equals(const SGMatrix<T>& other) const
 		return std::equal(                                                     \
 		    matrix, matrix + size(), other.matrix,                             \
 		    [](const real_t& a, const real_t& b) {                             \
-			    return Math::fequals<real_t>(                                 \
+			    return fequals<real_t>(                                 \
 			        a, b, std::numeric_limits<real_t>::epsilon());             \
 			});                                                                \
 	}
@@ -251,8 +252,8 @@ bool SGMatrix<complex128_t>::equals(const SGMatrix<complex128_t>& other) const
 	return std::equal(matrix, matrix+size(), other.matrix,
 		[](const complex128_t& a, const complex128_t& b)
 		{
-			return Math::fequals<float64_t>(a.real(), b.real(), LDBL_EPSILON) &&
-				Math::fequals<float64_t>(a.imag(), b.imag(), LDBL_EPSILON);
+			return fequals<float64_t>(a.real(), b.real(), LDBL_EPSILON) &&
+				fequals<float64_t>(a.imag(), b.imag(), LDBL_EPSILON);
 		});
 }
 
@@ -316,7 +317,7 @@ bool SGMatrix<real_t>::is_symmetric() const	\
 	{	\
 		for (index_t j=i+1; j<num_cols; ++j)	\
 		{	\
-			if (!Math::fequals<real_t>(matrix[j*num_rows+i],	\
+			if (!fequals<real_t>(matrix[j*num_rows+i],	\
 						matrix[i*num_rows+j], std::numeric_limits<real_t>::epsilon()))	\
 				return false;	\
 		}	\
@@ -347,9 +348,9 @@ bool SGMatrix<complex128_t>::is_symmetric() const
 	{
 		for (index_t j=i+1; j<num_cols; ++j)
 		{
-			if (!(Math::fequals<float64_t>(matrix[j*num_rows+i].real(),
+			if (!(fequals<float64_t>(matrix[j*num_rows+i].real(),
 						matrix[i*num_rows+j].real(), DBL_EPSILON) &&
-					Math::fequals<float64_t>(matrix[j*num_rows+i].imag(),
+					fequals<float64_t>(matrix[j*num_rows+i].imag(),
 						matrix[i*num_rows+j].imag(), DBL_EPSILON)))
 				return false;
 		}

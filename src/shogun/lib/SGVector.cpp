@@ -20,6 +20,7 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/lapack.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/lib/Fequal.h>
 
 #define COMPLEX128_ERROR_NOARG(function) \
 template <> \
@@ -440,7 +441,7 @@ bool SGVector<T>::equals(const SGVector<T>& other) const
                                                                                \
 		for (index_t i = 0; i < vlen; ++i)                                     \
 		{                                                                      \
-			if (!Math::fequals(                                               \
+			if (!fequals(                                               \
 			        vector[i], other.vector[i],                                \
 			        std::numeric_limits<real_t>::epsilon()))                   \
 				return false;                                                  \

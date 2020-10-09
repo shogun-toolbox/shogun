@@ -8,6 +8,7 @@
 #include <shogun/lib/SGSparseVector.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Fequal.h>
 #include <shogun/io/File.h>
 
 namespace shogun
@@ -505,7 +506,7 @@ operator==(const SGSparseVectorEntry<T>& other) const
 		if (feat_index != other.feat_index)                                    \
 			return false;                                                      \
                                                                                \
-		return Math::fequals<real_t>(                                         \
+		return fequals<real_t>(                                         \
 		    entry, other.entry, std::numeric_limits<real_t>::epsilon());       \
 	}
 
@@ -522,9 +523,9 @@ operator==(const SGSparseVectorEntry<complex128_t>& other) const
 	if (feat_index != other.feat_index)
 		return false;
 
-	return Math::fequals<float64_t>(
+	return fequals<float64_t>(
 		       entry.real(), other.entry.real(), LDBL_EPSILON) &&
-		   Math::fequals<float64_t>(
+		   fequals<float64_t>(
 		       entry.imag(), other.entry.imag(), LDBL_EPSILON);
 }
 

@@ -12,6 +12,7 @@
 #include <shogun/labels/DenseLabels.h>
 #include <shogun/labels/LabelEncoder.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/lib/Fequal.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
@@ -76,8 +77,8 @@ namespace shogun
 			{
 				const auto [min_v, max_v] = std::minmax_element(
 				    unique_labels.begin(), unique_labels.end());
-				if (Math::fequals(*min_v, 0.0, eps) &&
-				    Math::fequals(
+				if (fequals(*min_v, 0.0, eps) &&
+				    fequals(
 				        *max_v, static_cast<float64_t>(vlen - 1), eps))
 				{
 					return true;

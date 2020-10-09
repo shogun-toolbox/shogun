@@ -31,6 +31,7 @@
 #include <shogun/evaluation/MulticlassAccuracy.h>
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Fequal.h>
 #include <shogun/mathematics/Statistics.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/multiclass/tree/C45ClassifierTree.h>
@@ -261,20 +262,20 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 			{
 				feature_values[k]=(feats->get_feature_vector(k))[i];
 
-				if (!Math::fequals(feature_values[k],MISSING,0) && feature_values[k]>max_value)
+				if (!fequals(feature_values[k],MISSING,0) && feature_values[k]>max_value)
 					max_value=feature_values[k];
 			}
 
 			for (int32_t k=0;k<num_vecs;k++)
 			{
-				if (feature_values[k]!=max_value && !Math::fequals(feature_values[k],MISSING,0))
+				if (feature_values[k]!=max_value && !fequals(feature_values[k],MISSING,0))
 				{
 					// form temporary dense features to calculate gain (continuous->nominal conversion)
 					float64_t z=feature_values[k];
 					SGMatrix<float64_t> temp_feat_mat=SGMatrix<float64_t>(1,num_vecs);
 					for (int32_t l=0;l<num_vecs;l++)
 					{
-						if (Math::fequals(feature_values[l],MISSING,0))
+						if (fequals(feature_values[l],MISSING,0))
 							temp_feat_mat(0,l)=MISSING;
 						else if (feature_values[l]<=z)
 							temp_feat_mat(0,l)=0.;
@@ -307,7 +308,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 		for(int32_t p=0;p<num_vecs;p++)
 		{
 			feature_cache[p]=feats->get_feature_vector(p)[best_feature_index];
-			if (Math::fequals(feature_cache[p],MISSING,0))
+			if (fequals(feature_cache[p],MISSING,0))
 				continue;
 
 			if (feature_cache[p]<=threshold)
@@ -327,7 +328,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 	float64_t weight_missing=0.;
 	for (int32_t j=0;j<num_vecs;j++)
 	{
-		if (Math::fequals(best_feature_values[j],MISSING,0))
+		if (fequals(best_feature_values[j],MISSING,0))
 		{
 			num_missing++;
 			weight_missing+=weights[j];
@@ -338,7 +339,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 	int32_t index=0;
 	for (int32_t j=0;j<num_vecs;j++)
 	{
-		if (!Math::fequals(best_feature_values[j],MISSING,0))
+		if (!fequals(best_feature_values[j],MISSING,0))
 			best_features_unique[index++]=best_feature_values[j];
 	}
 
@@ -353,7 +354,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 
 		for (int32_t j=0; j<num_vecs; j++)
 		{
-			if (active_feature_value==best_feature_values[j] || Math::fequals(best_feature_values[j],MISSING,0))
+			if (active_feature_value==best_feature_values[j] || fequals(best_feature_values[j],MISSING,0))
 				num_cols++;
 		}
 
@@ -366,7 +367,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 		for (int32_t j=0; j<num_vecs; j++)
 		{
 			SGVector<float64_t> sample=feats->get_feature_vector(j);
-			if (active_feature_value==sample[best_feature_index] || Math::fequals(sample[best_feature_index],MISSING,0))
+			if (active_feature_value==sample[best_feature_index] || fequals(sample[best_feature_index],MISSING,0))
 			{
 				int32_t idx=-1;
 				for (int32_t k=0; k<sample.size(); k++)
@@ -376,7 +377,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 				}
 
 				new_labels_vector[cnt]=class_labels->get_labels()[j];
-				if (!Math::fequals(sample[best_feature_index],MISSING,0))
+				if (!fequals(sample[best_feature_index],MISSING,0))
 					new_weights[cnt]=weights[j];
 				else
 					new_weights[cnt]=0.;
@@ -391,7 +392,7 @@ std::shared_ptr<TreeMachineNode<C45TreeNodeData>> C45ClassifierTree::C45train(co
 		cnt=0;
 		for (int32_t j=0;j<num_vecs;j++)
 		{
-			if (Math::fequals(best_feature_values[j],MISSING,0))
+			if (fequals(best_feature_values[j],MISSING,0))
 				new_weights[cnt++]=rec_weight;
 			else if (best_feature_values[j]==active_feature_value)
 				cnt++;
@@ -575,7 +576,7 @@ float64_t C45ClassifierTree::informational_gain_attribute(
 	int32_t num_missing=0;
 	for (int32_t i=0;i<num_vecs;i++)
 	{
-		if (Math::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
+		if (fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
 			num_missing++;
 	}
 
@@ -593,7 +594,7 @@ float64_t C45ClassifierTree::informational_gain_attribute(
 		int32_t index=0;
 		for (int32_t i=0; i<num_vecs; i++)
 		{
-			if (!Math::fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
+			if (!fequals((feats->get_feature_vector(i))[attr_no],MISSING,0))
 			{
 				gain_attribute_values[index]=(feats->get_feature_vector(i))[attr_no];
 				gain_weights[index]=weights[i];

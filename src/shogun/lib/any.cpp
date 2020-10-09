@@ -6,6 +6,7 @@
 
 #include <shogun/lib/any.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Fequal.h>
 #ifdef HAVE_CXA_DEMANGLE
 #include <cxxabi.h>
 #endif
@@ -36,7 +37,7 @@ namespace shogun
 	bool compare_impl_eq(const real_t& lhs, const real_t& rhs)                 \
 	{                                                                          \
 		SG_DEBUG("Comparing using fequals<" #real_t ">(lhs, rhs).");        \
-		return Math::fequals(                                                 \
+		return fequals(                                                 \
 		    lhs, rhs, std::numeric_limits<real_t>::epsilon());                 \
 	}
 
@@ -50,8 +51,8 @@ namespace shogun
 		bool compare_impl_eq(const complex128_t& lhs, const complex128_t& rhs)
 		{
 			SG_DEBUG("Comparing using fequals<complex128_t>(lhs, rhs).");
-			return Math::fequals(lhs.real(), rhs.real(), LDBL_EPSILON) &&
-			       Math::fequals(lhs.imag(), rhs.imag(), LDBL_EPSILON);
+			return fequals(lhs.real(), rhs.real(), LDBL_EPSILON) &&
+			       fequals(lhs.imag(), rhs.imag(), LDBL_EPSILON);
 		}
 
 		void free_object(SGObject* obj)

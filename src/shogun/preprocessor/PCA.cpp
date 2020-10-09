@@ -9,6 +9,7 @@
 #include <shogun/features/Features.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Fequal.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/preprocessor/PCA.h>
@@ -191,7 +192,7 @@ void PCA::init_with_evd(const SGMatrix<float64_t>& feature_matrix, int32_t max_d
 	{
 		for (int32_t i=0; i<num_dim; i++)
 		{
-			if (Math::fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
+			if (fequals_abs<float64_t>(0.0, eigenValues[i+max_dim_allowed-num_dim],
 									m_eigenvalue_zero_tolerance))
 			{
 				io::warn(
@@ -266,7 +267,7 @@ void PCA::init_with_svd(const SGMatrix<float64_t> &feature_matrix, int32_t max_d
 	{
 		for (int32_t i = 0; i < num_dim; i++)
 		{
-			if (Math::fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance))
+			if (fequals_abs<float64_t>(0.0, eigenValues[i], m_eigenvalue_zero_tolerance))
 			{
 
 				io::warn("Covariance matrix has almost zero Eigenvalue (ie "

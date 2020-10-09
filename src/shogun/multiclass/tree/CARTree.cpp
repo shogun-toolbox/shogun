@@ -32,6 +32,7 @@
 #include <iterator>
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/lib/Fequal.h>
 #include <shogun/mathematics/RandomNamespace.h>
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
@@ -901,7 +902,7 @@ SGVector<bool> CARTree::surrogate_split(SGMatrix<float64_t> m,SGVector<float64_t
 	std::vector<float64_t> association_index;
 	for (index_t i=0;i<m.num_cols;++i)
 	{
-		if (!Math::fequals(m(attr,i),MISSING,0))
+		if (!fequals(m(attr,i),MISSING,0))
 		{
 			ret[i]=nm_left[l];
 			total+=weights[i];
@@ -930,7 +931,7 @@ SGVector<bool> CARTree::surrogate_split(SGMatrix<float64_t> m,SGVector<float64_t
 		std::vector<index_t> intersect_vecs;
 		for (index_t j=0;j<m.num_cols;j++)
 		{
-			if (!(Math::fequals(m(i,j),MISSING,0) || Math::fequals(m(attr,j),MISSING,0)))
+			if (!(fequals(m(i,j),MISSING,0) || fequals(m(attr,j),MISSING,0)))
 				intersect_vecs.push_back(j);
 		}
 
@@ -1000,7 +1001,7 @@ void CARTree::handle_missing_vecs_for_continuous_surrogate(SGMatrix<float64_t> m
 		for (size_t k = 0; k < missing_vecs.size(); ++k)
 		{
 			if ((lambda>association_index.at(k)) &&
-			(!Math::fequals(m(attr,missing_vecs.at(k)),MISSING,0)))
+			(!fequals(m(attr,missing_vecs.at(k)),MISSING,0)))
 			{
 				association_index[k] = lambda;
 				is_left[missing_vecs.at(k)] = (numer>=numerc)
@@ -1068,7 +1069,7 @@ void CARTree::handle_missing_vecs_for_nominal_surrogate(SGMatrix<float64_t> m, c
 		for (size_t k = 0; k < missing_vecs.size(); ++k)
 		{
 			if ((lambda>association_index.at(k)) &&
-			(!Math::fequals(m(attr,missing_vecs.at(k)),MISSING,0)))
+			(!fequals(m(attr,missing_vecs.at(k)),MISSING,0)))
 			{
 				association_index[k] = lambda;
 				// decide left/right based on which feature value the chosen data point has

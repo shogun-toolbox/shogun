@@ -14,6 +14,8 @@
 #include <set>
 #include <shogun/base/SGObject.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/lib/Fequal.h>
+
 namespace shogun
 {
 	/** @brief Implements a reversible mapping from any
@@ -138,7 +140,7 @@ namespace shogun
 			return std::equal(
 			    vec.begin(), vec.end(), converted.begin(),
 			    [&](auto&& e1, auto&& e2) {
-				    return Math::fequals(e1, static_cast<float64_t>(e2), eps);
+				    return fequals(e1, static_cast<float64_t>(e2), eps);
 			    });
 		}
 

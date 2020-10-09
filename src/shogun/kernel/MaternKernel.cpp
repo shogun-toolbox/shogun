@@ -7,6 +7,7 @@
 #include <shogun/distance/EuclideanDistance.h>
 #include <shogun/kernel/MaternKernel.h>
 #include <shogun/mathematics/bessel.h>
+#include <shogun/lib/Fequal.h>
 
 using namespace shogun;
 
@@ -63,15 +64,15 @@ float64_t MaternKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	// first we check if we should use one of the approximations which are
 	// cheaper to calculate
-	if (Math::fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
+	if (fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
 		result = std::exp(-dist / m_width);
-	else if (Math::fequals(
+	else if (fequals(
 	             m_nu, 1.5, std::numeric_limits<float64_t>::epsilon()))
 	{
 		const float64_t ratio = (std::sqrt(3) * dist) / m_width;
 		result = (1 + ratio) * std::exp(-ratio);
 	}
-	else if (Math::fequals(
+	else if (fequals(
 	             m_nu, 2.5, std::numeric_limits<float64_t>::epsilon()))
 	{
 		const float64_t ratio = (std::sqrt(5) * dist) / m_width;
@@ -84,7 +85,7 @@ float64_t MaternKernel::compute(int32_t idx_a, int32_t idx_b)
 	else
 	{
 		const float64_t adjusted_dist =
-		    Math::fequals(dist, 0.0, std::numeric_limits<float64_t>::epsilon())
+		    fequals(dist, 0.0, std::numeric_limits<float64_t>::epsilon())
 		        ? std::numeric_limits<float32_t>::epsilon()
 		        : dist;
 		const float64_t ratio = std::sqrt(2 * m_nu) * adjusted_dist / m_width;
@@ -110,7 +111,7 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 
 		// the gradients of Matern kernel wrt m_width were computed with
 		// WolframAlpha
-		if (Math::fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
+		if (fequals(m_nu, 0.5, std::numeric_limits<float64_t>::epsilon()))
 		{
 			const float64_t width_squared = std::pow(m_width, 2);
 			gradient_func = [width_squared, width=m_width](const float64_t& dist) {
@@ -119,7 +120,7 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 				return upper / lower;
 			};
 		}
-		else if (Math::fequals(
+		else if (fequals(
 		             m_nu, 1.5, std::numeric_limits<float64_t>::epsilon()))
 		{
 			const float64_t width_cubed = std::pow(m_width, 3);
@@ -130,7 +131,7 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 				return  upper / lower;
 			};
 		}
-		else if (Math::fequals(
+		else if (fequals(
 		             m_nu, 2.5, std::numeric_limits<float64_t>::epsilon()))
 		{
 			const float64_t width_power_4 = std::pow(m_width, 4);
@@ -145,7 +146,7 @@ SGMatrix<float64_t> MaternKernel::get_parameter_gradient(
 		else
 		{
 			gradient_func = [&](const float64_t& dist) {
-				if (Math::fequals(
+				if (fequals(
 				        dist, 0.0, std::numeric_limits<float64_t>::epsilon()))
 					return 0.0;
 
