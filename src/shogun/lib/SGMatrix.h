@@ -371,7 +371,7 @@ template<class T> class SGMatrix : public SGReferencedData
 		/**
 		 * Checks whether the matrix is symmetric or not. The equality check
 		 * is performed using '==' operators for discrete types (int, char,
-		 * bool) and using Math::fequals method for floating types (float,
+		 * bool) and using fequals method for floating types (float,
 		 * double, long double, std::complex<double>) with default espilon
 		 * values from std::numeric_limits
 		 *

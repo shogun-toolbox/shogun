@@ -45,22 +45,22 @@ namespace shogun
 		io::SGIO* io();
 
 		/** @return the globally over-ridden floating point epsilon for
-		 * CMath::fequals
+		 * fequals
 		 */
 		float64_t fequals_epsilon();
 
-		/** Globally over-ride the floating point epsilon for CMath::fequals.
+		/** Globally over-ride the floating point epsilon for fequals.
 		 * Hack required for SGObject::equals checks for certain serialization
 		 * formats.
 		 * @param fequals_epsilon new epsilon to use
 		 */
 		void set_global_fequals_epsilon(float64_t fequals_epsilon);
 
-		/** @return whether global linient check for CMath::fequals is enabled
+		/** @return whether global linient check for fequals is enabled
 		 */
 		bool fequals_tolerant();
 
-		/** Globally enable linient check for CMath::fequals.
+		/** Globally enable linient check for fequals.
 		 * Hack required for SGObject::equals checks for certain serialization
 		 * formats.
 		 * @param fequals_tolerant whether or not to use tolerant check
