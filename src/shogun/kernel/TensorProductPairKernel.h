@@ -69,9 +69,6 @@ class TensorProductPairKernel: public DotKernel
 		 */
 		EKernelType get_kernel_type() override { return K_TPPK; }
 
-		/* register the parameters
-		 */
-		void register_params() override;
 
 		/** return the kernel's name
 		 *

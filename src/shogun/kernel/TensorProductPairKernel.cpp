@@ -16,22 +16,20 @@ using namespace shogun;
 TensorProductPairKernel::TensorProductPairKernel()
 : DotKernel(0), subkernel(NULL)
 {
-	register_params();
+	SG_ADD((std::shared_ptr<SGObject>*)&subkernel, "subkernel", "the subkernel", ParameterProperties::HYPER);
 }
 
 TensorProductPairKernel::TensorProductPairKernel(int32_t size, std::shared_ptr<Kernel> s)
-: DotKernel(size), subkernel(std::move(s))
+: TensorProductPairKernel() 
 {
-
-	register_params();
+	set_cache_size(size);
+	subkernel = std::move(s);
 }
 
 TensorProductPairKernel::TensorProductPairKernel(const std::shared_ptr<DenseFeatures<int32_t>>& l, const std::shared_ptr<DenseFeatures<int32_t>>& r, std::shared_ptr<Kernel> s)
-: DotKernel(10), subkernel(std::move(s))
+: TensorProductPairKernel(10, std::move(s)
 {
-
 	init(l, r);
-	register_params();
 }
 
 TensorProductPairKernel::~TensorProductPairKernel()
@@ -74,7 +72,3 @@ float64_t TensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void TensorProductPairKernel::register_params()
-{
-	SG_ADD((std::shared_ptr<SGObject>*)&subkernel, "subkernel", "the subkernel", ParameterProperties::HYPER);
-}

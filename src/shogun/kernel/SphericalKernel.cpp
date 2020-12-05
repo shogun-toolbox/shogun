@@ -13,27 +13,26 @@ using namespace shogun;
 
 SphericalKernel::SphericalKernel(): Kernel(0), distance(NULL)
 {
-	register_params();
+	SG_ADD(&distance, "distance", "Distance to be used.",
+	    ParameterProperties::HYPER);
+	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
 	set_sigma(1.0);
 }
 
 SphericalKernel::SphericalKernel(int32_t size, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(size), distance(std::move(dist))
+: SphericalKernel()
 {
+	set_cache_size(size);
+	distance = std::move(dist);
 	ASSERT(distance)
-	
-	register_params();
 	set_sigma(sig);
 }
 
 SphericalKernel::SphericalKernel(
 	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(10), distance(std::move(dist))
+: SphericalKernel(10, sig, std::move(dist))
 {
 	ASSERT(distance)
-	
-	register_params();
-	set_sigma(sig);
 	init(std::move(l), std::move(r));
 }
 
@@ -49,13 +48,6 @@ bool SphericalKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features
 	Kernel::init(l,r);
 	distance->init(l,r);
 	return init_normalizer();
-}
-
-void SphericalKernel::register_params()
-{
-	SG_ADD(&distance, "distance", "Distance to be used.",
-	    ParameterProperties::HYPER);
-	SG_ADD(&sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
 }
 
 float64_t SphericalKernel::compute(int32_t idx_a, int32_t idx_b)

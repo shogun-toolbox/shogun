@@ -102,8 +102,7 @@ class SphericalKernel: public Kernel
 	~SphericalKernel() override;
 
 private:
-	/** register parameters */
-	void register_params() override;
+
 
 protected:
 

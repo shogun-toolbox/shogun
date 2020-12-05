@@ -15,23 +15,26 @@ using namespace shogun;
 WeightedDegreeRBFKernel::WeightedDegreeRBFKernel()
 : DotKernel(), width(1), degree(1), weights(0)
 {
-	register_params();
+	SG_ADD(&width, "width", "Kernel width", ParameterProperties::HYPER);
+	SG_ADD(&degree, "degree", "Kernel degree", ParameterProperties::HYPER);
 }
 
 
 WeightedDegreeRBFKernel::WeightedDegreeRBFKernel(int32_t size, float64_t w, int32_t d, int32_t nof_prop)
-: DotKernel(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
+: WeightedDegreeRBFKernel() 
 {
+	set_cache_size(size);
+	width = w;
+	degree = d;
+	nof_properties = nof_prop;
 	init_wd_weights();
-	register_params();
 }
 
 WeightedDegreeRBFKernel::WeightedDegreeRBFKernel(
 	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r, float64_t w, int32_t d, int32_t nof_prop, int32_t size)
-: DotKernel(size), width(w), degree(d), nof_properties(nof_prop), weights(0)
+: WeightedDegreeRBFKernel(size, w, d, nof_prop)
 {
 	init_wd_weights();
-	register_params();
 	init(l,r);
 }
 
@@ -108,8 +111,3 @@ float64_t WeightedDegreeRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void WeightedDegreeRBFKernel::register_params()
-{
-	SG_ADD(&width, "width", "Kernel width", ParameterProperties::HYPER);
-	SG_ADD(&degree, "degree", "Kernel degree", ParameterProperties::HYPER);
-}

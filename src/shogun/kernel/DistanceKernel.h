@@ -59,10 +59,6 @@ class DistanceKernel: public Kernel
 		 */
 		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
-		/** register the parameters (serialization support)
-		 *
-		*/
-		void register_params() override;
 
 		/** return what type of kernel we are
 		 *

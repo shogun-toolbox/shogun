@@ -18,27 +18,26 @@ using namespace shogun;
 DistanceKernel::DistanceKernel()
 : Kernel(0), distance(NULL), width(0.0)
 {
-	register_params();
+	SG_ADD(&width, "width", "Kernel width.", ParameterProperties::HYPER);
+	SG_ADD(&distance, "distance", "Distance to be used.",
+	    ParameterProperties::HYPER);
 }
 
 DistanceKernel::DistanceKernel(int32_t size, float64_t w, std::shared_ptr<Distance> d)
-: Kernel(size), distance(std::move(d))
-{
+: DistanceKernel()
+{	
+	set_cache_size(size);
+	distance = std::move(d);
 	ASSERT(distance)
 	set_width(w);
-	
-	register_params();
 }
 
 DistanceKernel::DistanceKernel(
 	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t w , std::shared_ptr<Distance> d)
-: Kernel(10), distance(std::move(d))
-{
-	set_width(w);
+: DistanceKernel(10, w, std::move(d))
+{	
 	ASSERT(distance)
-	
 	init(std::move(l), std::move(r));
-	register_params();
 }
 
 DistanceKernel::~DistanceKernel()
@@ -61,11 +60,4 @@ float64_t DistanceKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=distance->distance(idx_a, idx_b);
 	return exp(-result/width);
-}
-
-void DistanceKernel::register_params()
-{
-	SG_ADD(&width, "width", "Kernel width.", ParameterProperties::HYPER);
-	SG_ADD(&distance, "distance", "Distance to be used.",
-	    ParameterProperties::HYPER);
 }

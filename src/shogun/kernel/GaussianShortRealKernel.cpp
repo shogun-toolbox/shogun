@@ -14,21 +14,21 @@ using namespace shogun;
 GaussianShortRealKernel::GaussianShortRealKernel()
 : DotKernel(0), width(0.0)
 {
-	register_params();
+	SG_ADD(&width, "width", "kernel width", ParameterProperties::HYPER);
 }
 
 GaussianShortRealKernel::GaussianShortRealKernel(int32_t size, float64_t w)
-: DotKernel(size), width(w)
+: GaussianShortRealKernel()
 {
-	register_params();
+	set_cache_size(size);
+	width = w;
 }
 
 GaussianShortRealKernel::GaussianShortRealKernel(
 	const std::shared_ptr<DenseFeatures<float32_t>>& l, const std::shared_ptr<DenseFeatures<float32_t>>& r, float64_t w, int32_t size)
-: DotKernel(size), width(w)
+: GaussianShortRealKernel(size, w)
 {
 	init(l,r);
-	register_params();
 }
 
 GaussianShortRealKernel::~GaussianShortRealKernel()
@@ -60,9 +60,4 @@ float64_t GaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 	(std::static_pointer_cast<DenseFeatures<float32_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
-}
-
-void GaussianShortRealKernel::register_params()
-{
-	SG_ADD(&width, "width", "kernel width", ParameterProperties::HYPER);
 }
