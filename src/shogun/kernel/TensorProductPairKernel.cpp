@@ -27,7 +27,7 @@ TensorProductPairKernel::TensorProductPairKernel(int32_t size, std::shared_ptr<K
 }
 
 TensorProductPairKernel::TensorProductPairKernel(const std::shared_ptr<DenseFeatures<int32_t>>& l, const std::shared_ptr<DenseFeatures<int32_t>>& r, std::shared_ptr<Kernel> s)
-: TensorProductPairKernel(10, std::move(s)
+: TensorProductPairKernel(10, std::move(s))
 {
 	init(l, r);
 }
