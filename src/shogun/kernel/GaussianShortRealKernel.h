@@ -71,7 +71,6 @@ class GaussianShortRealKernel: public DotKernel
 		 */
 		const char* get_name() const override { return "GaussianShortRealKernel"; }
 
-
 	protected:
 		/** compute kernel function for features a and b
 		 * idx_{a,b} denote the index of the feature vectors

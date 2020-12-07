@@ -59,7 +59,6 @@ class HistogramIntersectionKernel: public DotKernel
 		 */
 		bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type HISTOGRAMINTERSECTION

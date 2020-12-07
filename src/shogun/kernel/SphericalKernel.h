@@ -103,7 +103,6 @@ class SphericalKernel: public Kernel
 
 private:
 
-
 protected:
 
 	/** distance */

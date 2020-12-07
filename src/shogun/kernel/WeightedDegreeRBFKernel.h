@@ -135,7 +135,6 @@ class WeightedDegreeRBFKernel: public DotKernel
 
 	private:
 
-
 };
 }
 #endif /* _WEIGHTEDDEGREERBFKERNEL_H__ */
