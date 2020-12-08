@@ -167,6 +167,20 @@ namespace shogun
 
 	template <typename T>
 	inline constexpr bool is_auto_value_v = is_auto_value<T>::value;
+
+
+	template<typename classType>
+	std::string_view name_lookup()
+	{
+		if constexpr(std::is_same_v<classType, Machine>)
+		{
+			return "Machine";
+		}
+		else 
+		{
+			return "SGObject";
+		}
+	};
 } // namespace shogun
 
 #endif // BASE_TYPES__H

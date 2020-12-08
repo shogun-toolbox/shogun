@@ -114,7 +114,15 @@ namespace shogun
 
 		std::shared_ptr<Features>
 		replace_lhs(std::shared_ptr<Features> lhs) override;
+		
+		using Distance::distance;
 
+		int32_t distance(const std::string& lhs, const std::string& rhs)
+		{
+			const SGVector<char> l(lhs.begin(), lhs.end());
+			const SGVector<char> r(rhs.begin(), rhs.end());
+			return compute_impl(l, r);
+		}
 	protected:
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
