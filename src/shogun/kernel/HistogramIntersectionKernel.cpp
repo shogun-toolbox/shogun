@@ -14,22 +14,22 @@ using namespace shogun;
 HistogramIntersectionKernel::HistogramIntersectionKernel()
 : DotKernel(0), m_beta(1.0)
 {
-	register_params();
+	SG_ADD(&m_beta, "beta", "the beta parameter of the kernel", ParameterProperties::HYPER);
 }
 
 HistogramIntersectionKernel::HistogramIntersectionKernel(int32_t size)
-: DotKernel(size), m_beta(1.0)
+: HistogramIntersectionKernel()
 {
-	register_params();
+	set_cache_size(size);
 }
 
 HistogramIntersectionKernel::HistogramIntersectionKernel(
 	const std::shared_ptr<DenseFeatures<float64_t>>& l, const std::shared_ptr<DenseFeatures<float64_t>>& r,
 	float64_t beta, int32_t size)
-: DotKernel(size), m_beta(beta)
+: HistogramIntersectionKernel(size)
 {
 	init(l,r);
-	register_params();
+	m_beta = beta;
 }
 
 HistogramIntersectionKernel::~HistogramIntersectionKernel()
@@ -74,9 +74,4 @@ float64_t HistogramIntersectionKernel::compute(int32_t idx_a, int32_t idx_b)
 	(std::static_pointer_cast<DenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
-}
-
-void HistogramIntersectionKernel::register_params()
-{
-	SG_ADD(&m_beta, "beta", "the beta parameter of the kernel", ParameterProperties::HYPER);
 }

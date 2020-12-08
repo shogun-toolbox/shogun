@@ -70,9 +70,6 @@ class GaussianShortRealKernel: public DotKernel
 		 * @return name GaussianShortReal
 		 */
 		const char* get_name() const override { return "GaussianShortRealKernel"; }
-		/** register the parameters
-		 */
-		void register_params() override;
 
 	protected:
 		/** compute kernel function for features a and b

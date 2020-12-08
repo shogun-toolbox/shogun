@@ -134,8 +134,6 @@ class WeightedDegreeRBFKernel: public DotKernel
 		float64_t* weights;
 
 	private:
-		/** register parameters */
-		void register_params() override;
 
 };
 }
