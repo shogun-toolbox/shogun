@@ -11,7 +11,6 @@
 #define __SGIO_H__
 
 #include <shogun/base/ShogunEnv.h>
-#include <shogun/io/fmt/fmt.h>
 #include <shogun/lib/common.h>
 #include <shogun/lib/config.h>
 #include <shogun/lib/exception/ShogunException.h>
@@ -24,6 +23,8 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
+
+#include <spdlog/fmt/fmt.h>
 
 namespace spdlog
 {
@@ -233,7 +234,7 @@ namespace shogun
 			template <typename... Args>
 			void message(
 			    EMessageType prio, const SourceLocation& loc,
-			    const char* format, const Args&... args) const;
+			    const char* format, Args&&... args) const;
 
 			/**
 			 * Return a C string from the substring
@@ -301,32 +302,35 @@ namespace shogun
 		template <typename... Args>
 		void SGIO::message(
 		    EMessageType prio, const SourceLocation& loc, const char* format,
-		    const Args&... args) const
+		    Args&&... args) const
 		{
 			if (should_log(prio))
 			{
 				fmt::memory_buffer msg;
-				fmt::format_to(msg, format, args...);
+				fmt::format_to(msg, format, std::forward<Args>(args)...);
 				message_(prio, loc, fmt::string_view(msg.data(), msg.size()));
 			}
 		}
 
 		template <typename... Args>
-		static inline void print(const char* format, const Args&... args)
+		static inline void print(const char* format, Args&&... args)
 		{
-			env()->io()->message(MSG_MESSAGEONLY, {}, format, args...);
+			env()->io()->message(
+			    MSG_MESSAGEONLY, {}, format, std::forward<Args>(args)...);
 		}
 
 		template <typename... Args>
-		static inline void info(const char* format, const Args&... args)
+		static inline void info(const char* format, Args&&... args)
 		{
-			env()->io()->message(MSG_INFO, {}, format, args...);
+			env()->io()->message(
+			    MSG_INFO, {}, format, std::forward<Args>(args)...);
 		}
 
 		template <typename... Args>
-		static inline void warn(const char* format, const Args&... args)
+		static inline void warn(const char* format, Args&&... args)
 		{
-			env()->io()->message(MSG_WARN, {}, format, args...);
+			env()->io()->message(
+			    MSG_WARN, {}, format, std::forward<Args>(args)...);
 		}
 
 		static inline void progress_done()
@@ -341,8 +345,8 @@ namespace shogun
 
 #ifndef SWIG
 	template <typename ExceptionType = ShogunException, typename... Args>
-	static inline void error(
-	    const io::SourceLocation& loc, const char* format, const Args&... args)
+	[[noreturn]] static inline void
+	error(const io::SourceLocation& loc, const char* format, Args&&... args)
 	{
 		// help clang static analyzer to identify custom assertation functions
 #ifdef __clang_analyzer__
@@ -353,7 +357,7 @@ namespace shogun
 		    "ExceptionType must be nothrow copy constructible");
 
 		fmt::memory_buffer msg;
-		fmt::format_to(msg, format, args...);
+		fmt::format_to(msg, format, std::forward<Args>(args)...);
 		msg.push_back('\0');
 		env()->io()->message(io::MSG_ERROR, loc, msg.data());
 		throw ExceptionType(msg.data());
@@ -361,38 +365,39 @@ namespace shogun
 	}
 
 	template <typename ExceptionType = ShogunException, typename... Args>
-	static inline void error(const char* format, const Args&... args)
+	[[noreturn]] static inline void error(const char* format, Args&&... args)
 	{
-		error<ExceptionType>(io::SourceLocation{}, format, args...);
+		error<ExceptionType>(
+		    io::SourceLocation{}, format, std::forward<Args>(args)...);
 	}
 
 	template <
 	    typename ExceptionType = ShogunException, typename Condition,
 	    typename... Args>
 	static inline void
-	require(const Condition& condition, const char* format, const Args&... args)
+	require(const Condition& condition, const char* format, Args&&... args)
 	{
 		if (SG_UNLIKELY(!condition))
 		{
-			error<ExceptionType>(format, args...);
+			error<ExceptionType>(format, std::forward<Args>(args)...);
 		}
 	}
 
 	/** print error message 'not implemented' */
-	static inline void not_implemented(const io::SourceLocation& loc = {})
+	[[noreturn]] static inline void
+	not_implemented(const io::SourceLocation& loc = {})
 	{
 		error<ShogunException>(loc, "Sorry, not yet implemented.");
 	}
 
 	/** print error message 'Only available with GPL parts.' */
-	static inline void gpl_only(const io::SourceLocation& loc = {})
+	[[noreturn]] static inline void gpl_only(const io::SourceLocation& loc = {})
 	{
 		error<ShogunException>(
 		    loc, "This feature is only "
 		         "available if Shogun is built "
 		         "with GPL codes.");
 	}
-
 
 	static inline void unstable(const io::SourceLocation& loc = {})
 	{

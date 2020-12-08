@@ -19,7 +19,13 @@
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/details/fmt_helper.h>
 #include <spdlog/version.h>
+#if ((SPDLOG_VER_MAJOR == 1) && (SPDLOG_VER_MINOR >= 6))
+#include <spdlog/pattern_formatter.h>
+#else
+#include <spdlog/details/pattern_formatter.h>
+#endif
 
 using namespace shogun;
 using namespace shogun::io;
