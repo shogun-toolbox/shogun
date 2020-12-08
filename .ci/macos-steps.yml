@@ -16,8 +16,8 @@ steps:
     downloadPath: $(build.binariesDirectory)
 
 - bash: |
-    sudo xcode-select --switch /Applications/Xcode_11.app/Contents/Developer
-  displayName: Select XCode11 env
+    sudo xcode-select --switch /Applications/Xcode_12.app/Contents/Developer
+  displayName: Select XCode12 env
 
 - bash: |
     brew update
