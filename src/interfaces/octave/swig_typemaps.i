@@ -5,7 +5,7 @@
  */
 
 %{
-#if ((OCTAVE_MAJOR_VERSION == 4) && (OCTAVE_MINOR_VERSION >= 4))
+#if (OCTAVE_MAJOR_VERSION >= 5 || ((OCTAVE_MAJOR_VERSION == 4) && (OCTAVE_MINOR_VERSION >= 4)))
 #include <octave/octave-config.h>
 #else
 #include <octave/config.h>
