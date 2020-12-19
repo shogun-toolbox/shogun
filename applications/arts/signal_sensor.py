@@ -6,13 +6,7 @@ import numpy
 import sys
 
 from util import *
-
-from shogun import StringCharFeatures, StringWordFeatures, CombinedFeatures, DNA
-from shogun import CombinedKernel, WeightedDegreePositionStringKernel
-from shogun import K_COMMWORDSTRING, CommWordStringKernel, IdentityKernelNormalizer
-from shogun import SortWordString
-from shogun import KernelMachine
-
+import shogun as sg
 
 class Sensor(object):
     """
@@ -58,26 +52,26 @@ class Sensor(object):
             l = file.readline()
 
     def init_sensor(self, kernel, svs):
-        f = StringCharFeatures(svs, DNA)
+        f = sg.StringCharFeatures(svs, sg.DNA)
 
         kname = kernel['name']
         if  kname == 'spectrum':
-            wf = StringWordFeatures(f.get_alphabet())
+            wf = sg.StringWordFeatures(f.get_alphabet())
             wf.obtain_from_char(f, kernel['order'] - 1, kernel['order'], 0, False)
 
-            pre = SortWordString()
+            pre = sg.SortWordString()
             pre.init(wf)
             wf.add_preprocessor(pre)
             wf.apply_preprocessor()
             f = wf
 
-            k = CommWordStringKernel(0, False)
+            k = sg.CommWordStringKernel(0, False)
             k.set_use_dict_diagonal_optimization(kernel['order'] < 8)
             self.preproc = pre
 
         elif kname == 'wdshift':
-                k = WeightedDegreePositionStringKernel(0, kernel['order'])
-                k.set_normalizer(IdentityKernelNormalizer())
+                k = sg.WeightedDegreePositionStringKernel(0, kernel['order'])
+                k.set_normalizer(sg.IdentityKernelNormalizer())
                 k.set_shifts(kernel['shift'] *
                         numpy.ones(f.get_max_vector_length(), dtype=numpy.int32))
                 k.set_position_weights(1.0 / f.get_max_vector_length() *
@@ -96,10 +90,10 @@ class Sensor(object):
         size = self.window[2] - self.window[0] + 1
         seq = seq[start:end]
         seq = seq.replace("N", "A").replace("R", "A").replace("M", "A")
-        f = StringCharFeatures([seq], DNA)
+        f = sg.StringCharFeatures([seq], sg.DNA)
 
         if self.preproc:
-            wf = StringWordFeatures(f.get_alphabet())
+            wf = sg.StringWordFeatures(f.get_alphabet())
             o = self.train_features.get_order()
             wf.obtain_from_char(f, 0, o, 0, False)
             f = wf
@@ -115,7 +109,7 @@ class SignalSensor(object):
     """
     def __init__(self):
         self.sensors = list()
-        self.kernel = CombinedKernel()
+        self.kernel = sg.CombinedKernel()
         self.svs = CombinedFeatures()
         self.svm = None
         self.window = (+100000, -1000000)
@@ -151,7 +145,7 @@ class SignalSensor(object):
                         self.svs.append_feature_obj(f)
 
                     self.kernel.init(self.svs, self.svs)
-                    self.svm = KernelMachine(self.kernel, alphas,
+                    self.svm = sg.KernelMachine(self.kernel, alphas,
                             numpy.arange(len(alphas), dtype=numpy.int32), bias)
                     self.svm.io.set_target_to_stderr()
                     self.svm.io.enable_progress()
