@@ -59,8 +59,9 @@ SGMatrix<float64_t> calculate_weights(
 			auto fold = obs_storage->get("folds", i);
 			auto machine =
 			    fold->get("trained_machine")
-					->as<MKLClassification>()
-					->get_kernel()->as<CombinedKernel>()
+						->as<MKLClassification>()
+					->get_kernel()
+						->as<CombinedKernel>()
 					->get_subkernel_weights();
 
 			/* Copy the weights inside the matrix */
