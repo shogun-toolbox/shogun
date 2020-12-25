@@ -1,0 +1,40 @@
+File f_feats_a = read_csv("@SHOGUN_DATA@/fm_train_dna.dat")
+File f_feats_b = read_csv("@SHOGUN_DATA@/fm_test_dna.dat")
+
+#![hyper_parameters]
+int order = 3
+int gap = 0
+bool reverse = False
+#![hyper_parameters]
+
+
+#![create_character_features]
+Features charfeats_a = create_string_features(f_feats_a, enum EAlphabet.DNA)
+Features charfeats_b = create_string_features(f_feats_b, enum EAlphabet.DNA)
+#![create_character_features]
+
+#![create_embedded_features]
+Features embedfeats_a = create_string_features(charfeats_a, order-1, order, gap, reverse, enum EPrimitiveType.PT_UINT16)
+Features embedfeats_b = create_string_features(charfeats_b, order-1, order, gap, reverse, enum EPrimitiveType.PT_UINT16)
+#![create_embedded_features]
+
+#![preprocess_features]
+Transformer preprocessor = create_transformer("SortWordString")
+preprocessor.fit(embedfeats_a)
+Features transformed_feats_a = preprocessor.transform(embedfeats_a)
+Features transformed_feats_b = preprocessor.transform(embedfeats_b)
+#![preprocess_features]
+
+#![create instance]
+Distance distance = create_distance("ManhattanWordDistance")
+distance.init(transformed_feats_a, transformed_feats_a)
+#![create_instance]
+
+#![extract_distance]
+RealMatrix distance_matrix_aa = distance.get_distance_matrix()
+#![extract_distance]
+
+#![refresh_distance]
+distance.init(transformed_feats_a, transformed_feats_b)
+RealMatrix distance_matrix_ab = distance.get_distance_matrix()
+#![refresh_distance]
