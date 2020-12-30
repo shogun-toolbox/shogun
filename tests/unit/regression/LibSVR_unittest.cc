@@ -54,12 +54,11 @@ TEST(LibSVR,epsilon_svr_apply)
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR;
-	LibSVR* svm=new LibSVR(svm_C, svm_eps, kernel, labels_train, st);
-	svm->train();
+	auto svm = std::make_shared<LibSVR>(svm_C, svm_eps, kernel, labels_train, st);
 
 	/* predict */
 	auto predicted_labels =
-	    svm->apply(features_test)->as<RegressionLabels>();
+	    svm->train()->as<LibSVR>()->apply(features_test)->as<RegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
 	EXPECT_NEAR(predicted_labels->get_labels()[0], 2.44343, 1E-5);
@@ -119,12 +118,11 @@ TEST(LibSVR,nu_svr_apply)
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_NU_SVR;
-	LibSVR* svm=new LibSVR(svm_C, svm_nu, kernel, labels_train, st);
-	svm->train();
+	auto svm = std::make_shared<LibSVR>(svm_C, svm_nu, kernel, labels_train, st);
 
 	/* predict */
 	auto predicted_labels =
-	    svm->apply(features_test)->as<RegressionLabels>();
+	    svm->train()->as<LibSVR>()->apply(features_test)->as<RegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
 	EXPECT_NEAR(predicted_labels->get_labels()[0], 2.18062, 1E-5);
