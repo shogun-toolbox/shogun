@@ -93,7 +93,7 @@ Autoencoder::Autoencoder(
 }
 
 
-bool Autoencoder::train(std::shared_ptr<Features> data)
+std::shared_ptr<Machine> Autoencoder::train(std::shared_ptr<Features> data)
 {
 	require(data != NULL, "Invalid (NULL) feature pointer");
 
@@ -134,7 +134,8 @@ bool Autoencoder::train(std::shared_ptr<Features> data)
 		input_layer->gaussian_noise = 0;
 	}
 
-	return result;
+	return result ? shared_from_this()->as<Machine>() : 
+					std::make_shared<Machine>();
 }
 
 std::shared_ptr<DenseFeatures< float64_t >> Autoencoder::transform(

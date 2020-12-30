@@ -59,9 +59,11 @@ class SGDQN : public LinearMachine
 		 * kernel-based classifiers are used and distance/kernels are
 		 * initialized with train data)
 		 *
-		 * @return whether training was successful
+		 * In case training is failed, returns a default Machine.
+		 *
+		 * @return the current machine
 		 */
-		bool train(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<Machine> train(std::shared_ptr<Features> data=NULL) override;
 
 		/** set C
 		 *

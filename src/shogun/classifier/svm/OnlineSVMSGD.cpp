@@ -53,7 +53,7 @@ void OnlineSVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 	loss=std::move(loss_func);
 }
 
-bool OnlineSVMSGD::train(std::shared_ptr<Features> data)
+std::shared_ptr<Machine> OnlineSVMSGD::train(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -145,7 +145,7 @@ bool OnlineSVMSGD::train(std::shared_ptr<Features> data)
 	float64_t wnorm = linalg::dot(m_w, m_w);
 	io::info("Norm: {:.6f}, Bias: {:.6f}", wnorm, bias);
 
-	return true;
+	return shared_from_this()->as<Machine>();
 }
 
 void OnlineSVMSGD::calibrate(int32_t max_vec_num)

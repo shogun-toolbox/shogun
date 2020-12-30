@@ -122,9 +122,11 @@ public:
 	 *
 	 * @param data Training examples
 	 *
-	 * @return True if training succeeded, false otherwise
+	 * In case training is failed, returns a default Machine.
+	 *
+	 * @return the current machine
 	 */
-	bool train(std::shared_ptr<Features> data) override;
+	std::shared_ptr<Machine> train(std::shared_ptr<Features> data) override;
 
 	/** Computes the activation of the hidden layer given the input data
 	 *

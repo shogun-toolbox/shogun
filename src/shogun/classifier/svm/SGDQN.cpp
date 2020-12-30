@@ -78,7 +78,7 @@ void SGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1
 	}
 }
 
-bool SGDQN::train(std::shared_ptr<Features> data)
+std::shared_ptr<Machine> SGDQN::train(std::shared_ptr<Features> data)
 {
 
 	ASSERT(m_labels)
@@ -189,7 +189,7 @@ bool SGDQN::train(std::shared_ptr<Features> data)
 
 	set_w(w);
 
-	return true;
+	return shared_from_this()->as<Machine>();
 }
 
 

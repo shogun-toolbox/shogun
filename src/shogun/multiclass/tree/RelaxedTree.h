@@ -169,9 +169,11 @@ public:
 	 * initialized with train data).
 	 * If flag is set, model features will be stored after training.
 	 *
-	 * @return whether training was successful
+	 * In case training is failed, returns a default Machine.
+	 *
+	 * @return the current machine
 	 */
-	bool train(std::shared_ptr<Features> data=NULL) override
+	std::shared_ptr<Machine> train(std::shared_ptr<Features> data=NULL) override
 	{
 		return Machine::train(data);
 	}
