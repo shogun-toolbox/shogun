@@ -296,7 +296,7 @@ SGVector<int32_t> RelaxedTree::train_node_with_initialization(const RelaxedTree:
 		auto feats_train = view(m_feats, subset);
 		auto labels_train = view(binary_labels, subset);
 
-		auto kernel = make_clone(m_kernel, ParameterProperties::ALL^ParameterProperties::MODEL);
+		auto kernel = sparse_copy(m_kernel, ParameterProperties::ALL ^ ParameterProperties::MODEL);
 
 		kernel->init(feats_train, feats_train);
 		svm->set_kernel(kernel);
