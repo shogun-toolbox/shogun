@@ -1362,7 +1362,7 @@ std::shared_ptr<const T> make_clone(std::shared_ptr<const T> orig, ParameterProp
 }
 
 template <class T>
-std::shared_ptr<T> sparse_copy(std::shared_ptr<T> orig,
+std::shared_ptr<T> shallow_copy(std::shared_ptr<T> orig,
 							ParameterProperties pp = ParameterProperties::ALL 
 				            ^ ParameterProperties::MODEL ^ ParameterProperties::READONLY)
 {
@@ -1370,7 +1370,7 @@ std::shared_ptr<T> sparse_copy(std::shared_ptr<T> orig,
 }
 
 template <class T>
-std::shared_ptr<const T> sparse_copy(std::shared_ptr<const T> orig,
+std::shared_ptr<const T> shallow_copy(std::shared_ptr<const T> orig,
 								ParameterProperties pp = ParameterProperties::ALL 
 				              	^ ParameterProperties::MODEL ^ ParameterProperties::READONLY)
 {
