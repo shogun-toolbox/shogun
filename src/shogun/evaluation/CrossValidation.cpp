@@ -100,7 +100,7 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 	{
 		// only need to clone hyperparameters and settings of machine
 		// model parameters are inferred/learned during training
-		auto machine = make_clone(m_machine,
+		auto machine = shallow_copy(m_machine,
 				ParameterProperties::HYPER | ParameterProperties::SETTING);
 
 		SGVector<index_t> idx_train =
@@ -114,7 +114,7 @@ float64_t CrossValidation::evaluate_one_run(int64_t index) const
 		auto features_test = view(m_features, idx_test);
 		auto labels_test = view(m_labels, idx_test);
 
-		auto evaluation_criterion = make_clone(m_evaluation_criterion);
+		auto evaluation_criterion = shallow_copy(m_evaluation_criterion);
 
 		machine->set_labels(labels_train);
 		machine->train(features_train);
