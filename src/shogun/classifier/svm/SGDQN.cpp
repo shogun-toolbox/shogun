@@ -189,7 +189,7 @@ std::shared_ptr<Machine> SGDQN::train(std::shared_ptr<Features> data)
 
 	set_w(w);
 
-	return shared_from_this()->as<Machine>();
+	return std::static_pointer_cast<Machine>(shared_from_this());
 }
 
 

@@ -95,7 +95,7 @@ std::shared_ptr<Machine> DeepAutoencoder::train(std::shared_ptr<Features> data)
 	m_auto_quick_initialize = pretrained | m_auto_quick_initialize;
 	auto result = Autoencoder::train(data);
 	m_auto_quick_initialize = auto_init;
-	return shared_from_this()->as<Machine>();
+	return std::static_pointer_cast<Machine>(shared_from_this());
 }
 
 void DeepAutoencoder::pre_train(std::shared_ptr<Features> data)

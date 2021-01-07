@@ -69,7 +69,7 @@ std::shared_ptr<Machine> Machine::train(std::shared_ptr<Features> data)
 	sub.unsubscribe();
 	reset_computation_variables();
 
-	return result ? shared_from_this()->as<Machine>() : 
+	return result ? std::static_pointer_cast<Machine>(shared_from_this()) : 
 					std::make_shared<Machine>();
 }
 

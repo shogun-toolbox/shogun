@@ -145,7 +145,7 @@ std::shared_ptr<Machine> OnlineSVMSGD::train(std::shared_ptr<Features> data)
 	float64_t wnorm = linalg::dot(m_w, m_w);
 	io::info("Norm: {:.6f}, Bias: {:.6f}", wnorm, bias);
 
-	return shared_from_this()->as<Machine>();
+	return std::static_pointer_cast<Machine>(shared_from_this());
 }
 
 void OnlineSVMSGD::calibrate(int32_t max_vec_num)

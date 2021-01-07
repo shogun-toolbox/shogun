@@ -58,7 +58,7 @@ TEST(LibSVR,epsilon_svr_apply)
 
 	/* predict */
 	auto predicted_labels =
-	    svm->train()->as<LibSVR>()->apply(features_test)->as<RegressionLabels>();
+	    svm->train()->apply(features_test)->as<RegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
 	EXPECT_NEAR(predicted_labels->get_labels()[0], 2.44343, 1E-5);
@@ -122,7 +122,7 @@ TEST(LibSVR,nu_svr_apply)
 
 	/* predict */
 	auto predicted_labels =
-	    svm->train()->as<LibSVR>()->apply(features_test)->as<RegressionLabels>();
+	    svm->train()->apply(features_test)->as<RegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
 	EXPECT_NEAR(predicted_labels->get_labels()[0], 2.18062, 1E-5);

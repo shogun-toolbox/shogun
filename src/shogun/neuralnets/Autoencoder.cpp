@@ -134,7 +134,7 @@ std::shared_ptr<Machine> Autoencoder::train(std::shared_ptr<Features> data)
 		input_layer->gaussian_noise = 0;
 	}
 
-	return result ? shared_from_this()->as<Machine>() : 
+	return result ? std::static_pointer_cast<Machine>(shared_from_this()) : 
 					std::make_shared<Machine>();
 }
 
