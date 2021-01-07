@@ -64,14 +64,14 @@ TEST(Autoencoder, train)
 	auto decoding_layer = std::make_shared<NeuralLinearLayer>(num_features);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(num_features, hidden_layer, decoding_layer);
-	ae.put("seed", seed);
+	auto ae = std::make_shared<Autoencoder>(num_features, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
 
 	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
 
-	ae.train(features);
+	ae->train(features);
 
-	auto reconstructed = ae.reconstruct(features);
+	auto reconstructed = ae->reconstruct(features);
 	SGMatrix<float64_t> reconstructed_data = reconstructed->get_feature_matrix();
 
 	float64_t avg_diff = 0;
@@ -97,11 +97,11 @@ TEST(Autoencoder, contractive_linear)
 	auto decoding_layer = std::make_shared<NeuralLinearLayer>(10);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(10, hidden_layer, decoding_layer);
-	ae.put("seed", seed);
-	ae.set_contraction_coefficient(10.0);
+	auto ae = std::make_shared<Autoencoder>(10, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
+	ae->set_contraction_coefficient(10.0);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -117,11 +117,11 @@ TEST(Autoencoder, contractive_rectified_linear)
 	auto decoding_layer = std::make_shared<NeuralLinearLayer>(10);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(10, hidden_layer, decoding_layer);
-	ae.put("seed", seed);
-	ae.set_contraction_coefficient(10.0);
+	auto ae = std::make_shared<Autoencoder>(10, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
+	ae->set_contraction_coefficient(10.0);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -137,13 +137,13 @@ TEST(Autoencoder, contractive_logistic)
 	auto decoding_layer = std::make_shared<NeuralLinearLayer>(10);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(10, hidden_layer, decoding_layer);
-	ae.put("seed", seed);
-	ae.initialize_neural_network();
+	auto ae = std::make_shared<Autoencoder>(10, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
+	ae->initialize_neural_network();
 
-	ae.set_contraction_coefficient(1.0);
+	ae->set_contraction_coefficient(1.0);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -161,10 +161,10 @@ TEST(Autoencoder, convolutional)
 	auto decoding_layer = std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(w,h,3,hidden_layer,decoding_layer);
-	ae.put("seed", seed);
+	auto ae = std::make_shared<Autoencoder>(w, h, 3, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -182,10 +182,10 @@ TEST(Autoencoder, convolutional_with_pooling)
 	auto decoding_layer = std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(w,h,3,hidden_layer,decoding_layer);
-	ae.put("seed", seed);
+	auto ae = std::make_shared<Autoencoder>(w, h, 3, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -202,10 +202,10 @@ TEST(Autoencoder, convolutional_with_stride)
 	auto decoding_layer = std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(w,h,3,hidden_layer,decoding_layer);
-	ae.put("seed", seed);
+	auto ae = std::make_shared<Autoencoder>(w, h, 3, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -223,8 +223,8 @@ TEST(Autoencoder, convolutional_with_stride_and_pooling)
 	auto decoding_layer = std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(w,h,3,hidden_layer,decoding_layer);
-	ae.put("seed", seed);
+	auto ae = std::make_shared<Autoencoder>(w, h, 3, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
 
-	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
+	EXPECT_NEAR(ae->check_gradients(), 0.0, tolerance);
 }

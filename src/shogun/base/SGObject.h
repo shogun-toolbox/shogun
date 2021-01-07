@@ -369,12 +369,13 @@ public:
 		      class X = typename std::enable_if_t<is_sg_base<T>::value>,
 		      class Z = void>
 #ifdef SWIG
-	void put(const std::string& name, std::shared_ptr<T> value)
+	std::shared_ptr<SGObject> put(const std::string& name, std::shared_ptr<T> value)
 #else
-	void put(std::string_view name, std::shared_ptr<T> value)
+	std::shared_ptr<SGObject> put(std::string_view name, std::shared_ptr<T> value)
 #endif
 	{
 		put(Tag<std::shared_ptr<T>>(name), value);
+		return shared_from_this();
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -494,15 +495,17 @@ public:
 		          !std::is_base_of_v<
 		              SGObject, typename std::remove_pointer_t<T>>, T>>
 #ifdef SWIG
-	void put(const std::string& name, T value)
+	std::shared_ptr<SGObject> put(const std::string& name, T value)
 #else
-	void put(std::string_view name, T value)
+	std::shared_ptr<SGObject> put(std::string_view name, T value)
 #endif
 	{
 		if constexpr (std::is_enum<T>::value)
 			put(Tag<machine_int_t>(name), static_cast<machine_int_t>(value));
 		else
 			put(Tag<T>(name), value);
+		
+		return shared_from_this();
 	}
 
 #ifndef SWIG

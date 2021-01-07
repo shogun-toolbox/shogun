@@ -506,9 +506,7 @@ TEST_F(GaussianProcessClassificationTest, train)
 	    std::make_shared<MultiLaplaceInferenceMethod>();
 	std::shared_ptr<Kernel> k = std::make_shared<GaussianKernel>();
 	std::shared_ptr<MeanFunction> mean = std::make_shared<ZeroMean>();
-	inf->put("kernel", k);
-	inf->put("mean_function", mean);
-	inf->put("likelihood_model", likelihood1);
+	inf->put("kernel", k)->put("mean_function", mean)->put("likelihood_model", likelihood1);
 	auto gpc1 = std::make_shared<GaussianProcessClassification>(inf);
 	gpc1->set_labels(multi_labels_train);
 	gpc1->train(features_train);
@@ -519,9 +517,7 @@ TEST_F(GaussianProcessClassificationTest, train)
 	    std::make_shared<SoftMaxLikelihood>();
 	std::shared_ptr<Inference> inf2 =
 	    std::make_shared<MultiLaplaceInferenceMethod>();
-	inf2->put("kernel", k);
-	inf2->put("mean_function", mean);
-	inf2->put("likelihood_model", likelihood2);
+	inf2->put("kernel", k)->put("mean_function", mean)->put("likelihood_model", likelihood2);
 	auto gpc2 = std::make_shared<GaussianProcessClassification>(inf2);
 	gpc2->set_labels(multi_labels_train);
 	gpc2->put("seed", 1);

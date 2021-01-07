@@ -47,34 +47,34 @@ TEST(RBM, gibbs_sampling)
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;
 
-	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
-	rbm.put("seed", seed);
-	rbm.initialize_neural_network();
-	rbm.set_batch_size(1);
+	auto rbm = std::make_shared<RBM>(num_hidden, num_visible, RBMVUT_BINARY);
+	rbm->put("seed", seed);
+	rbm->initialize_neural_network();
+	rbm->set_batch_size(1);
 
-	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
-		rbm.get_weights()[i] = i*1.0e-2;
+	for (int32_t i=0; i<rbm->get_weights().num_rows*rbm->get_weights().num_cols; i++)
+		rbm->get_weights()[i] = i*1.0e-2;
 
-	for (int32_t i=0; i<rbm.get_hidden_bias().vlen; i++)
-		rbm.get_hidden_bias()[i] = i*1.0e-1;
+	for (int32_t i=0; i<rbm->get_hidden_bias().vlen; i++)
+		rbm->get_hidden_bias()[i] = i*1.0e-1;
 
-	for (int32_t i=0; i<rbm.get_visible_bias().vlen; i++)
-		rbm.get_visible_bias()[i] = i*1.0e-1;
+	for (int32_t i=0; i<rbm->get_visible_bias().vlen; i++)
+		rbm->get_visible_bias()[i] = i*1.0e-1;
 
 	for (int32_t i=0; i<num_visible; i++)
-		rbm.visible_state[i] = i*1.0e-3;
+		rbm->visible_state[i] = i*1.0e-3;
 
 	SGVector<float64_t> probs(num_visible);
 	probs.zero();
 
-	rbm.sample(1000);
+	rbm->sample(1000);
 
 	for (int32_t i=0; i<1000; i++)
 	{
-		rbm.sample(100);
+		rbm->sample(100);
 
 		for (int32_t j=0; j<num_visible; j++)
-			probs[j] += rbm.visible_state[j]/1000;
+			probs[j] += rbm->visible_state[j]/1000;
 	}
 
 	// generated using scikit-learn
@@ -91,25 +91,25 @@ TEST(RBM, free_energy_binary)
 	int32_t num_hidden = 6;
 	int32_t batch_size = 3;
 
-	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
-	rbm.put("seed", seed);
-	rbm.initialize_neural_network();
+	auto rbm = std::make_shared<RBM>(num_hidden, num_visible, RBMVUT_BINARY);
+	rbm->put("seed", seed);
+	rbm->initialize_neural_network();
 
-	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
-		rbm.get_weights()[i] = i*1.0e-2;
+	for (int32_t i=0; i<rbm->get_weights().num_rows*rbm->get_weights().num_cols; i++)
+		rbm->get_weights()[i] = i*1.0e-2;
 
-	for (int32_t i=0; i<rbm.get_hidden_bias().vlen; i++)
-		rbm.get_hidden_bias()[i] = i*1.0e-1;
+	for (int32_t i=0; i<rbm->get_hidden_bias().vlen; i++)
+		rbm->get_hidden_bias()[i] = i*1.0e-1;
 
-	for (int32_t i=0; i<rbm.get_visible_bias().vlen; i++)
-		rbm.get_visible_bias()[i] = i*1.0e-1;
+	for (int32_t i=0; i<rbm->get_visible_bias().vlen; i++)
+		rbm->get_visible_bias()[i] = i*1.0e-1;
 
 	SGMatrix<float64_t> V(num_visible, batch_size);
 	for (int32_t i=0; i<V.num_rows*V.num_cols; i++)
 		V[i] = i*1e-3;
 
 	// generated using scikit-learn
-	EXPECT_NEAR(-5.0044376228, rbm.free_energy(V), 1e-6);
+	EXPECT_NEAR(-5.0044376228, rbm->free_energy(V), 1e-6);
 }
 
 TEST(RBM, free_energy_gradients)
@@ -122,30 +122,30 @@ TEST(RBM, free_energy_gradients)
 	std::mt19937_64 prng(seed);
 	UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
 
-	RBM rbm(num_hidden);
-	rbm.put("seed", seed);
-	rbm.add_visible_group(4, RBMVUT_BINARY);
-	rbm.add_visible_group(6, RBMVUT_GAUSSIAN);
-	rbm.add_visible_group(5, RBMVUT_BINARY);
-	rbm.initialize_neural_network();
+	auto rbm = std::make_shared<RBM>(num_hidden);
+	rbm->put("seed", seed);
+	rbm->add_visible_group(4, RBMVUT_BINARY);
+	rbm->add_visible_group(6, RBMVUT_GAUSSIAN);
+	rbm->add_visible_group(5, RBMVUT_BINARY);
+	rbm->initialize_neural_network();
 
 	SGMatrix<float64_t> V(num_visible, batch_size);
 	for (int32_t i=0; i<V.num_rows*V.num_cols; i++)
 		V[i] = uniform_real_dist(prng) < 0.7;
 
-	SGVector<float64_t> gradients(rbm.get_num_parameters());
-	rbm.free_energy_gradients(V, gradients);
+	SGVector<float64_t> gradients(rbm->get_num_parameters());
+	rbm->free_energy_gradients(V, gradients);
 
-	SGVector<float64_t> params = rbm.get_parameters();
-	SGVector<float64_t> gradients_numerical(rbm.get_num_parameters());
+	SGVector<float64_t> params = rbm->get_parameters();
+	SGVector<float64_t> gradients_numerical(rbm->get_num_parameters());
 	float64_t epsilon = 1e-9;
-	for (int32_t i=0; i<rbm.get_num_parameters(); i++)
+	for (int32_t i=0; i<rbm->get_num_parameters(); i++)
 	{
 		params[i] += epsilon;
-		float64_t energy_plus =rbm.free_energy(V);
+		float64_t energy_plus =rbm->free_energy(V);
 
 		params[i] -= 2*epsilon;
-		float64_t energy_minus =rbm.free_energy(V);
+		float64_t energy_minus =rbm->free_energy(V);
 
 		params[i] += epsilon;
 
@@ -163,18 +163,18 @@ TEST(RBM, pseudo_likelihood_binary)
 	int32_t num_hidden = 6;
 	int32_t batch_size = 1;
 
-	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
-	rbm.put("seed", seed);
-	rbm.initialize_neural_network();
+	auto rbm = std::make_shared<RBM>(num_hidden, num_visible, RBMVUT_BINARY);
+	rbm->put("seed", seed);
+	rbm->initialize_neural_network();
 
-	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
-		rbm.get_weights()[i] = i*1.0e-2;
+	for (int32_t i=0; i<rbm->get_weights().num_rows*rbm->get_weights().num_cols; i++)
+		rbm->get_weights()[i] = i*1.0e-2;
 
-	for (int32_t i=0; i<rbm.get_hidden_bias().vlen; i++)
-		rbm.get_hidden_bias()[i] = i*1.0e-1;
+	for (int32_t i=0; i<rbm->get_hidden_bias().vlen; i++)
+		rbm->get_hidden_bias()[i] = i*1.0e-1;
 
-	for (int32_t i=0; i<rbm.get_visible_bias().vlen; i++)
-		rbm.get_visible_bias()[i] = i*1.0e-1;
+	for (int32_t i=0; i<rbm->get_visible_bias().vlen; i++)
+		rbm->get_visible_bias()[i] = i*1.0e-1;
 
 	SGMatrix<float64_t> V(num_visible, batch_size);
 	for (int32_t i=0; i<V.num_rows*V.num_cols; i++)
@@ -182,7 +182,7 @@ TEST(RBM, pseudo_likelihood_binary)
 
 	float64_t pl = 0;
 	for (int32_t i=0; i<10000; i++)
-		pl += rbm.pseudo_likelihood(V)/10000;
+		pl += rbm->pseudo_likelihood(V)/10000;
 
 	// generated using scikit-learn
 	EXPECT_NEAR(-3.3698, pl, 0.02);

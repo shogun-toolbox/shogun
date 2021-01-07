@@ -279,8 +279,7 @@ TEST(NeuralNetwork, binary_classification)
 	layers.push_back(std::make_shared<NeuralLogisticLayer>(1));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
-	network->put("seed", seed);
-	network->put("sigma", 0.1);
+	network->put("seed", seed)->put("sigma", 0.1);
 
 	network->set_epsilon(1e-8);
 
@@ -334,8 +333,7 @@ TEST(NeuralNetwork, multiclass_classification)
 	layers.push_back(std::make_shared<NeuralLogisticLayer>(2));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
-	network->put("seed", seed);
-	network->put("sigma", 0.1);
+	network->put("seed", seed)->put("sigma", 0.1);
 
 	network->set_epsilon(1e-8);
 
@@ -381,8 +379,7 @@ TEST(NeuralNetwork, regression)
 	layers.push_back(std::make_shared<NeuralLinearLayer>(1));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
-	network->put("seed", seed);
-	network->put("sigma", 1e-6);
+	network->put("seed", seed)->put("sigma", 1e-6);
 
 	network->set_epsilon(1e-6);
 
@@ -431,8 +428,7 @@ TEST(NeuralNetwork, gradient_descent)
 	layers.push_back(std::make_shared<NeuralLogisticLayer>(1));
 
 	auto network = std::make_shared<NeuralNetwork>(layers);
-	network->put("seed", seed);
-	network->put("sigma", 0.1);
+	network->put("seed", seed)->put("sigma", 0.1);
 
 	network->set_optimization_method(NNOM_GRADIENT_DESCENT);
 	network->set_gd_learning_rate(10.0);
