@@ -7,9 +7,7 @@ Features feats_test = create_features(testdat)
 #![create_features]
 
 #![create_kernel]
-Distance d = create_distance("EuclideanDistance")
-d.init(feats_train, feats_train)
-Kernel circular_kernel = create_kernel("CircularKernel", sigma=1.0, distance=d)
+Kernel circular_kernel = create_kernel("CircularKernel", sigma=1.0)
 circular_kernel.init(feats_train, feats_train)
 #![create_kernel]
 
