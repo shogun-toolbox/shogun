@@ -4,19 +4,15 @@
  * Authors: Soeren Sonnenburg, Bjoern Esser
  */
 
-#include <shogun/lib/config.h>
+
 
 #ifndef CAUCHYKERNEL_H_
 #define CAUCHYKERNEL_H_
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/distance/Distance.h>
+#include <shogun/kernel/ShiftInvariantKernel.h>
 
 namespace shogun
 {
-
-class Distance;
 
 /** @brief Cauchy kernel
  *
@@ -28,7 +24,7 @@ class Distance;
  *
  */
 
-class CauchyKernel: public Kernel
+class CauchyKernel: public ShiftInvariantKernel
 {
 public:
 	/** default constructor */
