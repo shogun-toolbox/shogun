@@ -58,12 +58,12 @@ public:
 	/**
 	 * @return type of features
 	 */
-	EFeatureType get_feature_type() override { return F_ANY; }
+	EFeatureType get_feature_type() override { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	EFeatureClass get_feature_class() override { return C_ANY; }
+	EFeatureClass get_feature_class() override { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
