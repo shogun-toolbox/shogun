@@ -4,19 +4,14 @@
  * Authors: Soeren Sonnenburg, Bjoern Esser, Sergey Lisitsyn
  */
 
-#include <shogun/lib/config.h>
 
 #ifndef _CIRCULARKERNEL_H__
 #define _CIRCULARKERNEL_H__
 
-#include <shogun/lib/common.h>
-#include <shogun/kernel/Kernel.h>
-#include <shogun/distance/Distance.h>
+#include <shogun/kernel/ShiftInvariantKernel.h>
 
 namespace shogun
 {
-
-class Distance;
 
 /** @brief Circular kernel
  *
@@ -30,7 +25,7 @@ class Distance;
  *
  */
 
-class CircularKernel: public Kernel
+class CircularKernel: public ShiftInvariantKernel
 {
 	public:
 	/** default constructor */
