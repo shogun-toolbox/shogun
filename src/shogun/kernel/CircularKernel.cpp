@@ -11,29 +11,31 @@
 
 using namespace shogun;
 
-CircularKernel::CircularKernel(): Kernel(0), distance(NULL)
+CircularKernel::CircularKernel(): ShiftInvariantKernel(), distance(NULL)
 {
 	init();
+	set_cache_size(0);
 	set_sigma(1.0);
 }
 
 CircularKernel::CircularKernel(int32_t size, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(size), distance(std::move(dist))
+: ShiftInvariantKernel(), distance(std::move(dist))
 {
 	ASSERT(distance)
 	
-
+	set_cache_size(size);
 	set_sigma(sig);
 	init();
 }
 
 CircularKernel::CircularKernel(
 	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sig, std::shared_ptr<Distance> dist)
-: Kernel(10), distance(std::move(dist))
+: ShiftInvariantKernel(), distance(std::move(dist))
 {
 	ASSERT(distance)
 	
 	set_sigma(sig);
+	set_cache_size(10)
 	init();
 	init(std::move(l), std::move(r));
 }
