@@ -7,9 +7,7 @@ Features feats_test = create_features(f_feats_test)
 #![create_features]
 
 #![create_kernel]
-Distance dist = create_distance("EuclideanDistance")
-dist.init(feats_train, feats_train)
-Kernel cauchy = create_kernel("CauchyKernel", sigma=1.0, distance=dist)
+Kernel cauchy = create_kernel("CauchyKernel", sigma=1.0)
 #![create_kernel]
 
 #![kernel_matrix_train]
