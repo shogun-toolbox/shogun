@@ -12,23 +12,25 @@
 
 using namespace shogun;
 
-CauchyKernel::CauchyKernel(): Kernel(0), m_sigma(1.0)
+CauchyKernel::CauchyKernel(): ShiftInvariantKernel(), m_sigma(1.0)
 {
 	init();
 }
 
-CauchyKernel::CauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<Distance> dist)
-: Kernel(cache), m_distance(std::move(dist)), m_sigma(sigma)
+CauchyKernel::CauchyKernel(int32_t cache, float64_t sigma)
+: ShiftInvariantKernel(), m_sigma(sigma)
 {
 	init();
+	set_cache_size(cache);
 	ASSERT(m_distance)
 	
 }
 
-CauchyKernel::CauchyKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma, std::shared_ptr<Distance> dist)
-: Kernel(10), m_distance(std::move(dist)), m_sigma(sigma)
+CauchyKernel::CauchyKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma)
+: ShiftInvariantKernel(), m_sigma(sigma)
 {
 	init();
+	set_cache_size(10);
 	ASSERT(m_distance)
 	
 	init(std::move(l), std::move(r));
