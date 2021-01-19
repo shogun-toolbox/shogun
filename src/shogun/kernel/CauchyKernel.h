@@ -33,17 +33,15 @@ public:
 	/** constructor
 	 * @param cache size of cache
 	 * @param sigma kernel parameter sigma
-	 * @param dist distance to be used
 	 */
-	CauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<Distance> dist);
+	CauchyKernel(int32_t cache, float64_t sigma);
 
 	/** constructor
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @param sigma kernel parameter sigma
-	 * @param dist distance to be used
 	 */
-	CauchyKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma, std::shared_ptr<Distance> dist);
+	CauchyKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma);
 
 	/** initialize kernel with features
 	 * @param l features left-side
@@ -60,12 +58,12 @@ public:
 	/**
 	 * @return type of features
 	 */
-	EFeatureType get_feature_type() override { return m_distance->get_feature_type(); }
+	EFeatureType get_feature_type() override { return F_ANY; }
 
 	/**
 	 * @return class of features
 	 */
-	EFeatureClass get_feature_class() override { return m_distance->get_feature_class(); }
+	EFeatureClass get_feature_class() override { return C_ANY; }
 
 	/**
 	 * @return name of kernel
@@ -90,9 +88,6 @@ private:
 	void init();
 
 protected:
-
-	/// distance to be used
-	std::shared_ptr<Distance> m_distance;
 
 	/// sigma parameter of kernel
 	float64_t m_sigma;
