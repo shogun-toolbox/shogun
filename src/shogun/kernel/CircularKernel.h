@@ -37,7 +37,7 @@ class CircularKernel: public ShiftInvariantKernel
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
 	 */
-	CircularKernel(int32_t size, float64_t sigma, std::shared_ptr<Distance> dist);
+	CircularKernel(int32_t size, float64_t sigma);
 
 	/** constructor
 	 *
@@ -46,7 +46,7 @@ class CircularKernel: public ShiftInvariantKernel
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
 	 */
-	CircularKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma, std::shared_ptr<Distance> dist);
+	CircularKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t sigma);
 
 	/** initialize kernel with features
 	 *
@@ -64,12 +64,12 @@ class CircularKernel: public ShiftInvariantKernel
 	/**
 	 * @return type of features
 	 */
-	EFeatureType get_feature_type() override { return distance->get_feature_type(); }
+	EFeatureType get_feature_type() override { return m_distance->get_feature_type(); }
 
 	/**
 	 * @return class of features
 	 */
-	EFeatureClass get_feature_class() override { return distance->get_feature_class(); }
+	EFeatureClass get_feature_class() override { return m_distance->get_feature_class(); }
 
 	/**
 	 * @return name of kernel
@@ -121,9 +121,6 @@ private:
 	void init();
 
 protected:
-
-	/** distance */
-	std::shared_ptr<Distance> distance;
 
 	/** width */
 	float64_t sigma;
