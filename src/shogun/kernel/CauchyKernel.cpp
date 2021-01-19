@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-CauchyKernel::CauchyKernel(): Kernel(0), m_distance(NULL), m_sigma(1.0)
+CauchyKernel::CauchyKernel(): Kernel(0), m_sigma(1.0)
 {
 	init();
 }
@@ -50,7 +50,6 @@ bool CauchyKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r
 void CauchyKernel::init()
 {
 	SG_ADD(&m_sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
-	SG_ADD(&m_distance, "distance", "Distance to be used.", ParameterProperties::HYPER);
 }
 
 float64_t CauchyKernel::compute(int32_t idx_a, int32_t idx_b)
