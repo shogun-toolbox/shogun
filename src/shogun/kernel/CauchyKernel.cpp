@@ -4,6 +4,7 @@
  * Authors: Soeren Sonnenburg, Evan Shelhamer
  */
 
+#include <shogun/distance/EuclideanDistance.h>
 #include <shogun/kernel/CauchyKernel.h>
 #include <shogun/mathematics/Math.h>
 
@@ -49,6 +50,10 @@ bool CauchyKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r
 
 void CauchyKernel::init()
 {
+	auto dist = std::make_shared<EuclideanDistance>();
+	dist->set_disable_sqrt(true);
+	m_distance = dist;
+
 	SG_ADD(&m_sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
 }
 
