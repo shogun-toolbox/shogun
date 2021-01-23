@@ -53,7 +53,7 @@ bool CauchyKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r
 void CauchyKernel::init()
 {
 	auto dist = std::make_shared<EuclideanDistance>();
-	m_distance = dist;
+	m_distance = std::make_shared<EuclideanDistance>();
 
 	SG_ADD(&m_sigma, "sigma", "Sigma kernel parameter.", ParameterProperties::HYPER);
 }
