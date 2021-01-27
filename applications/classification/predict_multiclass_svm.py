@@ -32,9 +32,7 @@
 import argparse
 import logging
 from contextlib import closing
-from shogun import (LibSVMFile, SparseRealFeatures, MulticlassLabels,
-											MulticlassLibSVM, SerializableHdf5File,
-											MulticlassAccuracy)
+import shogun as sg 
 from utils import get_features_and_labels
 
 LOGGER = logging.getLogger(__file__)
@@ -54,12 +52,12 @@ def parse_arguments():
 def main(classifier, testset, output):
 	LOGGER.info("SVM Multiclass evaluation")
 
-	svm = MulticlassLibSVM()
-	serialized_classifier = SerializableHdf5File(classifier, 'r')
+	svm = sg.MulticlassLibSVM()
+	serialized_classifier = sg.SerializableHdf5File(classifier, 'r')
 	with closing(serialized_classifier):
 		svm.load_serializable(serialized_classifier)
 
-	test_feats, test_labels = get_features_and_labels(LibSVMFile(testset))
+	test_feats, test_labels = get_features_and_labels(sg.LibSVMFile(testset))
 	predicted_labels = svm.apply(test_feats)
 
 	with open(output, 'w') as f:

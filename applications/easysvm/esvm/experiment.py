@@ -12,27 +12,16 @@ import parse
 import utils
 from poim import compute_poims
 
-import shogun
-from shogun import GaussianKernel, WeightedDegreePositionStringKernel
-from shogun import WeightedDegreeStringKernel
-from shogun import LinearKernel, PolyKernel, LocalAlignmentStringKernel
-from shogun import LocalityImprovedStringKernel
-from shogun import CommWordStringKernel, WeightedCommWordStringKernel, CommUlongStringKernel
-from shogun import CombinedKernel
-from shogun import SLOWBUTMEMEFFICIENT
-from shogun import AvgDiagKernelNormalizer
-from shogun import RealFeatures, Labels, StringCharFeatures, DNA, StringWordFeatures, StringUlongFeatures, PROTEIN
-from shogun import CombinedFeatures
-from shogun import LibSVM,GPBTSVM
+import shogun as sg
 
-DefaultSVM = LibSVM
+DefaultSVM = sg.LibSVM
 try:
     from shogun import SVMLight
     LinAddSVM = SVMLight
     LinearSVM = SVMLight
 except:
-    LinAddSVM = GPBTSVM
-    LinearSVM = LibSVM
+    LinAddSVM = sg.GPBTSVM
+    LinearSVM = sg.LibSVM
 
 from shogun import SortWordString, SortUlongString
 
@@ -114,15 +103,15 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
 
     if kname == 'gauss' or kname == 'linear' or kname == 'poly':
         examples = numpy.array(examples)
-        feats = RealFeatures(examples)
+        feats = sg.RealFeatures(examples)
 
     elif kname == 'wd' or kname == 'localalign' or kname == 'localimprove':
         if seq_source == 'dna':
             examples = non_atcg_convert(examples, nuc_con)
-            feats = StringCharFeatures(examples, DNA)
+            feats = sg.StringCharFeatures(examples, sg.DNA)
         elif seq_source == 'protein':
             examples = non_aminoacid_converter(examples, nuc_con)
-            feats = StringCharFeatures(examples, PROTEIN)
+            feats = sg.StringCharFeatures(examples, sg.PROTEIN)
         else:
             sys.stderr.write("Sequence source -"+seq_source+"- is invalid. select [dna|protein]\n")
             sys.exit(-1)
@@ -130,15 +119,15 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
     elif kname == 'spec' or kname == 'cumspec':
         if seq_source == 'dna':
             examples = non_atcg_convert(examples, nuc_con)
-            feats = StringCharFeatures(examples, DNA)
+            feats = sg.StringCharFeatures(examples, sg.DNA)
         elif seq_source == 'protein':
             examples = non_aminoacid_converter(examples, nuc_con)
-            feats = StringCharFeatures(examples, PROTEIN)
+            feats = sg.StringCharFeatures(examples, sg.PROTEIN)
         else:
             sys.stderr.write("Sequence source -"+seq_source+"- is invalid. select [dna|protein]\n")
             sys.exit(-1)
 
-        wf = StringUlongFeatures( feats.get_alphabet() )
+        wf = sg.StringUlongFeatures( feats.get_alphabet() )
         wf.obtain_from_char(feats, kparam['degree']-1, kparam['degree'], 0, kname=='cumspec')
         del feats
 
@@ -153,14 +142,14 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
     elif kname == 'spec2' or kname == 'cumspec2':
         # spectrum kernel on two sequences
         feats = {}
-        feats['combined'] = CombinedFeatures()
+        feats['combined'] = sg.CombinedFeatures()
 
         reversed = kname=='cumspec2'
 
         (ex0,ex1) = zip(*examples)
 
-        f0 = StringCharFeatures(list(ex0), DNA)
-        wf = StringWordFeatures(f0.get_alphabet())
+        f0 = sg.StringCharFeatures(list(ex0), sg.DNA)
+        wf = sg.StringWordFeatures(f0.get_alphabet())
         wf.obtain_from_char(f0, kparam['degree']-1, kparam['degree'], 0, reversed)
         del f0
 
@@ -173,8 +162,8 @@ def create_features(kname, examples, kparam, train_mode, preproc, seq_source, nu
         feats['combined'].append_feature_obj(wf)
         feats['f0'] = wf
 
-        f1 = StringCharFeatures(list(ex1), DNA)
-        wf = StringWordFeatures( f1.get_alphabet() )
+        f1 = sg.StringCharFeatures(list(ex1), sg.DNA)
+        wf = sg.StringWordFeatures( f1.get_alphabet() )
         wf.obtain_from_char(f1, kparam['degree']-1, kparam['degree'], 0, reversed)
         del f1
 
@@ -196,44 +185,44 @@ def create_kernel(kname,kparam,feats_train):
     """Call the corresponding constructor for the kernel"""
 
     if kname == 'gauss':
-        kernel = GaussianKernel(feats_train, feats_train, kparam['width'])
+        kernel = sg.GaussianKernel(feats_train, feats_train, kparam['width'])
     elif kname == 'linear':
-        kernel = LinearKernel(feats_train, feats_train)
-        kernel.set_normalizer(AvgDiagKernelNormalizer(kparam['scale']))
+        kernel = sg.LinearKernel(feats_train, feats_train)
+        kernel.set_normalizer(sg.AvgDiagKernelNormalizer(kparam['scale']))
     elif kname == 'poly':
-        kernel = PolyKernel(feats_train, feats_train, kparam['degree'], kparam['inhomogene'], kparam['normal'])
+        kernel = sg.PolyKernel(feats_train, feats_train, kparam['degree'], kparam['inhomogene'], kparam['normal'])
     elif kname == 'wd':
-        kernel=WeightedDegreePositionStringKernel(feats_train, feats_train, kparam['degree'])
-        kernel.set_normalizer(AvgDiagKernelNormalizer(float(kparam['seqlength'])))
+        kernel=sg.WeightedDegreePositionStringKernel(feats_train, feats_train, kparam['degree'])
+        kernel.set_normalizer(sg.AvgDiagKernelNormalizer(float(kparam['seqlength'])))
         kernel.set_shifts(kparam['shift']*numpy.ones(kparam['seqlength'],dtype=numpy.int32))
-        #kernel=WeightedDegreeStringKernel(feats_train, feats_train, kparam['degree'])
+        #kernel=sg.WeightedDegreeStringKernel(feats_train, feats_train, kparam['degree'])
     elif kname == 'spec':
-        kernel = CommUlongStringKernel(feats_train, feats_train)
+        kernel = sg.CommUlongStringKernel(feats_train, feats_train)
     elif kname == 'cumspec':
-        kernel = WeightedCommWordStringKernel(feats_train, feats_train)
+        kernel = sg.WeightedCommWordStringKernel(feats_train, feats_train)
         kernel.set_weights(numpy.ones(kparam['degree']))
     elif kname == 'spec2':
-        kernel = CombinedKernel()
-        k0 = CommWordStringKernel(feats_train['f0'], feats_train['f0'])
+        kernel = sg.CombinedKernel()
+        k0 = sg.CommWordStringKernel(feats_train['f0'], feats_train['f0'])
         k0.io.disable_progress()
         kernel.append_kernel(k0)
-        k1 = CommWordStringKernel(feats_train['f1'], feats_train['f1'])
+        k1 = sg.CommWordStringKernel(feats_train['f1'], feats_train['f1'])
         k1.io.disable_progress()
         kernel.append_kernel(k1)
     elif kname == 'cumspec2':
-        kernel = CombinedKernel()
-        k0 = WeightedCommWordStringKernel(feats_train['f0'], feats_train['f0'])
+        kernel = sg.CombinedKernel()
+        k0 = sg.WeightedCommWordStringKernel(feats_train['f0'], feats_train['f0'])
         k0.set_weights(numpy.ones(kparam['degree']))
         k0.io.disable_progress()
         kernel.append_kernel(k0)
-        k1 = WeightedCommWordStringKernel(feats_train['f1'], feats_train['f1'])
+        k1 = sg.WeightedCommWordStringKernel(feats_train['f1'], feats_train['f1'])
         k1.set_weights(numpy.ones(kparam['degree']))
         k1.io.disable_progress()
         kernel.append_kernel(k1)
     elif kname == 'localalign':
-        kernel = LocalAlignmentStringKernel(feats_train, feats_train)
+        kernel = sg.LocalAlignmentStringKernel(feats_train, feats_train)
     elif kname == 'localimprove':
-        kernel = LocalityImprovedStringKernel(feats_train, feats_train, kparam['length'],\
+        kernel = sg.LocalityImprovedStringKernel(feats_train, feats_train, kparam['length'],\
                                               kparam['indeg'], kparam['outdeg'])
     else:
         print 'Unknown kernel %s' % kname
@@ -248,8 +237,8 @@ def create_combined_kernel(kname, kparam, examples, train_mode, preproc):
 
     """
     num_kernels = len(kname)
-    feats['combined'] = CombinedFeatures()
-    kernel = CombinedKernel()
+    feats['combined'] = sg.CombinedFeatures()
+    kernel = sg.CombinedKernel()
 
     for kix in xrange(num_kernels):
         cur_kname = '%s%d' % (kname[kix],kix)
@@ -297,7 +286,7 @@ def train(trainex,trainlab,C,kname,kparam,seq_source,nuc_con):
     else:
         kernel.init(feats_train, feats_train)
     kernel.io.disable_progress()
-    kernel.set_optimization_type(SLOWBUTMEMEFFICIENT)
+    kernel.set_optimization_type(sg.SLOWBUTMEMEFFICIENT)
     labels = BinaryLabels(numpy.array(trainlab,numpy.double))
 
     # libsvm is fine for most kernels
@@ -338,7 +327,7 @@ def train_and_test(trainex,trainlab,testex,C,kname,kparam, seq_source, nuc_con):
         feats_test.io.disable_progress()
         kernel.init(feats_train, feats_test)
 
-    kernel.set_optimization_type(SLOWBUTMEMEFFICIENT)
+    kernel.set_optimization_type(sg.SLOWBUTMEMEFFICIENT)
     output = svm.apply().get_labels()
 
     return output

@@ -32,15 +32,14 @@
 import argparse
 import logging
 from contextlib import contextmanager, closing
-from shogun import (LibSVMFile, GaussianKernel, MulticlassLibSVM,
-																SerializableHdf5File, LinearKernel)
+import shogun as sg
 from utils import get_features_and_labels, track_execution
 
 LOGGER = logging.getLogger(__file__)
 
 KERNELS = {
-	'linear': lambda feats, width: LinearKernel(feats, feats),
-	'gaussian': lambda feats, width: GaussianKernel(feats, feats, width),
+	'linear': lambda feats, width: sg.LinearKernel(feats, feats),
+	'gaussian': lambda feats, width: sg.GaussianKernel(feats, feats, width),
 }
 
 def parse_arguments():
@@ -72,7 +71,7 @@ def main(dataset, output, epsilon, capacity, width, kernel_type):
 	LOGGER.info("Gaussian width: %s" % width)
 
 	# Get features
-	feats, labels = get_features_and_labels(LibSVMFile(dataset))
+	feats, labels = get_features_and_labels(sg.LibSVMFile(dataset))
 
 	# Create kernel
 	try:
@@ -81,13 +80,13 @@ def main(dataset, output, epsilon, capacity, width, kernel_type):
 		LOGGER.error("Kernel %s not available. try Gaussian or Linear" % kernel_type)
 
 	# Initialize and train Multiclass SVM
-	svm = MulticlassLibSVM(capacity, kernel, labels)
+	svm = sg.MulticlassLibSVM(capacity, kernel, labels)
 	svm.set_epsilon(epsilon)
 	with track_execution():
 		svm.train()
 
 	# Serialize to file
-	writable_file = SerializableHdf5File(output, 'w')
+	writable_file = sg.SerializableHdf5File(output, 'w')
 	with closing(writable_file):
 		svm.save_serializable(writable_file)
 	LOGGER.info("Serialized classifier saved in: '%s'" % output)

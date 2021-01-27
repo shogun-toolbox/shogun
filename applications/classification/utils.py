@@ -30,22 +30,22 @@
 
 import logging
 from contextlib import contextmanager
-from shogun import MulticlassLabels, SparseRealFeatures, Time
+import shogun as sg
 
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)-15s %(module)s] %(message)s')
 LOGGER = logging.getLogger(__file__)
 
 def get_features_and_labels(input_file):
-	feats = SparseRealFeatures()
+	feats = sg.SparseRealFeatures()
 	label_array = feats.load_with_labels(input_file)
-	labels = MulticlassLabels(label_array)
+	labels = sg.MulticlassLabels(label_array)
 	return feats, labels
 
 @contextmanager
 def track_execution():
 	LOGGER.info('Starting training.')
-	timer = Time()
+	timer = sg.Time()
 	yield
 	timer.stop()
 	LOGGER.info('Training completed, took {0:.2f}s.'.format(timer.time_diff_sec()))
