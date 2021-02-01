@@ -7,7 +7,7 @@ GENERATE_INTERFACE_TARGET(csharp ${CMAKE_CURRENT_SOURCE_DIR} "")
 
 ADD_CUSTOM_COMMAND(TARGET interface_csharp
 				   POST_BUILD
-				   COMMAND "${CSHARP_COMPILER}" /t:library *.cs /out:shogun.dll
+				   COMMAND "${CSHARP_COMPILER}" /t:library /out:shogun.dll *.cs
 				   COMMENT "Creating shogun.dll")
 IF(NOT CSHARP_INSTALL_DIR)
 	SET(CSHARP_INSTALL_DIR "lib/cli/shogun")
