@@ -7,19 +7,16 @@ import sys
 import numpy
 import seqdict
 
-from shogun import LibSVM
-from shogun import StringCharFeatures,DNA
-from shogun import WeightedDegreeStringKernel
-from shogun import DynamicIntArray
+import shogun as sg
 
 class svm_splice_model(object):
 	def __init__(self, order, traindat, alphas, b, (window_left,offset,window_right), consensus):
 
 		f=StringCharFeatures(traindat, DNA)
-		wd_kernel = WeightedDegreeStringKernel(f,f, int(order))
+		wd_kernel = sg.WeightedDegreeStringKernel(f,f, int(order))
 		wd_kernel.io.set_target_to_stdout()
 
-		self.svm=LibSVM()
+		self.svm=sg.LibSVM()
 		self.svm.set_kernel(wd_kernel)
 		self.svm.set_alphas(alphas)
 		self.svm.set_support_vectors(numpy.arange(len(alphas), dtype=numpy.int32))
@@ -60,7 +57,7 @@ class svm_splice_model(object):
 		seqlen=self.window_right+self.window_left+2
 
 		for s in seqdic:
-			position_list=DynamicIntArray()
+			position_list=sg.DynamicIntArray()
 
 			sequence=s.seq
 			positions=s.preds[site].positions
@@ -102,7 +99,7 @@ class svm_splice_model(object):
 		seqlen=self.window_right+self.window_left+2
 		num=len(positions)
 
-		position_list=DynamicIntArray()
+		position_list=sg.DynamicIntArray()
 
 		for j in xrange(num):
 			i=positions[j] - self.offset - self.window_left
