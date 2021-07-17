@@ -47,8 +47,8 @@ void MulticlassMachine::set_labels(std::shared_ptr<Labels> lab)
 
 void MulticlassMachine::register_parameters()
 {
-	SG_ADD(&m_multiclass_strategy,"multiclass_strategy", "Multiclass strategy");
-	SG_ADD(&m_machine, "machine", "The base machine");
+	SG_ADD(&m_multiclass_strategy,kMulticlassStrategy, "Multiclass strategy");
+	SG_ADD(&m_machine, kMachine, "The base machine");
 }
 
 void MulticlassMachine::init_strategy()

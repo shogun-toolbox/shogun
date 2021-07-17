@@ -26,7 +26,7 @@ LocallyLinearEmbedding::LocallyLinearEmbedding() :
 
 void LocallyLinearEmbedding::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
+	SG_ADD(&m_k, kK, "number of neighbors", ParameterProperties::HYPER);
 	SG_ADD(&m_nullspace_shift, "nullspace_shift",
       "nullspace finding regularization shift");
 	SG_ADD(&m_reconstruction_shift, "reconstruction_shift",

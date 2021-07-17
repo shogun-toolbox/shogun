@@ -220,6 +220,13 @@ class StructuredOutputMachine : public Machine
 
 		/** verbose outputs and statistics */
 		bool m_verbose;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kModel = "model";
+		static constexpr std::string_view kSurrogateLoss = "surrogate_loss";
+		static constexpr std::string_view kVerbose = "verbose";
+		static constexpr std::string_view kHelper = "helper";
 
 }; /* class StructuredOutputMachine */
 

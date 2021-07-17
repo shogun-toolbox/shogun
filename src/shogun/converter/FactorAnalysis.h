@@ -98,6 +98,11 @@ private:
 
 	/** convergence parameter */
 	float64_t m_epsilon;
+	
+		#ifndef SWIG
+public:
+	static constexpr std::string_view kMaxIteration = "max_iteration";
+	static constexpr std::string_view kEpsilon = "epsilon";
 
 }; /* class FactorAnalysis */
 

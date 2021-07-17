@@ -72,12 +72,12 @@ std::shared_ptr<Kernel> EmbeddingConverter::get_kernel() const
 
 void EmbeddingConverter::init()
 {
-	SG_ADD(&m_target_dim, "target_dim",
+	SG_ADD(&m_target_dim, kTargetDim,
       "target dimensionality of preprocessor", ParameterProperties::HYPER);
 	SG_ADD(
-		&m_distance, "distance", "distance to be used for embedding",
+		&m_distance, kDistance, "distance to be used for embedding",
 		ParameterProperties::HYPER);
 	SG_ADD(
-		&m_kernel, "kernel", "kernel to be used for embedding", ParameterProperties::HYPER);
+		&m_kernel, kKernel, "kernel to be used for embedding", ParameterProperties::HYPER);
 }
 }

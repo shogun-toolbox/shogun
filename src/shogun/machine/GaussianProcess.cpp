@@ -38,13 +38,13 @@ void GaussianProcess::init()
 {
 	m_compute_variance = false;
 	SG_ADD(
-	    &m_method, "inference_method", "Inference method",
+	    &m_method, kInterfaceMethod, "Inference method",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_compute_variance, "compute_variance",
+	    &m_compute_variance, kComputeVariance,
 	    "Whether predictive variance is computed in predictions");
 	SG_ADD(
-	    &m_inducing_features, "inducing_features",
+	    &m_inducing_features, kInducingFeatures,
 	    "inducing features for approximation", ParameterProperties::MODEL);
 	add_callback_function("seed", [&]() {
 		if (m_method)

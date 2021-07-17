@@ -301,25 +301,25 @@ void KMeansBase::init()
 	use_kmeanspp = false;
 	initial_centers = SGMatrix<float64_t>();
 	SG_ADD(
-	    &max_iter, "max_iter", "Maximum number of iterations",
+	    &max_iter, kMaxIter, "Maximum number of iterations",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &k, "k", "k, the number of clusters",
+	    &k, kK, "k, the number of clusters",
 	    ParameterProperties::HYPER | ParameterProperties::CONSTRAIN,
 	    SG_CONSTRAINT(positive<>()));
 	SG_ADD(
-	    &dimensions, "dimensions", "Dimensions of data",
+	    &dimensions, kDimensions, "Dimensions of data",
 	    ParameterProperties::READONLY);
 	SG_ADD(
-	    &fixed_centers, "fixed_centers", "Whether to use fixed centers",
+	    &fixed_centers, kFixedCenters, "Whether to use fixed centers",
 	    ParameterProperties::HYPER | ParameterProperties::SETTING);
-	SG_ADD(&R, "radiuses", "Cluster radiuses", ParameterProperties::MODEL);
+	SG_ADD(&R, kRadiuses", "Cluster radiuses", ParameterProperties::MODEL);
 	SG_ADD(
-	    &use_kmeanspp, "kmeanspp", "Whether to use kmeans++",
+	    &use_kmeanspp, kMeanspp, "Whether to use kmeans++",
 	    ParameterProperties::HYPER | ParameterProperties::SETTING);
 	watch_method("cluster_centers", &KMeansBase::get_cluster_centers);
 	SG_ADD(
-	    &initial_centers, "initial_centers", "Initial centers",
+	    &initial_centers, kInitialCenters, "Initial centers",
 	    ParameterProperties::HYPER);
 	// add this to check initial centers
 	add_callback_function(

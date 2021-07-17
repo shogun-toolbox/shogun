@@ -88,6 +88,11 @@ protected:
 
 	/** tau parameter of heat distribution */
 	float64_t m_tau;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kK = "k";
+	static constexpr std::string_view kTau = "tau";
 
 };
 }

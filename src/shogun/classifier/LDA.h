@@ -183,6 +183,11 @@ class LDA : public DenseRealDispatch<LDA, LinearMachine>
 		ELDAMethod m_method;
 		/** use bdc-svd algorithm */
 		bool m_bdc_svd;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kGamma = "gamma";
+		static constexpr std::string_view kBdcSvd = "bdc_svd";	
 };
 }
 #endif//ifndef

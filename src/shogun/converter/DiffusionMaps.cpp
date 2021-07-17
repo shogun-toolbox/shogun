@@ -25,8 +25,8 @@ DiffusionMaps::DiffusionMaps() :
 
 void DiffusionMaps::init()
 {
-	SG_ADD(&m_t, "t", "number of steps", ParameterProperties::HYPER);
-	SG_ADD(&m_width, "width", "gaussian kernel width", ParameterProperties::HYPER);
+	SG_ADD(&m_t, kT, "number of steps", ParameterProperties::HYPER);
+	SG_ADD(&m_width, kWidth, "gaussian kernel width", ParameterProperties::HYPER);
 }
 
 DiffusionMaps::~DiffusionMaps()

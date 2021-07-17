@@ -88,6 +88,10 @@ protected:
 
 	/** k, number of neighbors for K-Isomap */
 	int32_t m_k;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kK = "k";
 
 };
 }

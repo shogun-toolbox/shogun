@@ -21,13 +21,13 @@ PluginEstimate::PluginEstimate(float64_t pos_pseudo, float64_t neg_pseudo)
 	pos_model(NULL), neg_model(NULL), features(NULL)
 {
 	SG_ADD(
-	    &m_pos_pseudo, "pos_pseudo", "pseudo count for positive class",
+	    &m_pos_pseudo, kPosPseudo, "pseudo count for positive class",
 	    ParameterProperties::MODEL);
 	SG_ADD(
-	    &m_neg_pseudo, "neg_pseudo", "pseudo count for negative class",
+	    &m_neg_pseudo, kNegPseudo, "pseudo count for negative class",
 	    ParameterProperties::MODEL);
 	SG_ADD(
-	    &pos_model, "pos_model", "LinearHMM modelling positive class.",
+	    &pos_model, kPosModel, "LinearHMM modelling positive class.",
 	    ParameterProperties::MODEL);
 	SG_ADD(
 	    &neg_model, "neg_model", "LinearHMM modelling negative class.",

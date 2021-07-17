@@ -16,8 +16,8 @@ Machine::Machine()
     : StoppableSGObject(), m_max_train_time(0), m_labels(NULL),
       m_solver_type(ST_AUTO)
 {
-	SG_ADD(&m_max_train_time, "max_train_time", "Maximum training time.");
-	SG_ADD(&m_labels, "labels", "Labels to be used.");
+	SG_ADD(&m_max_train_time, kMaxTrainTime", "Maximum training time.");
+	SG_ADD(&m_labels, kLabels, "Labels to be used.");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_solver_type, "solver_type", "Type of solver.",
 	    ParameterProperties::NONE,

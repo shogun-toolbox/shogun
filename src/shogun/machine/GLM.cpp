@@ -25,25 +25,25 @@ using namespace shogun;
 GLM::GLM()
 {
 	SG_ADD_OPTIONS(
-	    (machine_int_t*)&distribution, "distribution_type",
+	    (machine_int_t*)&distribution, kDistributionType,
 	    "variable to store name of distribution type",
 	    ParameterProperties::HYPER, SG_OPTIONS(POISSON));
 	SG_ADD(
-	    &m_eta, "eta",
+	    &m_eta, kEta,
 	    "threshold parameter that linearizes the exp() function above eta",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_lambda, "lambda", "regularization parameter of penalty term",
+	    &m_lambda, kLambda, "regularization parameter of penalty term",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_alpha, "alpha",
+	    &m_alpha, kAlpha,
 	    "weighting between L1 penalty and L2 penalty term of the loss function",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_tolerance, "tolerance", "convergence threshold or stopping criteria",
+	    &m_tolerance, kTolerance, "convergence threshold or stopping criteria",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_learning_rate, "learning_rate", "learning rate for gradient descent",
+	    &m_learning_rate, kLearningRate, "learning rate for gradient descent",
 	    ParameterProperties::HYPER);
 
 	m_gradient_updater = std::make_shared<GradientDescendUpdater>();

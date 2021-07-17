@@ -104,6 +104,11 @@ protected:
 
 	/** regularization shift of nullspace finding step */
 	float64_t m_nullspace_shift;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kK = "k";
+	static constexpr std::string_view kReconstructionShift = "reconstruction_shift";
 
 };
 }

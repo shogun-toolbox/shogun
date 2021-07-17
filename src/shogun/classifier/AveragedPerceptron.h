@@ -83,6 +83,8 @@ namespace shogun
 #ifndef SWIG
 	public:
 		static constexpr std::string_view kLearnRate = "learn_rate";
+		static constexpr std::string_view kCachedW = "cached_w";
+		static constexpr std::string_view kCachedBias = "cached_bias";
 #endif
 	};
 } // namespace shogun

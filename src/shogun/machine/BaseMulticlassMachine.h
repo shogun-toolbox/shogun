@@ -50,7 +50,10 @@ protected:
 
 	/** machines */
 	std::vector<std::shared_ptr<Machine>> m_machines;
-};
+
+#ifndef SWIG
+public:
+     static constexpr std::string_view kMachines = "machines";
 
 } /* shogun */
 

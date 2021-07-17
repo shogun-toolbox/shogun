@@ -24,9 +24,9 @@ ManifoldSculpting::ManifoldSculpting() :
 void ManifoldSculpting::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors");
-	SG_ADD(&m_squishing_rate, "quishing_rate",
+	SG_ADD(&m_squishing_rate, kQuishingRate",
       "squishing rate");
-	SG_ADD(&m_max_iteration, "max_iteration",
+	SG_ADD(&m_max_iteration, kMaxIteration,
       "maximum number of algorithm's iterations");
 }
 

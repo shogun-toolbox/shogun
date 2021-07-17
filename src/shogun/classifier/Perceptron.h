@@ -73,6 +73,11 @@ class Perceptron : public IterativeMachine<LinearMachine>
 		 * manually setting weights and bias before training.
 		 */
 		bool m_initialize_hyperplane;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kInitializeHyperplane = "initialize_hyperplane";
+		static constexpr std::string_view kLearnRate = "learn_rate";	
 };
 }
 #endif

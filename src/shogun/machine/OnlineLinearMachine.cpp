@@ -18,9 +18,9 @@ using namespace shogun;
 OnlineLinearMachine::OnlineLinearMachine()
 : Machine(), bias(0), features(NULL)
 {
-	SG_ADD(&m_w, "m_w", "Parameter vector w.", ParameterProperties::MODEL);
-	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
-	SG_ADD((std::shared_ptr<SGObject>*) &features, "features",
+	SG_ADD(&m_w, kMw, "Parameter vector w.", ParameterProperties::MODEL);
+	SG_ADD(&bias, kBias, "Bias b.", ParameterProperties::MODEL);
+	SG_ADD((std::shared_ptr<SGObject>*) &features, kFeatures,
 	    "Feature object.");
 }
 

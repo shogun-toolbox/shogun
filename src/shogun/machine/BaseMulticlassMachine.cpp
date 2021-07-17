@@ -10,7 +10,7 @@ using namespace shogun;
 
 BaseMulticlassMachine::BaseMulticlassMachine()
 {
-	SG_ADD(&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
+	SG_ADD(&m_machines, kMachines, "Machines that jointly make up the multi-class machine.");
 }
 
 BaseMulticlassMachine::~BaseMulticlassMachine()

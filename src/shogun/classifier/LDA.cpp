@@ -52,10 +52,10 @@ void LDA::init()
 	m_bdc_svd = true;
 
 	SG_ADD(
-	    &m_gamma, "gamma", "Regularization parameter",
+	    &m_gamma, kGamma, "Regularization parameter",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &m_bdc_svd, "bdc_svd", "Use BDC-SVD algorithm",
+	    &m_bdc_svd, kBdcSvd, "Use BDC-SVD algorithm",
 	    ParameterProperties::SETTING)
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_method, "method", "Method used for LDA calculation",

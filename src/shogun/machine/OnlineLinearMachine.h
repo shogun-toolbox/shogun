@@ -236,6 +236,12 @@ class OnlineLinearMachine : public Machine
 		float32_t bias;
 		/** features */
 		std::shared_ptr<StreamingDotFeatures> features;
+		
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kMw = "m_w";
+		static constexpr std::string_view kBias = "bias";
+		static constexpr std::string_view kFeatures = "features";
 };
 }
 #endif

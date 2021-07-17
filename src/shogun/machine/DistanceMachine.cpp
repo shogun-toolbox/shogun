@@ -30,7 +30,7 @@ DistanceMachine::~DistanceMachine()
 void DistanceMachine::init()
 {
 	distance=NULL;
-	SG_ADD(&distance, "distance", "Distance to use", ParameterProperties::HYPER);
+	SG_ADD(&distance, kDistance, "Distance to use", ParameterProperties::HYPER);
 }
 
 void DistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)

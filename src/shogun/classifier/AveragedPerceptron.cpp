@@ -32,10 +32,10 @@ void AveragedPerceptron::init()
 	SG_ADD(
 	    &learn_rate, kLearnRate, "Learning rate.", ParameterProperties::HYPER)
 	SG_ADD(
-	    &cached_w, "cached_w", "Cached weights that contribute to the average.",
+	    &cached_w, kCachedW, "Cached weights that contribute to the average.",
 	    ParameterProperties::MODEL)
 	SG_ADD(
-	    &cached_bias, "cached_bias",
+	    &cached_bias, kCachedBias,
 	    "Cached bias that contribute to the average.",
 	    ParameterProperties::MODEL)
 }

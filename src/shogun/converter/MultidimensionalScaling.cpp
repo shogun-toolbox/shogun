@@ -29,10 +29,10 @@ MultidimensionalScaling::MultidimensionalScaling() : EmbeddingConverter()
 
 void MultidimensionalScaling::init()
 {
-	SG_ADD(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding");
-	SG_ADD(&m_landmark, "landmark",
+	SG_ADD(&m_eigenvalues, kEigenvalues, "eigenvalues of last embedding");
+	SG_ADD(&m_landmark, kLandmark,
 	    "indicates if landmark approximation should be used");
-	SG_ADD(&m_landmark_number, "landmark_number",
+	SG_ADD(&m_landmark_number, kLandmarkNumber",
 	    "the number of landmarks for approximation", ParameterProperties::HYPER);
 }
 

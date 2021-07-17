@@ -435,14 +435,14 @@ void KernelMachine::init()
 	use_linadd=true;
 	use_bias=true;
 
-	SG_ADD(&kernel, "kernel", "", ParameterProperties::HYPER);
-	SG_ADD(&use_batch_computation, "use_batch_computation",
+	SG_ADD(&kernel, kKernel, "", ParameterProperties::HYPER);
+	SG_ADD(&use_batch_computation, kUseBatchComputation,
 			"Batch computation is enabled.", ParameterProperties::SETTING);
-	SG_ADD(&use_linadd, "use_linadd", "Linadd is enabled.", ParameterProperties::SETTING);
-	SG_ADD(&use_bias, "use_bias", "Bias shall be used.", ParameterProperties::SETTING);
-	SG_ADD(&m_bias, "m_bias", "Bias term.", ParameterProperties::MODEL);
-	SG_ADD(&m_alpha, "m_alpha", "Array of coefficients alpha.", ParameterProperties::MODEL);
-	SG_ADD(&m_svs, "m_svs", "Number of ``support vectors''.", ParameterProperties::MODEL);
+	SG_ADD(&use_linadd, kUselinadd, "Linadd is enabled.", ParameterProperties::SETTING);
+	SG_ADD(&use_bias, kUseBias, "Bias shall be used.", ParameterProperties::SETTING);
+	SG_ADD(&m_bias, kMBias, "Bias term.", ParameterProperties::MODEL);
+	SG_ADD(&m_alpha, kMAlpha, "Array of coefficients alpha.", ParameterProperties::MODEL);
+	SG_ADD(&m_svs, kMSVS, "Number of ``support vectors''.", ParameterProperties::MODEL);
 	watch_method("store_model_features", &KernelMachine::store_model_features);
 }
 

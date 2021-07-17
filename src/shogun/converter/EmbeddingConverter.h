@@ -90,6 +90,12 @@ protected:
 
 	/** kernel to be used */
 	std::shared_ptr<Kernel> m_kernel;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kTargetDim = "target_dim";
+	static constexpr std::string_view kDistance = "distance";
+	static constexpr std::string_view kKernel = "kernel";
 };
 }
 

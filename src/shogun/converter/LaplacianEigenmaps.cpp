@@ -23,8 +23,8 @@ LaplacianEigenmaps::LaplacianEigenmaps() :
 
 void LaplacianEigenmaps::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
-	SG_ADD(&m_tau, "tau", "heat distribution coefficient", ParameterProperties::HYPER);
+	SG_ADD(&m_k, kK, "number of neighbors", ParameterProperties::HYPER);
+	SG_ADD(&m_tau, kTau, "heat distribution coefficient", ParameterProperties::HYPER);
 }
 
 LaplacianEigenmaps::~LaplacianEigenmaps()

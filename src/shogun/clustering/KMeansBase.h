@@ -137,6 +137,16 @@ class KMeansBase : public RandomMixin<DistanceMachine>
 
 		/** Cluster centers */
 		SGMatrix<float64_t> cluster_centers;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kMaxIter = "max_iter";
+		static constexpr std::string_view kK = "k";
+		static constexpr std::string_view kDimensions = "dimensions";
+		static constexpr std::string_view kFixedCenters = "fixed_centers";
+		static constexpr std::string_view kRadiuses = "radiuses";
+		static constexpr std::string_view kMeanspp = "kmeanspp";
+		static constexpr std::string_view kInitialCenters = "initial_centers";	
 };
 }
 #endif

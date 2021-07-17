@@ -47,10 +47,10 @@ std::shared_ptr<StructuredModel> StructuredOutputMachine::get_model() const
 
 void StructuredOutputMachine::register_parameters()
 {
-	SG_ADD(&m_model, "model", "Structured model");
-	SG_ADD(&m_surrogate_loss, "surrogate_loss", "Surrogate loss");
-	SG_ADD(&m_verbose, "verbose", "Verbosity flag");
-	SG_ADD((std::shared_ptr<SGObject>*)&m_helper, "helper", "Training helper");
+	SG_ADD(&m_model, kModel, "Structured model");
+	SG_ADD(&m_surrogate_loss, kSurrogateLoss, "Surrogate loss");
+	SG_ADD(&m_verbose, kVerbose, "Verbosity flag");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_helper, kHelper, "Training helper");
 
 	m_verbose = false;
 	m_helper = NULL;

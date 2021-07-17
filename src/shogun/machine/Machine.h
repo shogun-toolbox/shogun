@@ -317,6 +317,12 @@ class Machine : public StoppableSGObject
 
 		/** solver type */
 		ESolverType m_solver_type;
+		
+				#ifndef SWIG
+	public:
+		static constexpr std::string_view kMaxTrainTime = "max_train_time";
+		static constexpr std::string_view kLabels = "labels";
+
 };
 }
 #endif // _MACHINE_H__

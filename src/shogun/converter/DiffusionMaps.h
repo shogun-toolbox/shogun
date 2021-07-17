@@ -88,6 +88,11 @@ protected:
 
 	/** gaussian kernel width */
 	float64_t m_width;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kT = "t";
+	static constexpr std::string_view kWidth = "width";
 
 };
 }

@@ -21,7 +21,7 @@ Isomap::Isomap() : MultidimensionalScaling()
 
 void Isomap::init()
 {
-	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
+	SG_ADD(&m_k, kK, "number of neighbors", ParameterProperties::HYPER);
 }
 
 Isomap::~Isomap()

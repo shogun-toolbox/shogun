@@ -57,11 +57,11 @@ void HashedDocConverter::init(const std::shared_ptr<Tokenizer>& tzer, int32_t ha
 	else
 		tokenizer = tzer;
 
-	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash");
-	SG_ADD(&ngrams, "ngrams", "Number of consecutive tokens");
-	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip");
-	SG_ADD(&should_normalize, "should_normalize", "Whether to normalize vectors or not");
-	SG_ADD(&tokenizer, "tokenizer", "Tokenizer");
+	SG_ADD(&num_bits, kNumBits, "Number of bits of the hash");
+	SG_ADD(&ngrams, kNgrams, "Number of consecutive tokens");
+	SG_ADD(&tokens_to_skip, kTokensToSkip, "Number of tokens to skip");
+	SG_ADD(&should_normalize, kShouldNormalize, "Whether to normalize vectors or not");
+	SG_ADD(&tokenizer, kTokenizer, "Tokenizer");
 }
 
 const char* HashedDocConverter::get_name() const

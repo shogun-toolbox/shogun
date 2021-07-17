@@ -98,6 +98,10 @@ class DistanceMachine : public Machine
 	protected:
 		/** the distance */
 		std::shared_ptr<Distance> distance;
+		
+#ifndef SWIG
+        public:
+               static constexpr std::string_view kDistance = "distance";
 };
 }
 #endif

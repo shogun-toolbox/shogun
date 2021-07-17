@@ -70,6 +70,10 @@ class LinearStructuredOutputMachine : public StructuredOutputMachine
 	protected:
 		/** weight vector */
 		SGVector< float64_t > m_w;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kW = "w";
 
 }; /* class LinearStructuredOutputMachine */
 

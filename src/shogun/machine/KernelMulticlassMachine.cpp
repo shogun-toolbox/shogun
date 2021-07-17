@@ -75,7 +75,7 @@ void KernelMulticlassMachine::store_model_features()
 
 KernelMulticlassMachine::KernelMulticlassMachine() : MulticlassMachine(), m_kernel(NULL)
 {
-	SG_ADD(&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
+	SG_ADD(&m_kernel, kKernel, "The kernel to be used", ParameterProperties::HYPER);
 }
 
 /** standard constructor
@@ -88,7 +88,7 @@ KernelMulticlassMachine::KernelMulticlassMachine(std::shared_ptr<MulticlassStrat
 	MulticlassMachine(std::move(strategy),std::move(machine),std::move(labs)), m_kernel(NULL)
 {
 	set_kernel(std::move(kernel));
-	SG_ADD(&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
+	SG_ADD(&m_kernel, kKernel, "The kernel to be used", ParameterProperties::HYPER);
 }
 
 /** destructor */

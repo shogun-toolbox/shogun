@@ -152,6 +152,14 @@ protected:
 
 	/** the number of tokens to skip */
 	int32_t tokens_to_skip;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kNumBits = "num_bits";
+	static constexpr std::string_view kNgrams = "ngrams";
+	static constexpr std::string_view kTokensToSkip = "tokens_to_skip";
+	static constexpr std::string_view kShouldNormalize = "should_normalize";
+	static constexpr std::string_view kTokenizer = "tokenizer";
 };
 }
 

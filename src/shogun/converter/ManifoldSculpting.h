@@ -92,6 +92,12 @@ private:
 	 * iterations
 	 */
 	float64_t m_max_iteration;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kK = "k";
+	static constexpr std::string_view kQuishingRate = "quishing_rate";
+	static constexpr std::string_view kMaxIteration = "max_iteration";
 
 }; /* class ManifoldSculpting */
 

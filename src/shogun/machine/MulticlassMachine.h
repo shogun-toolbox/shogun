@@ -203,6 +203,10 @@ class MulticlassMachine : public BaseMulticlassMachine
 
 		/** machine */
 		std::shared_ptr<Machine> m_machine;
-};
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kMulticlassStrategy = "multiclass_strategy";
+		static constexpr std::string_view kMachine = "kmachine";
 }
 #endif

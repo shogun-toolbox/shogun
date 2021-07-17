@@ -21,8 +21,8 @@ FactorAnalysis::FactorAnalysis() :
 
 void FactorAnalysis::init()
 {
-	SG_ADD(&m_max_iteration, "max_iteration", "maximum number of iterations");
-	SG_ADD(&m_epsilon, "epsilon", "convergence parameter");
+	SG_ADD(&m_max_iteration, kMaxIteration, "maximum number of iterations");
+	SG_ADD(&m_epsilon, kEpsilon, "convergence parameter");
 }
 
 FactorAnalysis::~FactorAnalysis()

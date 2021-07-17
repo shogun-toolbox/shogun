@@ -144,6 +144,12 @@ namespace shogun
 		bool m_compute_variance;
 		/**use in inference method*/
 		std::shared_ptr<Features> m_inducing_features;
+		
+		#ifndef SWIG
+       public:
+             static constexpr std::string_view kInterfaceMethod = "inference_method";
+             static constexpr std::string_view kComputeVariance = "compute_variance";
+             static constexpr std::string_view kInducingFeatures = "inducing_features";
 	};
 } // namespace shogun
 #endif /* _GAUSSIANPROCESSMACHINE_H_ */

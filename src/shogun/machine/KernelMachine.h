@@ -264,6 +264,16 @@ class KernelMachine : public Machine
 
 		/** array of ``support vectors'' (indices of feature objects) */
 		SGVector<int32_t> m_svs;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kKernel = "kernel";
+		static constexpr std::string_view kUseBatchComputation = "use_batch_computation";
+		static constexpr std::string_view kUselinadd = "use_linadd";
+		static constexpr std::string_view kMBias = "m_bias";
+		static constexpr std::string_view kMAlpha = "m_alpha";
+		static constexpr std::string_view kMSVS = "m_svs";
+		static constexpr std::string_view kFeatures = "features";
 };
 }
 #endif /* _KERNEL_MACHINE_H__ */

@@ -137,6 +137,13 @@ namespace shogun
 		private:
 			/** initalize the values to default values */
 			void init();
+			
+	#ifndef SWIG
+	       public:
+		static constexpr std::string_view kC = "C";
+		static constexpr std::string_view kEpsilon = "epsilon";
+		static constexpr std::string_view kMaxIter = "max_iter";
+		static constexpr std::string_view kLatentModel = "latent_model";
 	};
 }
 

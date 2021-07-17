@@ -71,6 +71,6 @@ std::shared_ptr<StructuredLabels> LinearStructuredOutputMachine::apply_structure
 
 void LinearStructuredOutputMachine::register_parameters()
 {
-	SG_ADD(&m_w, "w", "Weight vector", ParameterProperties::MODEL);
+	SG_ADD(&m_w, kW, "Weight vector", ParameterProperties::MODEL);
 }
 

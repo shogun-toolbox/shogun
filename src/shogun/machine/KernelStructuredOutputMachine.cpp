@@ -47,5 +47,5 @@ std::shared_ptr<Kernel> KernelStructuredOutputMachine::get_kernel() const
 
 void KernelStructuredOutputMachine::register_parameters()
 {
-	SG_ADD((std::shared_ptr<SGObject>*)&m_kernel, "m_kernel", "The kernel", ParameterProperties::HYPER);
+	SG_ADD((std::shared_ptr<SGObject>*)&m_kernel, kMKernel, "The kernel", ParameterProperties::HYPER);
 }

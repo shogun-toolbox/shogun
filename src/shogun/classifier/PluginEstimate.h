@@ -221,6 +221,14 @@ class PluginEstimate: public Machine
 
 		/** features */
 		std::shared_ptr<StringFeatures<uint16_t>> features;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kPosPseudo = "pos_pseudo";
+		static constexpr std::string_view kNegPseudo = "neg_pseudo";
+		static constexpr std::string_view kPosModel = "pos_model";
+		static constexpr std::string_view kNegModel = "neg_model";
+		static constexpr std::string_view kFeatures = "features";	
 };
 }
 #endif

@@ -93,6 +93,10 @@ class KernelMulticlassMachine : public MulticlassMachine
 
 		/** kernel */
 		std::shared_ptr<Kernel> m_kernel;
+		
+	#ifndef SWIG
+	public:
+		static constexpr std::string_view kKernel = "kernel";
 
 };
 }

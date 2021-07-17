@@ -124,6 +124,12 @@ protected:
 
 	/** number of landmarks */
 	int32_t m_landmark_number;
+	
+	#ifndef SWIG
+public:
+	static constexpr std::string_view kEigenvalues = "eigenvalues";
+	static constexpr std::string_view kLandmark = "landmark";
+	static constexpr std::string_view kLandmarkNumber = "landmark_number";
 
 };
 

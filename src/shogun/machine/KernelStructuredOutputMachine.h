@@ -60,6 +60,10 @@ class KernelStructuredOutputMachine : public StructuredOutputMachine
 	protected:
 		/** kernel */
 		std::shared_ptr<Kernel> m_kernel;
+		
+		#ifndef SWIG
+	public:
+		static constexpr std::string_view kMKernel = "m_kernel";
 
 }; /* class KernelStructuredOutputMachine */
 

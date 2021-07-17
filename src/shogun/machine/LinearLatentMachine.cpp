@@ -120,9 +120,9 @@ void LinearLatentMachine::init()
 	m_max_iter = 400;
 	m_model = NULL;
 
-	SG_ADD(&m_C, "C", "Cost constant.");
-	SG_ADD(&m_epsilon, "epsilon", "Convergence precision.");
-	SG_ADD(&m_max_iter, "max_iter", "Maximum iterations.");
-	SG_ADD(&m_model, "latent_model", "Latent Model.");
+	SG_ADD(&m_C, kC, "Cost constant.");
+	SG_ADD(&m_epsilon, kEpsilon, "Convergence precision.");
+	SG_ADD(&m_max_iter, kMaxIter, "Maximum iterations.");
+	SG_ADD(&m_model, kLatentModel, "Latent Model.");
 }
 

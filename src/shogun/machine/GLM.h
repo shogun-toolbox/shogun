@@ -281,6 +281,16 @@ namespace shogun
 
 			return result;
 		}
+		
+				#ifndef SWIG
+       public:
+             static constexpr std::string_view kDistributionType = "distribution_type";
+             static constexpr std::string_view kEta = "eta";
+             static constexpr std::string_view kLambda = "lambda";
+             static constexpr std::string_view kAlpha = "alpha";
+             static constexpr std::string_view kTolerance = "tolerance";
+             static constexpr std::string_view kLearningRate = "learning_rate";
+             static constexpr std::string_view kInterfaceMethod = "distribution_type";
 	};
 } // namespace shogun
 // #endif
