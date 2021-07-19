@@ -1361,6 +1361,18 @@ std::shared_ptr<const T> make_clone(std::shared_ptr<const T> orig, ParameterProp
 	return std::static_pointer_cast<const T>(clone);
 }
 
+template <class T>
+std::shared_ptr<T> shallow_copy(std::shared_ptr<T> orig, ParameterProperties pp = ParameterProperties::ALL ^ ParameterProperties::MODEL ^ ParameterProperties::READONLY)
+{
+	return make_clone(orig, pp);
+}
+
+template <class T>
+std::shared_ptr<const T> shallow_copy(std::shared_ptr<const T> orig, ParameterProperties pp = ParameterProperties::ALL ^ ParameterProperties::MODEL ^ ParameterProperties::READONLY)
+{
+	return make_clone(orig, pp);
+}
+
 #ifndef SWIG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 namespace sgo_details
