@@ -1824,7 +1824,8 @@ namespace shogun
 			{
 				auto max_it = std::max_element(a_copy.begin(), a_copy.begin() + n);
 				result = (a_copy[n] + *max_it) / 2;
-      }
+			}
+		}
 
 			return result;
 		}
