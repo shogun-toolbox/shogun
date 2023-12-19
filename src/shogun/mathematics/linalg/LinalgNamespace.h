@@ -38,6 +38,8 @@
 #include <shogun/mathematics/linalg/LinalgEnums.h>
 #include <shogun/mathematics/linalg/SGLinalg.h>
 
+#include <algorithm>
+
 namespace shogun
 {
 
@@ -1814,18 +1816,16 @@ namespace shogun
 		T median(const SGVector<T>& a)
 		{
 			require(a.size() > 0, "Vector cannot be empty!\n");
-			T result;
 			auto a_copy = a;
 			int64_t n = a.size() / 2;
 			std::nth_element(a_copy.begin(), a_copy.begin() + n, a_copy.end());
+			T result = a_copy[n];
 			if (a_copy.size() % 2 == 0)
 			{
-				std::nth_element(
-				    a_copy.begin(), a_copy.begin() + n - 1, a_copy.end());
-				result = (a_copy[n] + a_copy[n - 1]) / 2;
+				auto max_it = std::max_element(a_copy.begin(), a_copy.begin() + n);
+				result = (a_copy[n] + *max_it) / 2;
 			}
-			else
-				result = a_copy[n];
+		}
 
 			return result;
 		}
