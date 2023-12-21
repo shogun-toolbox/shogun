@@ -77,12 +77,6 @@ class StructuredOutputMachine : public Machine
 			return "StructuredOutputMachine";
 		}
 
-		/** set labels
-		 *
-		 * @param lab labels
-		 */
-		void set_labels(std::shared_ptr<Labels> lab) override;
-
 		/** set features
 		 *
 		 * @param f features

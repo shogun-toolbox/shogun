@@ -157,11 +157,10 @@ TEST(CHAIDTree, test_tree_structure)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c=std::make_shared<CHAIDTree>(0);
-	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->set_alpha_merge(Math::MIN_REAL_NUMBER);
 	c->set_alpha_split(Math::MAX_REAL_NUMBER);
-	c->train(feats);
+	c->train(feats, labels);
 
 	auto node=c->get_root();
 	EXPECT_EQ(2,node->data.attribute_id);
@@ -190,7 +189,7 @@ TEST(CHAIDTree, test_tree_structure)
 	ft[2]=1;
 	ft[3]=1;
 	c->set_feature_types(ft);
-	c->train(feats);
+	c->train(feats, labels);
 
 
 
@@ -251,11 +250,10 @@ TEST(CHAIDTree, test_classify_multiclass)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c=std::make_shared<CHAIDTree>(0);
-	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->set_alpha_merge(Math::MIN_REAL_NUMBER);
 	c->set_alpha_split(Math::MAX_REAL_NUMBER);
-	c->train(feats);
+	c->train(feats, labels);
 
 	SGMatrix<float64_t> test(4,5);
 	test(0,0)=overcast;
@@ -298,7 +296,7 @@ TEST(CHAIDTree, test_classify_multiclass)
 	ft[2]=1;
 	ft[3]=1;
 	c->set_feature_types(ft);
-	c->train(feats);
+	c->train(feats, labels);
 
 
 	result=c->apply_multiclass(test_feats);

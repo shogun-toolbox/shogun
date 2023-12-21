@@ -11,11 +11,11 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![set_parameters]
-Machine perceptron = create_machine("AveragedPerceptron", labels=labels_train, learn_rate=1.0, max_iterations=1000)
+Machine perceptron = create_machine("AveragedPerceptron", learn_rate=1.0, max_iterations=1000)
 #![set_parameters]
 
 #![train_and_apply]
-perceptron.train(features_train)
+perceptron.train(features_train, labels_train)
 Labels labels_predict = perceptron.apply(features_test)
 #![train_and_apply]
 

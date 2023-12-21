@@ -153,11 +153,10 @@ TEST(RandomCARTree, classify_nominal)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c=std::make_shared<RandomCARTree>();
-	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->set_feature_subset_size(4);
 	c->put("seed", seed);
-	c->train(feats);
+	c->train(feats, labels);
 
 	SGMatrix<float64_t> test(4,5);
 	test(0,0)=overcast;

@@ -22,11 +22,11 @@ MulticlassStrategy rnd_dense_strategy=create_multiclass_strategy("ECOCStrategy",
 #![choose_strategy]
 
 #![create_instance]
-Machine mc_classifier=create_machine("LinearMulticlassMachine", multiclass_strategy=rnd_dense_strategy, machine=classifier, labels=labels_train)
+Machine mc_classifier=create_machine("LinearMulticlassMachine", multiclass_strategy=rnd_dense_strategy, machine=classifier)
 #![create_instance]
 
 #![train_and_apply]
-mc_classifier.train(features_train)
+mc_classifier.train(features_train, labels_train)
 Labels labels_predict = mc_classifier.apply(features_test)
 #![train_and_apply]
 

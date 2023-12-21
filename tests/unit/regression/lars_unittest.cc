@@ -106,8 +106,7 @@ TEST(LeastAngleRegression, lasso_n_greater_than_d)
 	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	auto lars=std::make_shared<LeastAngleRegression>();
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->train(features, labels);
 
 	SGVector<float64_t> active3=SGVector<float64_t>(lars->get_w_for_var(3));
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
@@ -138,8 +137,7 @@ TEST(LeastAngleRegression, lasso_n_less_than_d)
 	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	auto lars=std::make_shared<LeastAngleRegression>();
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->train(features, labels);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
 	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
@@ -169,8 +167,7 @@ TEST(LeastAngleRegression, lars_n_greater_than_d)
 	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	auto lars=std::make_shared<LeastAngleRegression>(false);
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->train(features, labels);
 
 	SGVector<float64_t> active3=SGVector<float64_t>(lars->get_w_for_var(3));
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
@@ -201,8 +198,7 @@ TEST(LeastAngleRegression, lars_n_less_than_d)
 	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	auto lars=std::make_shared<LeastAngleRegression>(false);
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->train(features, labels);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
 	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));
@@ -240,12 +236,11 @@ void lars_n_less_than_d_feature_test_templated()
 	auto lars=std::make_shared<LeastAngleRegression>(false);
 
 
-	lars->set_labels(labels);
 
 	//Catch exceptions thrown when training, clean up
 	try
 	{
-		lars->train(features);
+		lars->train(features, labels);
 	}
 	catch(...)
 	{
@@ -427,8 +422,7 @@ TEST(LeastAngleRegression, ols_equivalence)
 
 	auto labels = std::make_shared<RegressionLabels>(lab);
 	auto lars = std::make_shared<LeastAngleRegression>(false);
-	lars->set_labels(labels);
-	lars->train(features);
+	lars->train(features, labels);
 	// Full LAR model
 	SGVector<float64_t> w=lars->get_w();
 	Map<VectorXd> map_w(w.vector, w.size());
@@ -456,10 +450,9 @@ TEST(LeastAngleRegression, early_stop_l1_norm)
 	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	auto lars=std::make_shared<LeastAngleRegression>(false);
-	lars->set_labels(labels);
 	// set max l1 norm
 	lars->put("max_l1_norm", 1.0);
-	lars->train(features);
+	lars->train(features, labels);
 
 	SGVector<float64_t> active2=SGVector<float64_t>(lars->get_w_for_var(2));
 	SGVector<float64_t> active1=SGVector<float64_t>(lars->get_w_for_var(1));

@@ -34,9 +34,8 @@ def multiclass_c45classifiertree(train=traindat,test=testdat,labels=label_traind
 	feats_train.add_subset(trsubset)
 
 	c=C45ClassifierTree()
-	c.set_labels(train_labels)
 	c.set_feature_types(ft)
-	c.train(feats_train)
+	c.train(feats_train, train_labels)
 
 	train_labels.remove_subset()
 	feats_train.remove_subset()

@@ -25,15 +25,12 @@ GaussianNaiveBayes::GaussianNaiveBayes() : NativeMulticlassMachine(), m_features
 	init();
 };
 
-GaussianNaiveBayes::GaussianNaiveBayes(const std::shared_ptr<Features>& train_examples,
-	const std::shared_ptr<Labels>& train_labels) : NativeMulticlassMachine(), m_features(NULL),
+GaussianNaiveBayes::GaussianNaiveBayes(const std::shared_ptr<Features>& train_examples)
+	: NativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
 	init();
-	ASSERT(train_examples->get_num_vectors() == train_labels->get_num_labels())
-	set_labels(train_labels);
-
 	if (!train_examples->has_property(FP_DOT))
 		error("Specified features are not of type CDotFeatures");
 
@@ -59,7 +56,7 @@ void GaussianNaiveBayes::set_features(std::shared_ptr<Features> features)
 	m_features = features->as<DotFeatures>();
 }
 
-bool GaussianNaiveBayes::train_machine(std::shared_ptr<Features> data)
+bool GaussianNaiveBayes::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -70,9 +67,9 @@ bool GaussianNaiveBayes::train_machine(std::shared_ptr<Features> data)
 	}
 
 	// get int labels to train_labels and check length equality
-	ASSERT(m_labels)
+	ASSERT(labs)
 	SGVector<int32_t> train_labels =
-	    multiclass_labels(m_labels)->get_int_labels();
+	    multiclass_labels(labs)->get_int_labels();
 	ASSERT(m_features->get_num_vectors()==train_labels.vlen)
 
 	// find minimal and maximal label

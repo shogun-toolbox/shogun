@@ -33,21 +33,27 @@ namespace shogun
 		}
 
 	protected:
-		bool train_dense(std::shared_ptr<Features> data) override
+		bool train_dense(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs) override
 		{
 			auto* this_casted = static_cast<P*>(this);
 			switch (data->get_feature_type())
 			{
 			case F_DREAL:
 				return this_casted->template train_machine_templated<float64_t>(
-				    std::dynamic_pointer_cast<DenseFeatures<float64_t>>(data));
+				    std::dynamic_pointer_cast<DenseFeatures<float64_t>>(data),
+				    labs);
 			case F_SHORTREAL:
 				return this_casted->template train_machine_templated<float32_t>(
-				    std::dynamic_pointer_cast<DenseFeatures<float32_t>>(data));
+				    std::dynamic_pointer_cast<DenseFeatures<float32_t>>(data),
+				    labs);
 			case F_LONGREAL:
 				return this_casted
 				    ->template train_machine_templated<floatmax_t>(
-				        std::dynamic_pointer_cast<DenseFeatures<floatmax_t>>(data));
+				        std::dynamic_pointer_cast<DenseFeatures<floatmax_t>>(
+				            data),
+				        labs);
 			default:
 				error(
 				    "Training with {} of provided type {} is not "
@@ -83,20 +89,22 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_string(std::shared_ptr<Features> data)
+		virtual bool train_string(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs)
 		{
 			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_BYTE:
 				return this_casted->template train_machine_templated<uint8_t>(
-				    data->as<StringFeatures<uint8_t>>());
+				    data->as<StringFeatures<uint8_t>>(), labs);
 			case F_CHAR:
 				return this_casted->template train_machine_templated<char>(
-				    data->as<StringFeatures<char>>());
+				    data->as<StringFeatures<char>>(), labs);
 			case F_WORD:
 				return this_casted->template train_machine_templated<uint16_t>(
-				    data->as<StringFeatures<uint16_t>>());
+				    data->as<StringFeatures<uint16_t>>(), labs);
 			default:
 				error(
 				    "Training with {} of provided type {} is "

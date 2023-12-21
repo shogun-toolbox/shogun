@@ -181,6 +181,7 @@ void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 
 bool KMeans::train_machine(std::shared_ptr<Features> data)
 {
+	m_features = data;
 	initialize_training(data);
 	Lloyd_KMeans(cluster_centers, k);
 	compute_cluster_variances();

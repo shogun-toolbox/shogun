@@ -105,7 +105,8 @@ void C45ClassifierTree::clear_feature_types()
 	m_types_set=false;
 }
 
-bool C45ClassifierTree::train_machine(std::shared_ptr<Features> data)
+bool C45ClassifierTree::train_machine(const std::shared_ptr<Features>& data, 
+	const std::shared_ptr<Labels>& labs)
 {
 	require(data,"Data required for training");
 	require(data->get_feature_class()==C_DENSE,"Dense data required for training");
@@ -140,7 +141,7 @@ bool C45ClassifierTree::train_machine(std::shared_ptr<Features> data)
 	SGVector<int32_t> feature_ids(num_features);
 	feature_ids.range_fill();
 
-	set_root(C45train(data, m_weights, multiclass_labels(m_labels), feature_ids, 0));
+	set_root(C45train(data, m_weights, multiclass_labels(labs), feature_ids, 0));
 	if (m_root)
 	{
 		compute_feature_importance(num_features, m_root);

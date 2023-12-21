@@ -24,8 +24,8 @@ MulticlassLibLinear::MulticlassLibLinear() :
 	init_defaults();
 }
 
-MulticlassLibLinear::MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs) :
-	RandomMixin<LinearMulticlassMachine>(std::make_shared<MulticlassOneVsRestStrategy>(),std::move(features),nullptr,std::move(labs))
+MulticlassLibLinear::MulticlassLibLinear(float64_t C) :
+	RandomMixin<LinearMulticlassMachine>(std::make_shared<MulticlassOneVsRestStrategy>(), nullptr)
 {
 	register_parameters();
 	init_defaults();
@@ -60,19 +60,14 @@ SGVector<int32_t> MulticlassLibLinear::get_support_vectors() const
 	if (!m_train_state)
 		error("Please enable save_train_state option and train machine.");
 
-	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS)
-
-	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = multiclass_labels(m_labels)->get_num_classes();
-
 	v_array<int32_t> nz_idxs;
-	nz_idxs.reserve(num_vectors);
+	nz_idxs.reserve(m_num_vectors);
 
-	for (int32_t i=0; i<num_vectors; i++)
+	for (int32_t i=0; i<m_num_vectors; i++)
 	{
-		for (int32_t y=0; y<num_classes; y++)
+		for (int32_t y=0; y<m_num_classes; y++)
 		{
-			if (Math::abs(m_train_state->alpha[i*num_classes+y])>1e-6)
+			if (Math::abs(m_train_state->alpha[i*m_num_classes+y])>1e-6)
 			{
 				nz_idxs.push(i);
 				break;
@@ -89,28 +84,23 @@ SGMatrix<float64_t> MulticlassLibLinear::obtain_regularizer_matrix() const
 	return SGMatrix<float64_t>();
 }
 
-bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
+bool MulticlassLibLinear::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
-
-	ASSERT(m_features)
-	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
-	ASSERT(m_multiclass_strategy)
-	init_strategy();
-
-	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = multiclass_labels(m_labels)->get_num_classes();
+	require(m_multiclass_strategy, "Multiclass strategy not set");
+	init_strategy(labs);
+	auto feats = data->as<DotFeatures>();
+	m_num_vectors = data->get_num_vectors();
+	m_num_classes = multiclass_labels(labs)->get_num_classes();
 	int32_t bias_n = m_use_bias ? 1 : 0;
 
 	liblinear_problem mc_problem;
-	mc_problem.l = num_vectors;
-	mc_problem.n = m_features->get_dim_feature_space() + bias_n;
+	mc_problem.l = m_num_vectors;
+	mc_problem.n = feats->get_dim_feature_space() + bias_n;
 	mc_problem.y = SG_MALLOC(float64_t, mc_problem.l);
-	for (int32_t i=0; i<num_vectors; i++)
-		mc_problem.y[i] = multiclass_labels(m_labels)->get_int_label(i);
+	for (int32_t i=0; i<m_num_vectors; i++)
+		mc_problem.y[i] = multiclass_labels(labs)->get_int_label(i);
 
-	mc_problem.x = m_features;
+	mc_problem.x = feats;
 	mc_problem.use_bias = m_use_bias;
 
 	SGMatrix<float64_t> w0 = obtain_regularizer_matrix();
@@ -118,27 +108,27 @@ bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
 	if (!m_train_state)
 		m_train_state = new mcsvm_state();
 
-	float64_t* C = SG_MALLOC(float64_t, num_vectors);
-	for (int32_t i=0; i<num_vectors; i++)
+	float64_t* C = SG_MALLOC(float64_t, m_num_vectors);
+	for (int32_t i=0; i<m_num_vectors; i++)
 		C[i] = m_C;
 
-	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
+	Solver_MCSVM_CS solver(&mc_problem,m_num_classes,C,w0.matrix,m_epsilon,
 	                       m_max_iter,m_max_train_time,m_train_state);
 	solver.solve(m_prng);
 
 	m_machines.clear();
-	for (int32_t i=0; i<num_classes; i++)
+	for (int32_t i=0; i<m_num_classes; i++)
 	{
 		auto machine = std::make_shared<LinearMachine>();
 		SGVector<float64_t> cw(mc_problem.n-bias_n);
 
 		for (int32_t j=0; j<mc_problem.n-bias_n; j++)
-			cw[j] = m_train_state->w[j*num_classes+i];
+			cw[j] = m_train_state->w[j*m_num_classes+i];
 
 		machine->set_w(cw);
 
 		if (m_use_bias)
-			machine->set_bias(m_train_state->w[(mc_problem.n-bias_n)*num_classes+i]);
+			machine->set_bias(m_train_state->w[(mc_problem.n-bias_n)*m_num_classes+i]);
 
 		m_machines.push_back(machine);
 	}

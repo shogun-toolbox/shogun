@@ -35,16 +35,11 @@ LibLinear::LibLinear(LIBLINEAR_SOLVER_TYPE l) : RandomMixin<LinearMachine>()
 	set_liblinear_solver_type(l);
 }
 
-LibLinear::LibLinear(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
-    : RandomMixin<LinearMachine>()
+LibLinear::LibLinear(float64_t C) : RandomMixin<LinearMachine>()
 {
 	init();
 	set_C(C, C);
 	set_bias_enabled(true);
-
-	set_features(std::move(traindat));
-	set_labels(std::move(trainlab));
-	init_linear_term();
 }
 
 void LibLinear::init()
@@ -73,22 +68,19 @@ LibLinear::~LibLinear()
 {
 }
 
-bool LibLinear::train_machine(std::shared_ptr<Features> data)
+bool LibLinear::train(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+{
+	m_num_labels = labs->get_num_labels();
+	return train_machine(data->as<DotFeatures>(), labs);
+}
+
+bool LibLinear::train_machine(
+    const std::shared_ptr<DotFeatures>& features, const std::shared_ptr<Labels>& labs)
 {
 
-	ASSERT(m_labels)
-	init_linear_term();
+	init_linear_term(labs);
 
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-
-		set_features(std::static_pointer_cast<DotFeatures>(data));
-	}
-	ASSERT(features)
-
-	int32_t num_train_labels = m_labels->get_num_labels();
+	int32_t num_train_labels = labs->get_num_labels();
 	int32_t num_feat = features->get_dim_feature_space();
 	int32_t num_vec = features->get_num_vectors();
 
@@ -144,7 +136,7 @@ bool LibLinear::train_machine(std::shared_ptr<Features> data)
 	double Cp = get_C1();
 	double Cn = get_C2();
 
-	auto labels = binary_labels(m_labels);
+	auto labels = binary_labels(labs);
 	for (int32_t i = 0; i < prob.l; i++)
 	{
 		prob.y[i] = labels->get_int_label(i);
@@ -1372,19 +1364,9 @@ void LibLinear::solve_l2r_lr_dual(
 
 void LibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 {
-	if (!m_labels)
-		error("Please assign labels first!");
-
-	int32_t num_labels = m_labels->get_num_labels();
-
-	if (num_labels != linear_term.vlen)
-	{
-		error(
-		    "Number of labels ({}) does not match number"
+	require(m_num_labels == linear_term.vlen, "Number of labels ({}) does not match number"
 		    " of entries ({}) in linear term \n",
-		    num_labels, linear_term.vlen);
-	}
-
+		    m_num_labels, linear_term.vlen);
 	m_linear_term = linear_term;
 }
 
@@ -1396,12 +1378,10 @@ SGVector<float64_t> LibLinear::get_linear_term()
 	return m_linear_term;
 }
 
-void LibLinear::init_linear_term()
+void LibLinear::init_linear_term(const std::shared_ptr<Labels>& labs)
 {
-	if (!m_labels)
-		error("Please assign labels first!");
 
-	m_linear_term = SGVector<float64_t>(m_labels->get_num_labels());
+	m_linear_term = SGVector<float64_t>(labs->get_num_labels());
 	SGVector<float64_t>::fill_vector(
 	    m_linear_term.vector, m_linear_term.vlen, -1.0);
 }

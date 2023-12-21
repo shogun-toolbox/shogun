@@ -531,7 +531,7 @@ float64_t FactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 
 
 	// 2.2 Train SGD
-	sgd->train();
+	sgd->train(fg_feats_train, fg_labels_train);
 
 	// 3.1 Evaluation
 	auto labels_sgd = sgd->apply()->as<StructuredLabels>();

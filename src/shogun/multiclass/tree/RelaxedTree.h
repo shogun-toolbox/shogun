@@ -45,33 +45,12 @@ public:
 	/** apply machine to data in means of multiclass classification problem */
 	std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL) override;
 
-	/** set features
-	 * @param feats features
-	 */
-	void set_features(std::shared_ptr<DenseFeatures<float64_t> >feats)
-	{
-		m_feats = std::move(feats);
-	}
-
 	/** set kernel
 	 * @param kernel the kernel to be used
 	 */
 	virtual void set_kernel(std::shared_ptr<Kernel >kernel)
 	{
 		m_kernel = std::move(kernel);
-	}
-
-	/** set labels
-	 *
-	 * @param lab labels
-	 */
-	void set_labels(std::shared_ptr<Labels> lab) override
-	{
-		auto mlab = multiclass_labels(lab);
-		require(lab, "requires MulticlassLabes");
-
-		Machine::set_labels(mlab);
-		m_num_classes = mlab->get_num_classes();
 	}
 
 	/** set machine for confusion matrix
@@ -162,20 +141,6 @@ public:
 		return m_max_num_iter;
 	}
 
-	/** train machine
-	 *
-	 * @param data training data (parameter can be avoided if distance or
-	 * kernel-based classifiers are used and distance/kernels are
-	 * initialized with train data).
-	 * If flag is set, model features will be stored after training.
-	 *
-	 * @return whether training was successful
-	 */
-	bool train(std::shared_ptr<Features> data=NULL) override
-	{
-		return Machine::train(data);
-	}
-
 	/** entry type */
 	typedef std::pair<std::pair<int32_t, int32_t>, float64_t> entry_t;
 protected:
@@ -193,21 +158,24 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	bool train_machine(std::shared_ptr<Features> data) override;
+	bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 	/** train node */
-	std::shared_ptr<bnode_t> train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes);
+	std::shared_ptr<bnode_t> train_node(const SGMatrix<float64_t> &conf_mat, SGVector<int32_t> classes, 
+			const std::shared_ptr<Features>&, const std::shared_ptr<Labels>&);
 	/** init node */
 	std::vector<entry_t> init_node(const SGMatrix<float64_t> &global_conf_mat, SGVector<int32_t> classes);
 	/** train node with initialization */
-	SGVector<int32_t> train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes, const std::shared_ptr<SVM >&svm);
+	SGVector<int32_t> train_node_with_initialization(const RelaxedTree::entry_t &mu_entry, SGVector<int32_t> classes,
+		 const std::shared_ptr<SVM >&svm, const std::shared_ptr<Features>&, const std::shared_ptr<Labels>&);
 
 	/** compute score */
 	float64_t compute_score(SGVector<int32_t> mu, const std::shared_ptr<SVM >&svm);
 	/** color label space */
-	SGVector<int32_t> color_label_space(std::shared_ptr<SVM >svm, SGVector<int32_t> classes);
+	SGVector<int32_t> color_label_space(std::shared_ptr<SVM >svm, SGVector<int32_t> classes,
+		const std::shared_ptr<Features>&, const std::shared_ptr<Labels>&);
 	/** evaluate binary model K */
-	SGVector<float64_t> eval_binary_model_K(const std::shared_ptr<SVM >&svm);
+	SGVector<float64_t> eval_binary_model_K(const std::shared_ptr<SVM >&svm, const std::shared_ptr<Features>& data);
 
 	/** enforce balance constraints upper */
 	void enforce_balance_constraints_upper(SGVector<int32_t> &mu, SGVector<float64_t> &delta_neg, SGVector<float64_t> &delta_pos, int32_t B_prime, SGVector<float64_t>& xi_neg_class);

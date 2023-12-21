@@ -71,18 +71,6 @@ std::shared_ptr<MulticlassLabels> GaussianProcessClassification::apply_multiclas
 	require(m_method->supports_multiclass(), "{} with {} doesn't support "
 			"multi classification\n", m_method->get_name(), lik->get_name());
 
-	// if regression data equals to NULL, then apply classification on training
-	// features
-	if (!data)
-	{
-		if (m_method->get_inference_type()==INF_SPARSE)
-		{
-			not_implemented(SOURCE_LOCATION);
-		}
-		else
-			data=m_method->get_features();
-	}
-
 	const index_t n=data->get_num_vectors();
 	SGVector<float64_t> mean=get_mean_vector(data);
 	const index_t C=mean.vlen/n;
@@ -109,21 +97,6 @@ std::shared_ptr<BinaryLabels> GaussianProcessClassification::apply_binary(
 	auto lik=m_method->get_model();
 	require(m_method->supports_binary(), "{} with {} doesn't support "
 			"binary classification\n", m_method->get_name(), lik->get_name());
-
-	if (!data)
-	{
-		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
-		{
-#ifdef USE_GPL_SHOGUN
-			auto fitc_method = m_method->as<SingleFITCLaplaceInferenceMethod>();
-			data=fitc_method->get_inducing_features();
-#else
-			gpl_only(SOURCE_LOCATION);
-#endif //USE_GPL_SHOGUN
-		}
-		else
-			data=m_method->get_features();
-	}
 
 	auto result=std::make_shared<BinaryLabels>(get_mean_vector(data));
 	if (m_compute_variance)

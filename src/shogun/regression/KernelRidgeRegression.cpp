@@ -23,13 +23,13 @@ KernelRidgeRegression::KernelRidgeRegression()
 	init();
 }
 
-KernelRidgeRegression::KernelRidgeRegression(float64_t tau, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: KernelMachine()
+KernelRidgeRegression::KernelRidgeRegression(
+    float64_t tau, std::shared_ptr<Kernel> k)
+    : KernelMachine()
 {
 	init();
 
 	set_tau(tau);
-	set_labels(std::move(lab));
 	set_kernel(std::move(k));
 }
 
@@ -64,23 +64,10 @@ bool KernelRidgeRegression::solve_krr_system()
 	return true;
 }
 
-bool KernelRidgeRegression::train_machine(std::shared_ptr<Features >data)
+bool KernelRidgeRegression::train_machine(std::shared_ptr<Features> data)
 {
-	require(m_labels, "No labels set");
-
-	if (data)
-	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
-			error("Number of training vectors does not match number of labels");
-		kernel->init(data, data);
-	}
-	ASSERT(kernel && kernel->has_features())
-
-	if (m_labels->get_num_labels() != kernel->get_num_vec_rhs())
-	{
-		error("Number of labels does not match number of kernel"
-			" columns (num_labels={} cols={}", m_labels->get_num_labels(), kernel->get_num_vec_rhs());
-	}
+	require(kernel, "Kernel not set");
+	kernel->init(data, data);
 
 	// allocate alpha vector
 	set_alphas(SGVector<float64_t>(m_labels->get_num_labels()));

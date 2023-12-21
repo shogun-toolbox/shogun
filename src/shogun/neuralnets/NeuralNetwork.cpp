@@ -231,8 +231,14 @@ std::shared_ptr<DenseFeatures< float64_t >> NeuralNetwork::transform(
 	return std::make_shared<DenseFeatures<float64_t>>(output_activations);
 }
 
-bool NeuralNetwork::train_machine(std::shared_ptr<Features> data)
+bool NeuralNetwork::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
+	if (labs->get_label_type() == LT_BINARY)
+		m_problem_type = PT_BINARY;
+	else if (labs->get_label_type() == LT_REGRESSION)
+		m_problem_type = PT_REGRESSION;
+	else 
+		m_problem_type = PT_MULTICLASS;
 	if (m_auto_quick_initialize)
 	{
 		quick_connect();
@@ -243,7 +249,7 @@ bool NeuralNetwork::train_machine(std::shared_ptr<Features> data)
 		"Maximum number of epochs ({}) must be >= 0", m_max_num_epochs);
 
 	SGMatrix<float64_t> inputs = features_to_matrix(data);
-	SGMatrix<float64_t> targets = labels_to_matrix(m_labels);
+	SGMatrix<float64_t> targets = labels_to_matrix(labs);
 
 	for (int32_t i=0; i<m_num_layers-1; i++)
 	{
@@ -684,16 +690,7 @@ SGMatrix<float64_t> NeuralNetwork::labels_to_matrix(const std::shared_ptr<Labels
 
 EProblemType NeuralNetwork::get_machine_problem_type() const
 {
-	// problem type depends on the type of labels given to the network
-	// if no labels are given yet, just return PT_MULTICLASS
-	if (m_labels==NULL)
-		return PT_MULTICLASS;
-
-	if (m_labels->get_label_type() == LT_BINARY)
-		return PT_BINARY;
-	else if (m_labels->get_label_type() == LT_REGRESSION)
-		return PT_REGRESSION;
-	else return PT_MULTICLASS;
+	return m_problem_type;
 }
 
 bool NeuralNetwork::is_label_valid(std::shared_ptr<Labels> lab) const
@@ -703,21 +700,6 @@ bool NeuralNetwork::is_label_valid(std::shared_ptr<Labels> lab) const
 		lab->get_label_type() == LT_REGRESSION);
 }
 
-void NeuralNetwork::set_labels(std::shared_ptr<Labels> lab)
-{
-	if (lab->get_label_type() == LT_BINARY)
-	{
-		require(get_num_outputs() <= 2, "Cannot use {} in a neural network "
-			"with more that 2 output neurons", lab->get_name());
-	}
-	else if (lab->get_label_type() == LT_REGRESSION)
-	{
-		require(get_num_outputs() == 1, "Cannot use {} in a neural network "
-			"with more that 1 output neuron", lab->get_name());
-	}
-
-	Machine::set_labels(lab);
-}
 
 SGVector<float64_t>* NeuralNetwork::get_layer_parameters(int32_t i) const
 {

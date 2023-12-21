@@ -85,8 +85,8 @@ protected:
 // typedef ::testing::Types<KNN_BRUTE, KNN_KDTREE, KNN_LSH> KNNTypes;
 TEST_F(KNNTest, brute_solver)
 {
-	auto knn = std::make_shared<KNN>(k, distance, labels, KNN_BRUTE);
-	knn->train(features);
+	auto knn = std::make_shared<KNN>(k, distance, KNN_BRUTE);
+	knn->train(features, labels);
 	auto output = knn->apply(features_test)->as<MulticlassLabels>();
 
 	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )
@@ -95,8 +95,8 @@ TEST_F(KNNTest, brute_solver)
 
 TEST_F(KNNTest, kdtree_solver)
 {
-	auto knn = std::make_shared<KNN>(k, distance, labels, KNN_KDTREE);
-	knn->train(features);
+	auto knn = std::make_shared<KNN>(k, distance, KNN_KDTREE);
+	knn->train(features, labels);
 	auto output = knn->apply(features_test)->as<MulticlassLabels>();
 
 	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )
@@ -106,8 +106,8 @@ TEST_F(KNNTest, kdtree_solver)
 
 TEST_F(KNNTest, lsh_solver)
 {
-	auto knn = std::make_shared<KNN>(k, distance, labels, KNN_LSH);
-	knn->train(features);
+	auto knn = std::make_shared<KNN>(k, distance, KNN_LSH);
+	knn->train(features, labels);
 	auto output = knn->apply(features_test)->as<MulticlassLabels>();
 
 	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )
@@ -117,11 +117,11 @@ TEST_F(KNNTest, lsh_solver)
 
 TEST_F(KNNTest, lsh_solver_sparse)
 {
-	auto knn = std::make_shared<KNN>(k, distance, labels, KNN_LSH);
+	auto knn = std::make_shared<KNN>(k, distance, KNN_LSH);
 	// TODO: the sparse features should be actually sparse
 	auto features_sparse = std::make_shared<SparseFeatures<float64_t>>(features);
 	auto features_test_sparse = std::make_shared<SparseFeatures<float64_t>>(features_test);
-	knn->train(features_sparse);
+	knn->train(features_sparse, labels);
 	auto output = knn->apply(features_test_sparse)->as<MulticlassLabels>();
 
 	for ( index_t i = 0; i < labels_test->get_num_labels(); ++i )
@@ -153,12 +153,12 @@ TEST(KNN, classify_multiple_brute)
 
 	int32_t k=4;
 	auto distance = std::make_shared<EuclideanDistance>();
-	auto knn=std::make_shared<KNN> (k, distance, labels, KNN_BRUTE);
+	auto knn=std::make_shared<KNN> (k, distance, KNN_BRUTE);
 
 
 	features->add_subset(train);
 	labels->add_subset(train);
-	knn->train(features);
+	knn->train(features, labels);
 
 	// classify for multiple k
 	features_test->add_subset(test);
@@ -203,12 +203,12 @@ TEST(KNN, classify_multiple_kdtree)
 
 	int32_t k=4;
 	auto distance = std::make_shared<EuclideanDistance>();
-	auto knn=std::make_shared<KNN>(k, distance, labels, KNN_KDTREE);
+	auto knn=std::make_shared<KNN>(k, distance, KNN_KDTREE);
 
 
 	features->add_subset(train);
 	labels->add_subset(train);
-	knn->train(features);
+	knn->train(features, labels);
 
 	// classify for multiple k
 	features_test->add_subset(test);

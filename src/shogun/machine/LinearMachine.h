@@ -15,6 +15,7 @@
 #include <shogun/lib/common.h>
 #include <shogun/machine/Machine.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/features/DotFeatures.h>
 
 
 namespace shogun
@@ -95,19 +96,14 @@ class LinearMachine : public Machine
 		 */
 		virtual float64_t get_bias() const;
 
-		/** set features
-		 *
-		 * @param feat features to set
-		 */
-		virtual void set_features(std::shared_ptr<DotFeatures> feat);
-
 		/** apply linear machine to data
 		 * for binary classification problem
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<BinaryLabels>
+		apply_binary(std::shared_ptr<Features> data) override;
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -115,16 +111,12 @@ class LinearMachine : public Machine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<RegressionLabels>
+		apply_regression(std::shared_ptr<Features> data) override;
 
 		/** applies to one vector */
-		float64_t apply_one(int32_t vec_idx) override;
-
-		/** get features
-		 *
-		 * @return features
-		 */
-		virtual std::shared_ptr<DotFeatures> get_features();
+		virtual float64_t apply_one(
+		    const std::shared_ptr<DotFeatures>& features, int32_t vec_idx);
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -142,6 +134,17 @@ class LinearMachine : public Machine
 		 */
 		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
 
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) final
+		{
+			const auto dot_feat = data->as<DotFeatures>();
+			return train_machine(dot_feat, labs);
+		}
+
+		virtual bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs)
+		{
+			not_implemented(SOURCE_LOCATION);
+			return false;
+		}
 	private:
 
 		void init();
@@ -151,10 +154,7 @@ class LinearMachine : public Machine
 		SGVector<float64_t> m_w;
 
 		/** bias */
-		float64_t bias;
-
-		/** features */
-		std::shared_ptr<DotFeatures> features;
+		float64_t bias = 0.0;
 };
 }
 #endif

@@ -112,9 +112,9 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	model.add("factor_types", ftype[2])
 
 	# --- training with BMRM ---
-	bmrm = sg.create_machine("DualLibQPBMSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
+	bmrm = sg.create_machine("DualLibQPBMSOSVM", model=model, m_lambda=0.01)
 	#bmrm.set_verbose(True)
-	bmrm.train()
+	bmrm.train(tr_samples, tr_labels)
 	#print 'learned weights:'
 	#print bmrm.get_w()
 	#print 'ground truth weights:'
@@ -142,9 +142,9 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print hbm.get_train_errors()
 
 	# --- training with SGD ---
-	sgd = sg.create_machine("StochasticSOSVM", model=model, labels=tr_labels, m_lambda=0.01)
+	sgd = sg.create_machine("StochasticSOSVM", model=model, m_lambda=0.01)
 	#sgd.set_verbose(True)
-	sgd.train()
+	sgd.train(tr_samples, tr_labels)
 
 	# evaluation
 	#print('SGD: Average training error is %.4f' % SOSVMHelper.average_loss(sgd.get_w(), model))
@@ -154,9 +154,9 @@ def structure_factor_graph_model(tr_samples = samples, tr_labels = labels, w = w
 	#print hp.get_train_errors()
 
 	# --- training with FW ---
-	fw = sg.create_machine("FWSOSVM", model=model, labels=tr_labels, m_lambda=0.01, 
+	fw = sg.create_machine("FWSOSVM", model=model, m_lambda=0.01, 
 					gap_threshold=0.01)
-	fw.train()
+	fw.train(tr_samples, tr_labels)
 
 	# evaluation
 	#print('FW: Average training error is %.4f' % SOSVMHelper.average_loss(fw.get_w(), model))

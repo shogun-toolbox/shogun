@@ -24,8 +24,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(const std::shared
 	{
 		// subset for training
 		SGVector<index_t> inverse_subset_indices = split->generate_subset_inverse(i);
-		machine->set_labels(view(Y, inverse_subset_indices));
-		machine->train(view(X, inverse_subset_indices));
+		machine->train(view(X, inverse_subset_indices), view(Y, inverse_subset_indices));
 
 		// subset for predicting
 		SGVector<index_t> subset_indices = split->generate_subset_indices(i);

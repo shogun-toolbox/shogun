@@ -154,6 +154,17 @@ class Machine : public StoppableSGObject
 		 */
 		virtual bool train(std::shared_ptr<Features> data=NULL);
 
+		/** train machine
+		 *
+		 * @param data training data
+		 * @param lab training label
+		 *
+		 * @return whether training was successful
+		 */
+		virtual bool train(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& lab);
+
 		/** apply machine to data
 		 * if data is not specified apply to the current features
 		 *
@@ -172,18 +183,6 @@ class Machine : public StoppableSGObject
 		virtual std::shared_ptr<StructuredLabels> apply_structured(std::shared_ptr<Features> data=NULL);
 		/** apply machine to data in means of latent problem */
 		virtual std::shared_ptr<LatentLabels> apply_latent(std::shared_ptr<Features> data=NULL);
-
-		/** set labels
-		 *
-		 * @param lab labels
-		 */
-		virtual void set_labels(std::shared_ptr<Labels> lab);
-
-		/** get labels
-		 *
-		 * @return labels
-		 */
-		virtual std::shared_ptr<Labels> get_labels();
 
 		/** set maximum training time
 		 *
@@ -255,7 +254,29 @@ class Machine : public StoppableSGObject
 			return false;
 		}
 
+		virtual bool train_machine(
+		    const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
+		{
+			error("train_machine is not yet implemented for {}!", get_name());
+			return false;
+		}
+
 		virtual bool train_dense(std::shared_ptr<Features> data)
+		{
+			not_implemented(SOURCE_LOCATION);
+			return false;
+		}
+		virtual bool train_dense(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs)
+		{
+			not_implemented(SOURCE_LOCATION);
+			return false;
+		}
+
+		virtual bool train_string(
+		    const std::shared_ptr<Features>& data,
+		    const std::shared_ptr<Labels>& labs)
 		{
 			not_implemented(SOURCE_LOCATION);
 			return false;
@@ -313,7 +334,7 @@ class Machine : public StoppableSGObject
 		float64_t m_max_train_time;
 
 		/** labels */
-		std::shared_ptr<Labels> m_labels;
+		//std::shared_ptr<Labels> m_labels;
 
 		/** solver type */
 		ESolverType m_solver_type;

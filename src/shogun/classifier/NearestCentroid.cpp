@@ -17,43 +17,24 @@ namespace shogun{
 
 	NearestCentroid::NearestCentroid() : DistanceMachine()
 	{
-		init();
 	}
 
-	NearestCentroid::NearestCentroid(const std::shared_ptr<Distance>& d, const std::shared_ptr<Labels>& trainlab) : DistanceMachine()
+	NearestCentroid::NearestCentroid(const std::shared_ptr<Distance>& d) : DistanceMachine()
 	{
-		init();
 		ASSERT(d)
-		ASSERT(trainlab)
 		set_distance(d);
-		set_labels(trainlab);
 	}
 
 	NearestCentroid::~NearestCentroid()
 	{
 	}
 
-	void NearestCentroid::init()
-	{
-		m_shrinking=0;
-		m_is_trained=false;
-	}
-
-
 	bool NearestCentroid::train_machine(std::shared_ptr<Features> data)
 	{
-		ASSERT(m_labels)
-		ASSERT(distance)
-		if (data)
-		{
-			if (m_labels->get_num_labels() != data->get_num_vectors())
-				error("Number of training vectors does not match number of labels");
-			distance->init(data, data);
-		}
-		else
-		{
-			data = distance->get_lhs();
-		}
+		require(distance, "Distance not set");
+		require(m_labels->get_num_labels() == data->get_num_vectors(),
+			"Number of training vectors does not match number of labels");
+		distance->init(data, data);
 
 		auto multiclass_labels = m_labels->as<MulticlassLabels>();
 		auto dense_data = data->as<DenseFeatures<float64_t>>();
@@ -83,7 +64,7 @@ namespace shogun{
 		linalg::scale(centroids, centroids, scale);
 
 		auto centroids_feats = std::make_shared<DenseFeatures<float64_t>>(centroids);
-
+		m_centroids = centroids_feats;
 		m_is_trained=true;
 		distance->init(centroids_feats, distance->get_rhs());
 

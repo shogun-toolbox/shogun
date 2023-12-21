@@ -12,11 +12,11 @@ Labels labels_test = create_labels(f_labels_test)
 
 
 #![create_instance]
-Machine classifier = create_machine("MulticlassLogisticRegression", m_z=1.0, labels=labels_train)
+Machine classifier = create_machine("MulticlassLogisticRegression", m_z=1.0)
 #![create_instance]
 
 #![train_and_apply]
-classifier.train(features_train)
+classifier.train(features_train, labels_train)
 MulticlassLabels labels_predict = classifier.apply_multiclass(features_test)
 #![train_and_apply]
 

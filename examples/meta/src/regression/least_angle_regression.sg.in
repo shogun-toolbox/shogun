@@ -22,11 +22,11 @@ Features normalized_features_test = Normalize.transform(pruned_features_test)
 #![preprocess_features]
 
 #![create_instance]
-Machine lars = create_machine("LeastAngleRegression", labels=labels_train, lasso=False, max_l1_norm=0.01)
+Machine lars = create_machine("LeastAngleRegression", lasso=False, max_l1_norm=0.01)
 #![create_instance]
 
 #![train_and_apply]
-lars.train(normalized_features_train)
+lars.train(normalized_features_train, labels_train)
 Labels labels_predict = lars.apply(normalized_features_test)
 
 #[!extract_w]

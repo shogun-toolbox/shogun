@@ -11,11 +11,11 @@ Labels labels_test = create_labels(f_labels_test)
 #![create_features]
 
 #![create_instance]
-Machine mc_lda = create_machine("MCLDA", labels=labels_train, m_tolerance=0.0001, m_store_cov=True)
+Machine mc_lda = create_machine("MCLDA", m_tolerance=0.0001, m_store_cov=True)
 #![create_instance]
 
 #![train_and_apply]
-mc_lda.train(features_train)
+mc_lda.train(features_train, labels_train)
 MulticlassLabels labels_predict = mc_lda.apply_multiclass(features_test)
 #![train_and_apply]
 

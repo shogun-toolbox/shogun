@@ -19,8 +19,8 @@ MulticlassLibSVM::MulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
 {
 }
 
-MulticlassLibSVM::MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>(), C, std::move(k), std::move(lab)), solver_type(LIBSVM_C_SVC)
+MulticlassLibSVM::MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k )
+: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>(), C, std::move(k) ), solver_type(LIBSVM_C_SVC)
 {
 }
 
@@ -36,7 +36,7 @@ void MulticlassLibSVM::register_params()
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
-bool MulticlassLibSVM::train_machine(std::shared_ptr<Features> data)
+bool MulticlassLibSVM::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -46,17 +46,17 @@ bool MulticlassLibSVM::train_machine(std::shared_ptr<Features> data)
 
 	problem = svm_problem();
 
-	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-	init_strategy();
+	ASSERT(labs && labs->get_num_labels())
+	ASSERT(labs->get_label_type() == LT_MULTICLASS)
+	init_strategy(labs);
 	int32_t num_classes = m_multiclass_strategy->get_num_classes();
-	problem.l=m_labels->get_num_labels();
+	problem.l=labs->get_num_labels();
 	io::info("{} trainlabels, {} classes", problem.l, num_classes);
 
 
 	if (data)
 	{
-		if (m_labels->get_num_labels() != data->get_num_vectors())
+		if (labs->get_num_labels() != data->get_num_vectors())
 		{
 			error("Number of training vectors does not match number of "
 					"labels");
@@ -74,7 +74,7 @@ bool MulticlassLibSVM::train_machine(std::shared_ptr<Features> data)
 	for (int32_t i=0; i<problem.l; i++)
 	{
 		problem.pv[i]=-1.0;
-		problem.y[i]=multiclass_labels(m_labels)->get_label(i);
+		problem.y[i]=multiclass_labels(labs)->get_label(i);
 		problem.x[i]=&x_space[2*i];
 		x_space[2*i].index=i;
 		x_space[2*i+1].index=-1;

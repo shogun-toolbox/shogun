@@ -10,6 +10,7 @@ namespace shogun {
 		public:
 			MOCK_METHOD1(apply, std::shared_ptr<Labels>(std::shared_ptr<Features>));
 			MOCK_METHOD1(train_machine, bool(std::shared_ptr<Features>));
+			MOCK_METHOD2(train_machine, bool(const std::shared_ptr<Features>&, const std::shared_ptr<Labels>&));
 			MOCK_CONST_METHOD1(clone, std::shared_ptr<SGObject>(ParameterProperties));
 
 			virtual const char* get_name() const { return "MockMachine"; }

@@ -67,9 +67,7 @@ TEST(GLM, GLM_basic_test)
 	glm->set_bias(0.44101309);
 	glm->set_w(SGVector<float64_t>({0.1000393, 0.2446845, 0.5602233}));
 
-	glm->set_labels(labels_train);
-
-	glm->train(features_train);
+	glm->train(features_train, labels_train);
 
 	auto labels_predict = glm->apply_regression(features_test);
 

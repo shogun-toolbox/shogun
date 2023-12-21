@@ -60,11 +60,10 @@ TEST(MalsarL12Test, train)
 	auto task = std::make_shared<Task>(0, data.second->get_num_labels());
 	task_group->append_task(task);
 
-	auto mtlr = std::make_shared<MultitaskL12LogisticRegression>(0.1,0.1,data.first.first,data.second,task_group);
-	mtlr->train();
-	mtlr->set_features(data.first.second);
+	auto mtlr = std::make_shared<MultitaskL12LogisticRegression>(0.1,0.1, task_group);
+	mtlr->train(data.first.first, data.second);
 	mtlr->set_current_task(0);
-	auto output = mtlr->apply();
+	auto output = mtlr->apply(data.first.second);
 
 
 }
@@ -77,11 +76,10 @@ TEST(MalsarClusteredTest, train)
 	auto task = std::make_shared<Task>(0, data.second->get_num_labels());
 	task_group->append_task(task);
 
-	auto mtlr = std::make_shared<MultitaskClusteredLogisticRegression>(0.1,0.1,data.first.first,data.second,task_group,1);
-	mtlr->train();
-	mtlr->set_features(data.first.second);
+	auto mtlr = std::make_shared<MultitaskClusteredLogisticRegression>(0.1,0.1, task_group,1);
+	mtlr->train(data.first.first, data.second);
 	mtlr->set_current_task(0);
-	auto output = mtlr->apply();
+	auto output = mtlr->apply(data.first.second);
 
 
 }
@@ -94,11 +92,10 @@ TEST(MalsarTraceTest, train)
 	auto task = std::make_shared<Task>(0, data.second->get_num_labels());
 	task_group->append_task(task);
 
-	auto mtlr = std::make_shared<MultitaskTraceLogisticRegression>(0.1,data.first.first,data.second,task_group);
-	mtlr->train();
-	mtlr->set_features(data.first.second);
+	auto mtlr = std::make_shared<MultitaskTraceLogisticRegression>(0.1, task_group);
+	mtlr->train(data.first.first, data.second);
 	mtlr->set_current_task(0);
-	auto output = mtlr->apply();
+	auto output = mtlr->apply(data.first.second);
 
 
 }

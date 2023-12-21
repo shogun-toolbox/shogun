@@ -774,8 +774,8 @@ SGMatrix<float64_t> GMM::alpha_init(SGMatrix<float64_t> init_means)
 	SGVector<float64_t> label_num(init_means.num_cols);
 	linalg::range_fill(label_num);
 
-	auto knn=std::make_shared<KNN>(1, std::make_shared<EuclideanDistance>(), std::make_shared<MulticlassLabels>(label_num));
-	knn->train(std::make_shared<DenseFeatures<float64_t>>(init_means));
+	auto knn=std::make_shared<KNN>(1, std::make_shared<EuclideanDistance>());
+	knn->train(std::make_shared<DenseFeatures<float64_t>>(init_means), std::make_shared<MulticlassLabels>(label_num));
 	auto init_labels = knn->apply(features)->as<MulticlassLabels>();
 
 	SGMatrix<float64_t> alpha(num_vectors, index_t(m_components.size()));

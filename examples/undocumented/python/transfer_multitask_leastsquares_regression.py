@@ -29,12 +29,12 @@ def transfer_multitask_leastsquares_regression (fm_train=traindat,fm_test=testda
 	task_group.append_task(task_one)
 	task_group.append_task(task_two)
 
-	mtlsr = MultitaskLeastSquaresRegression(0.1,features,labels,task_group)
+	mtlsr = MultitaskLeastSquaresRegression(0.1,task_group)
 	mtlsr.set_regularization(1) # use regularization ratio
 	mtlsr.set_tolerance(1e-2) # use 1e-2 tolerance
-	mtlsr.train()
+	mtlsr.train(features,labels)
 	mtlsr.set_current_task(0)
-	out = mtlsr.apply_regression().get_labels()
+	out = mtlsr.apply_regression(features).get_labels()
 	return out
 
 if __name__=='__main__':

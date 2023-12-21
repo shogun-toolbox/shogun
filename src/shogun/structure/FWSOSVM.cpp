@@ -61,7 +61,7 @@ EMachineType FWSOSVM::get_classifier_type()
 	return CT_FWSOSVM;
 }
 
-bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
+bool FWSOSVM::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	SG_TRACE("Entering CFWSOSVM::train_machine.");
 	if (data)
@@ -76,7 +76,7 @@ bool FWSOSVM::train_machine(std::shared_ptr<Features> data)
 	// Dimensionality of the joint feature space
 	int32_t M = m_model->get_dim();
 	// Number of training examples
-	int32_t N = m_labels->as<StructuredLabels>()->get_num_labels();
+	int32_t N = labs->as<StructuredLabels>()->get_num_labels();
 
 	SG_DEBUG("M={}, N ={}.", M, N);
 

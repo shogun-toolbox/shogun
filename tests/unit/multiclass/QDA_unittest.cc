@@ -31,11 +31,11 @@ TEST(QDA, train_and_apply)
 	auto labels = std::make_shared<MulticlassLabels>(lab);
 	auto features = std::make_shared<DenseFeatures< float64_t >>(feat);
 
-	auto qda = std::make_shared<QDA>(features, labels);
+	auto qda = std::make_shared<QDA>();
 
-	qda->train();
+	qda->train(features, labels);
 
-	auto output = qda->apply()->as<MulticlassLabels>();
+	auto output = qda->apply(features)->as<MulticlassLabels>();
 	// Test
 	for ( index_t i = 0; i < CLASSES*NUM; ++i )
 		EXPECT_EQ(output->get_label(i), labels->get_label(i));

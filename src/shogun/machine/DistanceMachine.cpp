@@ -17,7 +17,7 @@
 using namespace shogun;
 
 DistanceMachine::DistanceMachine()
-: Machine()
+: NonParametricMachine()
 {
 	init();
 }
@@ -99,6 +99,7 @@ void DistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1,
 
 std::shared_ptr<MulticlassLabels> DistanceMachine::apply_multiclass(std::shared_ptr<Features> data)
 {
+	
 	if (data)
 	{
 		/* set distance features to given ones and apply to all */
@@ -118,30 +119,20 @@ std::shared_ptr<MulticlassLabels> DistanceMachine::apply_multiclass(std::shared_
 		return apply_multiclass(all);
 	}
 	return NULL;
+
 }
 
 float64_t DistanceMachine::apply_one(int32_t num)
 {
 	/* number of clusters */
-	auto lhs=distance->get_lhs();
+    const auto& lhs=distance->get_lhs();
 	int32_t num_clusters=lhs->get_num_vectors();
 
 	/* (multiple threads) calculate distances to all cluster centers */
     SGVector<float64_t> dists(num_clusters);
 	distances_lhs(dists, 0, num_clusters-1, num);
-
-	/* find cluster index with smallest distance */
-	float64_t result=dists.vector[0];
-	index_t best_index=0;
-	for (index_t i=1; i<num_clusters; ++i)
-	{
-		if (dists[i]<result)
-		{
-			result=dists[i];
-			best_index=i;
-		}
-	}
-
+    const auto result_iter = std::min_element(dists.begin(), dists.end());
+    index_t best_index = std::distance(dists.begin(), result_iter);
 	/* implicit cast */
 	return best_index;
 }

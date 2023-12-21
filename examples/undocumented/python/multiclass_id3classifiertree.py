@@ -30,8 +30,7 @@ def multiclass_id3classifiertree(train=train_data,labels=train_labels,test=test_
 
 	# ID3 Tree formation
 	id3=ID3ClassifierTree()
-	id3.set_labels(feats_labels)
-	id3.train(feats_train)
+	id3.train(feats_train, feats_labels)
 
 	# Classify test data
 	output=id3.apply_multiclass(feats_test).get_labels()

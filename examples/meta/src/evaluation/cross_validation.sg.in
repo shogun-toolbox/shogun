@@ -16,7 +16,7 @@ real epsilon = 0.001
 #![set_parameters]
 
 #![create_instance]
-Machine svm = create_machine("LibLinear", labels=labels_train, epsilon=epsilon, C1=C, C2=C, liblinear_solver_type="L2R_L2LOSS_SVC", seed=2)
+Machine svm = create_machine("LibLinear", epsilon=epsilon, C1=C, C2=C, liblinear_solver_type="L2R_L2LOSS_SVC", seed=2)
 #![create_instance]
 
 #![create_cross_validation]
@@ -32,7 +32,7 @@ real stddev = result.get_real("std_dev")
 #![evaluate_and_get_result]
 
 #![get_results_test_data]
-svm.train(features_train)
+svm.train(features_train, labels_train)
 Labels labels_predict = svm.apply(features_test)
 real accuracy_test = evaluation_criterion.evaluate(labels_predict, labels_test)
 #![get_results_test_data]
@@ -51,7 +51,7 @@ Labels reg_labels_test = create_labels(reg_lab_test)
 
 #![create_machine_REGRESSION]
 real tau = 0.001
-Machine lrr = create_machine("LinearRidgeRegression", tau=tau, labels=reg_labels_train)
+Machine lrr = create_machine("LinearRidgeRegression", tau=tau)
 #![create_instance_REGRESSION]
 
 #![create_cross_validation_REGRESSION]
@@ -65,7 +65,7 @@ EvaluationResult result_lrr = cross_validation.evaluate()
 #![evaluate_and_get_result_REGRESSION]
 
 #![evaluate_error_REGRESSION]
-lrr.train(reg_features_train)
+lrr.train(reg_features_train, reg_labels_train)
 Labels reg_labels_predict = lrr.apply(reg_features_test)
 real mse = MSE_evaluation.evaluate(reg_labels_predict, reg_labels_test)
 #![evaluate_error_REGRESSION]

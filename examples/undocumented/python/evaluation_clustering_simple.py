@@ -25,8 +25,8 @@ def assign_labels(data, centroids, ncenters):
 	fea_centroids = sg.create_features(centroids)
 	distance = sg.create_distance('EuclideanDistance')
 	distance.init(fea_centroids, fea_centroids)
-	knn = sg.create_machine("KNN", k=1, distance=distance, labels=labels)
-	knn.train()
+	knn = sg.create_machine("KNN", k=1, distance=distance)
+	knn.train(fea_centroids, labels)
 	return knn.apply(data)
 
 def evaluation_clustering_simple (n_data=100, sqrt_num_blobs=4, distance=5):

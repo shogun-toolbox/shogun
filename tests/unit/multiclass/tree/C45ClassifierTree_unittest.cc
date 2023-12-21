@@ -160,9 +160,8 @@ TEST(C45ClassifierTree, classify_equivalence_check_to_id3)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c45=std::make_shared<C45ClassifierTree>();
-	c45->set_labels(labels);
 	c45->set_feature_types(ft);
-	c45->train(feats);
+	c45->train(feats, labels);
 
 	SGMatrix<float64_t> test(4,5);
 	test(0,0)=overcast;
@@ -310,9 +309,8 @@ TEST(C45ClassifierTree, classify_continuous_plus_categorical_data)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c45=std::make_shared<C45ClassifierTree>();
-	c45->set_labels(labels);
 	c45->set_feature_types(ft);
-	c45->train(feats);
+	c45->train(feats, labels);
 
 	SGMatrix<float64_t> test(4,5);
 	test(0,0)=overcast;
@@ -386,9 +384,8 @@ TEST(C45ClassifierTree, missing_attribute)
 	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto c45=std::make_shared<C45ClassifierTree>();
-	c45->set_labels(labels);
 	c45->set_feature_types(ft);
-	c45->train(feats);
+	c45->train(feats, labels);
 
 	SGMatrix<float64_t> test(1,2);
 	test(0,0)=32;
@@ -500,9 +497,8 @@ TEST(C45ClassifierTree, tree_prune_categorical_attributes)
 
 
 	auto c45tree=std::make_shared<C45ClassifierTree>();
-	c45tree->set_labels(train_lab);
 	c45tree->set_feature_types(feature_types);
-	c45tree->train(train_features);
+	c45tree->train(train_features, train_lab);
 	c45tree->prune_tree(train_features,validation_lab);
 
 	auto result=c45tree->apply(train_features)->as<MulticlassLabels>();
@@ -589,9 +585,8 @@ TEST(C45ClassifierTree, tree_prune_continuous_attributes)
 
 
 	auto c45tree=std::make_shared<C45ClassifierTree>();
-	c45tree->set_labels(train_lab);
 	c45tree->set_feature_types(feature_types);
-	c45tree->train(train_features);
+	c45tree->train(train_features, train_lab);
 	c45tree->prune_tree(validation_features,validation_lab);
 
 	auto result=c45tree->apply(train_features)->as<MulticlassLabels>();

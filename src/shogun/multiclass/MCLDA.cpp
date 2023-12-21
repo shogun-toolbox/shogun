@@ -31,7 +31,7 @@ MCLDA::MCLDA(float64_t tolerance, bool store_cov)
 
 }
 
-MCLDA::MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_cov)
+MCLDA::MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat,  float64_t tolerance, bool store_cov)
 : NativeMulticlassMachine()
 {
 	init();
@@ -40,7 +40,6 @@ MCLDA::MCLDA(const std::shared_ptr<DenseFeatures<float64_t>>& traindat, std::sha
 	m_store_cov=store_cov;
 
 	set_features(traindat);
-	set_labels(std::move(trainlab));
 }
 
 MCLDA::~MCLDA()
@@ -149,9 +148,9 @@ std::shared_ptr<MulticlassLabels> MCLDA::apply_multiclass(std::shared_ptr<Featur
 	return out;
 }
 
-bool MCLDA::train_machine(std::shared_ptr<Features> data)
+bool MCLDA::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (!m_labels)
+	if (!labs)
 		error("No labels allocated in MCLDA training");
 
 	if (data)
@@ -165,14 +164,14 @@ bool MCLDA::train_machine(std::shared_ptr<Features> data)
 	if (!m_features)
 		error("No features allocated in MCLDA training");
 
-	SGVector< int32_t > train_labels = multiclass_labels(m_labels)->get_int_labels();
+	SGVector< int32_t > train_labels = multiclass_labels(labs)->get_int_labels();
 
 	if (!train_labels.vector)
 		error("No train_labels allocated in MCLDA training");
 
 	cleanup();
 
-	m_num_classes = multiclass_labels(m_labels)->get_num_classes();
+	m_num_classes = multiclass_labels(labs)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 
