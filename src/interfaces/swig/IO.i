@@ -77,6 +77,7 @@
 %shared_ptr(shogun::StreamingFileFromDenseFeatures<floatmax_t>)
 #endif
 
+%include <shogun/io/ARFFFile.h>
 %include <shogun/io/File.h>
 %include <shogun/io/streaming/StreamingFile.h>
 %include <shogun/io/streaming/StreamingFileFromFeatures.h>

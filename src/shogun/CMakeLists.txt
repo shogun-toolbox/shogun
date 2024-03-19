@@ -529,6 +529,12 @@ SHOGUN_DEPENDENCIES(
   SCOPE PRIVATE
   CONFIG_FLAG HAVE_ARPREC)
 
+# Date external lib
+include(external/date)
+SHOGUN_INCLUDE_DIRS(SCOPE PUBLIC
+        $<BUILD_INTERFACE:${DATE_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include/shogun/third_party/date>)
+
 ############################ HMM
 OPTION(USE_HMMDEBUG "HMM debug mode" OFF)
 OPTION(USE_HMMCACHE "HMM cache" ON)

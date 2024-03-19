@@ -1,4 +1,5 @@
 %{
+#include <shogun/io/ARFFFile.h>
 #include <shogun/io/IOBuffer.h>
 #include <shogun/io/streaming/ParseBuffer.h>
 #include <shogun/io/streaming/InputParser.h>
