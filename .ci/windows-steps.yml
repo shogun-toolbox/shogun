@@ -45,7 +45,7 @@ steps:
   displayName: 'Build ($(buildConfiguration) $(buildPlatform))'
   workingDirectory: $(Build.SourcesDirectory)\build
 
-- script: ctest -j 2
+- script: ctest --output-on-failure -j 2
   displayName: Test
   workingDirectory: $(Build.SourcesDirectory)\build
 
