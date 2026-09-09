@@ -57,7 +57,8 @@ IGNORE_IN_CLASSLIST class DirectorKernelMachine : public KernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL)
+		virtual std::shared_ptr<Machine>
+		train(std::shared_ptr<Features> data = NULL)
 		{
 			return KernelMachine::train(data);
 		}

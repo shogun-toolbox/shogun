@@ -82,7 +82,7 @@ void DeepAutoencoder::initialize_neural_network(float64_t sigma)
 	}
 }
 
-bool DeepAutoencoder::train(std::shared_ptr<Features> data)
+std::shared_ptr<Machine> DeepAutoencoder::train(std::shared_ptr<Features> data)
 {
 	bool pretrained = false;
 	if (m_do_pretrain)

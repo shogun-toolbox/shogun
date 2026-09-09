@@ -64,14 +64,14 @@ TEST(Autoencoder, train)
 	auto decoding_layer = std::make_shared<NeuralLinearLayer>(num_features);
 	hidden_layer->put("seed", seed);
 	decoding_layer->put("seed", seed);
-	Autoencoder ae(num_features, hidden_layer, decoding_layer);
-	ae.put("seed", seed);
+	auto ae = std::make_shared<Autoencoder>(
+	    num_features, hidden_layer, decoding_layer);
+	ae->put("seed", seed);
 
 	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
 
-	ae.train(features);
-
-	auto reconstructed = ae.reconstruct(features);
+	auto reconstructed =
+	    ae->train(features)->as<Autoencoder>()->reconstruct(features);
 	SGMatrix<float64_t> reconstructed_data = reconstructed->get_feature_matrix();
 
 	float64_t avg_diff = 0;

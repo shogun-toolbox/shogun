@@ -110,7 +110,7 @@ public:
 	 *
 	 * @return True if training succeeded, false otherwise
 	 */
-	bool train(std::shared_ptr<Features> data) override;
+	std::shared_ptr<Machine> train(std::shared_ptr<Features> data) override;
 
 	/** Pre-trains the deep autoencoder as a stack of autoencoders
 	 *

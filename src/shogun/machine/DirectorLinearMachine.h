@@ -44,7 +44,8 @@ IGNORE_IN_CLASSLIST class DirectorLinearMachine : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<Features> data=NULL)
+		virtual std::shared_ptr<Machine>
+		train(std::shared_ptr<Features> data = NULL)
 		{
 			return LinearMachine::train(data);
 		}

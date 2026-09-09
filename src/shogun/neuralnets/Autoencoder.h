@@ -124,7 +124,7 @@ public:
 	 *
 	 * @return True if training succeeded, false otherwise
 	 */
-	bool train(std::shared_ptr<Features> data) override;
+	std::shared_ptr<Machine> train(std::shared_ptr<Features> data) override;
 
 	/** Computes the activation of the hidden layer given the input data
 	 *
