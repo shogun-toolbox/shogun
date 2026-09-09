@@ -57,7 +57,7 @@ TEST(Perceptron, train)
 
 	auto perceptron = std::make_shared<Perceptron>();
 	perceptron->set_labels(labels);
-	EXPECT_TRUE(perceptron->train(features));
+	EXPECT_NE(perceptron->train(features), nullptr);
 
 	auto results = perceptron->apply(test_features);
 	auto acc = std::make_shared<AccuracyMeasure>();

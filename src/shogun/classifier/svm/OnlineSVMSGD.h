@@ -56,7 +56,8 @@ class OnlineSVMSGD : public OnlineLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train(std::shared_ptr<Features> data=NULL) override;
+		std::shared_ptr<Machine>
+		train(std::shared_ptr<Features> data = NULL) override;
 
 		/** set C
 		 *

@@ -31,7 +31,7 @@ Machine::~Machine()
 
 }
 
-bool Machine::train(std::shared_ptr<Features> data)
+std::shared_ptr<Machine> Machine::train(std::shared_ptr<Features> data)
 {
 	if (train_require_labels())
 	{
@@ -68,7 +68,9 @@ bool Machine::train(std::shared_ptr<Features> data)
 	sub.unsubscribe();
 	reset_computation_variables();
 
-	return result;
+	if (!result)
+		error("Training of {} failed!", get_name());
+	return shared_from_base<Machine>();
 }
 
 void Machine::set_labels(std::shared_ptr<Labels> lab)

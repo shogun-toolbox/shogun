@@ -92,8 +92,7 @@ Autoencoder::Autoencoder(
 	initialize_neural_network(sigma);
 }
 
-
-bool Autoencoder::train(std::shared_ptr<Features> data)
+std::shared_ptr<Machine> Autoencoder::train(std::shared_ptr<Features> data)
 {
 	require(data != NULL, "Invalid (NULL) feature pointer");
 
@@ -134,7 +133,9 @@ bool Autoencoder::train(std::shared_ptr<Features> data)
 		input_layer->gaussian_noise = 0;
 	}
 
-	return result;
+	if (!result)
+		error("Training of {} failed!", get_name());
+	return shared_from_base<Machine>();
 }
 
 std::shared_ptr<DenseFeatures< float64_t >> Autoencoder::transform(
